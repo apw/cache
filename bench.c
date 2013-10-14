@@ -10,6 +10,7 @@
 int main(int argc, char *argv[])
 {
     tunnel_t *t, *head = 0, *tail = 0;
+    unsigned long long dt;
     int64_t lo, tic, toc;
     FILE *cache, *query;
     uint8_t cv, *x = 0;
@@ -90,8 +91,11 @@ int main(int argc, char *argv[])
             t = search(x, head);
             toc = rdtsc(0);
 
+            /* Calculate the calibrated cycle count.  */
+            dt = toc - tic - lo;
+
             /* Print hit indicator and calibrated cycle count.  */
-            if (printf("%d %lld\n", t != 0, toc - tic - lo) < 0)
+            if (printf("%d %lld\n", t != 0, dt) < 0)
                 goto failure;
         }
 
