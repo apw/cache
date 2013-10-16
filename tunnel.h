@@ -8,7 +8,7 @@ typedef struct tunnel {
 
     uint32_t m;                 /* Number of modified bytes.  */
     uint32_t *mi;               /* Array of modified byte indexes.  */
-    uint8_t *mv;                /* Array of causal byte values.  */
+    uint8_t *mv;                /* Array of modified byte values.  */
 
     uint64_t k;                 /* Length of the tunnel.  */
 
