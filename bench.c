@@ -83,6 +83,7 @@ int main(int argc, char *argv[])
     /* Calibrate the cycle counter.  */
     lo = rdtsc(1);
 
+    /* Read in the query file and time each query against the cache.  */
     for (j = 0; fscanf(query, "%u %hhu", &ci, &cv) != EOF; j = ci) {
         /* If this is a new state vector, query the cache on the old one.  */
         if (ci < j) {
