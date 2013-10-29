@@ -1,17 +1,25 @@
-CFLAGS = -g -Wall -Werror
-LDFLAGS = -g
+CC = g++-4.7
+CFLAGS = -Wall -Werror
+
+SOURCES = main/*.cpp algo/*.cpp arch/*.c
+HEADERS = includes/*.h includes/*.hpp
+EXECUTABLE = bin/main
+
+KANGAROO_BODY = $(CC) $(CFLAGS)
+KANGAROO_TAIL = $(SOURCES) -o $(EXECUTABLE)
 
 ifdef O
 CFLAGS += -O$(O)
 endif
 
-bench: congruent.o search.o bench.o
-	$(CC) $^ $(LDFLAGS) -o $@
+main:
+	mkdir -p bin graphs output
+	$(KANGAROO_BODY) $(KANGAROO_TAIL)
 
-%.o: %.c rdtsc.h tunnel.h
-	$(CC) $< $(CFLAGS) -c -o $@
-
-.PHONY: clean
+dbg:
+	$(KANGAROO_BODY) -g $(KANGAROO_TAIL)
 
 clean:
-	$(RM) $(wildcard bench *.o *.c~)
+	rm -rf bin/*
+
+.PHONY: main dbg clean

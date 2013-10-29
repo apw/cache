@@ -1,0 +1,7 @@
+*~
+*.dat
+bin/*
+graphs/*
+output/*
+*.trace
+.DS_Store
