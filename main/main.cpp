@@ -20,8 +20,7 @@ using namespace std;
 
 #define NUM_ARGS 2
 
-// AHH TODO NEIL MOVE BACK TO 2 ahhh
-#define NUM_IMPS 1
+#define NUM_IMPS 2
 
 /*
  * THE FOLLOWING #define's MUST BE UNIQUE FROM ONE ANOTHER
