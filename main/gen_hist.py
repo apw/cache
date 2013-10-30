@@ -1,4 +1,5 @@
 import sys
+import os
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -25,7 +26,7 @@ for line in lines:
 hist, bins = np.histogram(m, bins=20)
 hist2, bins2 = np.histogram(h, bins=20)
 
-N = 20
+N = 50
 minm = min(m + h)
 maxm = max(m + h)
 
@@ -33,7 +34,6 @@ h,b,c = plt.hist(h, N, range=(minm, maxm), log=True)
 m,b,c = plt.hist(m, N, range=(minm, maxm), log=True)
 
 plt.close('all')
-
 
 ind = np.arange(N)  # the x locations for the groups
 width = 0.35       # the width of the bars
@@ -44,4 +44,8 @@ rects1 = ax.bar(ind, h, width, color='b',log=True)
 womenMeans = m
 rects2 = ax.bar(ind+width, m, width, color='r',log=True)
 rects = [rects2]
-plt.show(rects)
+# plt.show(rects)
+# useful: http://matplotlib.org/faq/howto_faq.html#save-transparent-figures
+
+pngname, fileext = os.path.splitext(os.path.basename(fname))
+plt.savefig('graphs/' + pngname + '.png')
