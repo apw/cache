@@ -200,6 +200,7 @@ int main(int argc, char **argv) {
     assert(r);
 
     load(r);
+    r->prepare_to_query();
     run(r);
     cleanup(r);
     

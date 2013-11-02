@@ -42,6 +42,10 @@ void ll::do_add_byte(int id, unsigned bytenum, unsigned byteval) {
   j = bytenum;
 }
 
+void ll::prepare_to_query() {
+  
+}
+
 int ll::do_query(uint8_t *x, unsigned len) {
   tunnel_t *tun;
   

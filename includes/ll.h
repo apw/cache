@@ -14,7 +14,7 @@ class ll : public virtual rep {
   ~ll(void);
 
   void do_add_byte(int id, unsigned bytenum, unsigned byteval);
-
+  void prepare_to_query(void);
   int do_query(uint8_t *bv, unsigned len);
 
  private:
@@ -24,9 +24,9 @@ class ll : public virtual rep {
     uint32_t *ci;               /* Array of causal byte indexes.  */
     uint8_t *cv;                /* Array of causal byte values.  */
 
-    uint32_t m;                 /* Number of modified bytes.  */
-    uint32_t *mi;               /* Array of modified byte indexes.  */
-    uint8_t *mv;                /* Array of modified byte values.  */
+    //uint32_t m;                 /* Number of modified bytes.  */
+    //uint32_t *mi;               /* Array of modified byte indexes.  */
+    //uint8_t *mv;                /* Array of modified byte values.  */
 
     uint64_t k;                 /* Length of the tunnel.  */
 

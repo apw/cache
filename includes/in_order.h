@@ -20,7 +20,7 @@ class in_order : public virtual rep {
   ~in_order(void);
 
   void do_add_byte(int id, unsigned bytenum, unsigned byteval);
-
+  void prepare_to_query(void);
   int do_query(uint8_t *bv, unsigned len);
 
  private:
@@ -56,6 +56,9 @@ class in_order : public virtual rep {
   typedef unordered_set<bytepair, hash_func> bytepair_set;
   typedef unordered_map<unsigned, bytepair_set, bytenum_hash, bytenum_eq> cache;
   cache c_;
+
+  unsigned num_relevant_;
+  unsigned *relevant_;
 };
 
 #endif

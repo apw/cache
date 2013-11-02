@@ -6,15 +6,17 @@
 #include <boost/unordered_set.hpp>
 #include <iostream>
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
 
 in_order::in_order(const char *cur_time) : rep(IN_ORDER_OUTFNAME, cur_time) {
-
+  relevant_ = NULL;
+  num_relevant_ = 0;
 }
 
 in_order::~in_order() {
-
+  free(relevant_);
 }
 
 void in_order::do_add_byte(int id, unsigned bytenum, unsigned byteval) {
@@ -29,6 +31,19 @@ void in_order::do_add_byte(int id, unsigned bytenum, unsigned byteval) {
   c_[bytenum].insert(bp);
 }
 
+void in_order::prepare_to_query() {
+  num_relevant_ = c_.size();
+  relevant_ = (unsigned *) malloc(sizeof(unsigned) * num_relevant_);
+  assert(relevant_ != NULL);
+
+  unsigned i = 0;
+  cache::const_iterator c_end = c_.end();
+  for(cache::const_iterator c_iter = c_.begin(); c_iter != c_end; c_iter++) {
+    relevant_[i] = c_iter->first;
+    i++;
+  }
+}
+
 int in_order::do_query(uint8_t *bv, unsigned len) {
   unsigned num_matches = current_id_ + 1;
   /*
@@ -39,15 +54,13 @@ int in_order::do_query(uint8_t *bv, unsigned len) {
   int *candidates = (int *) calloc(current_id_ + 1, sizeof(int));
   assert(candidates != NULL);
 
-  cache::const_iterator c_end = c_.end();
-  for(cache::const_iterator c_iter = c_.begin(); c_iter != c_end; c_iter++) {
-    assert(c_iter->first < len);
-    //std::cout << "bytenum: " << c_iter->first << " -> [";
+  for(unsigned i = 0; i < num_relevant_; i++) {
+    assert(relevant_[i] < len);
 
-    bytepair_set::const_iterator b_end = c_iter->second.end();
-    for(bytepair_set::const_iterator b_iter = c_iter->second.begin(); 
+    bytepair_set::const_iterator b_end = c_[relevant_[i]].end();
+    for(bytepair_set::const_iterator b_iter = c_[relevant_[i]].begin(); 
 	b_iter != b_end; b_iter++) {
-      if (b_iter->byteval != bv[c_iter->first]) {
+      if (b_iter->byteval != bv[relevant_[i]]) {
 	if (candidates[b_iter->id] == 0) {
 	  num_matches--;
 	  candidates[b_iter->id] = 1;

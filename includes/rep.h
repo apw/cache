@@ -23,6 +23,7 @@ class rep {
   void end_sbv(int id);
 
   bool query(uint8_t *bv, unsigned len);
+  virtual void prepare_to_query(void) = 0;
   virtual int do_query(uint8_t *bv, unsigned len) = 0;
 
  protected:
