@@ -8,15 +8,14 @@ EXECUTABLE = bin/main
 KANGAROO_BODY = $(CC) $(CFLAGS)
 KANGAROO_TAIL = $(SOURCES) -o $(EXECUTABLE)
 MKDIRS = mkdir -p bin graphs output 
-RUN = ./$(EXECUTABLE)
 
-ifdef O
-CFLAGS += -O$(O)
-endif
+#ifdef O
+#CFLAGS += -O$(O)
+#endif
 
 main:
 	$(MKDIRS)
-	$(KANGAROO_BODY) $(KANGAROO_TAIL)
+	$(KANGAROO_BODY) -O3 $(KANGAROO_TAIL)
 
 dbg:
 	$(KANGAROO_BODY) -g $(KANGAROO_TAIL)
@@ -27,6 +26,10 @@ clean:
 run:
 	$(MKDIRS)
 	$(KANGAROO_BODY) $(KANGAROO_TAIL)
-	$(RUN) $(t) $(q)
+	./$(EXECUTABLE) $(t) $(q)
+
+hist:
+	$(MKDIRS)
+	python main/gen_hist.py $(h)
 
 .PHONY: main dbg clean
