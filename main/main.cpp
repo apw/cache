@@ -23,7 +23,7 @@ using namespace std;
 typedef enum {LL_IMP, IN_ORDER_IMP} imp_t;
 
 // order in which implementations will be run
-int imps[] = {IN_ORDER_IMP, LL_IMP};
+int imps[] = {LL_IMP, IN_ORDER_IMP};
 
 #define TIMEBUF_SZ 80
 char cur_time[TIMEBUF_SZ];
