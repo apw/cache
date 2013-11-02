@@ -152,14 +152,14 @@ void run(rep_ptr rpt) {
       assert(expected_bytenum == bytenum);
       bv[bytenum] = byteval;
       //printf("%u %u\n", bytenum, byteval);
-      
-      hit = rpt->query(bv, bv_len);
-      // TODO verify correctess of hits/misses against LL implementation
-      
+            
       expected_bytenum++;
       line += pos;
     }
     
+    hit = rpt->query(bv, bv_len);
+    // TODO verify correctess of hits/misses against LL implementation
+
     // ensure that the datafile contains pairs of numbers (bytenum and byteval)
     assert(matches == -1);
   } while ((r = getline(&buf, &len, query)) != -1);
