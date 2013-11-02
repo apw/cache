@@ -9,13 +9,14 @@ KANGAROO_BODY = $(CC) $(CFLAGS)
 KANGAROO_TAIL = $(SOURCES) -o $(EXECUTABLE)
 MKDIRS = mkdir -p bin graphs output 
 
+OH = -O3
 #ifdef O
 #CFLAGS += -O$(O)
 #endif
 
 main:
 	$(MKDIRS)
-	$(KANGAROO_BODY) -O3 $(KANGAROO_TAIL)
+	$(KANGAROO_BODY) $(OH) $(KANGAROO_TAIL)
 
 dbg:
 	$(KANGAROO_BODY) -g $(KANGAROO_TAIL)
@@ -25,7 +26,7 @@ clean:
 
 run:
 	$(MKDIRS)
-	$(KANGAROO_BODY) $(KANGAROO_TAIL)
+	$(KANGAROO_BODY) $(OH) $(KANGAROO_TAIL)
 	./$(EXECUTABLE) $(t) $(q)
 
 hist:
