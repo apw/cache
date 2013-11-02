@@ -152,7 +152,7 @@ void run(rep_ptr rpt) {
       assert(expected_bytenum == bytenum);
       bv[bytenum] = byteval;
       //printf("%u %u\n", bytenum, byteval);
-      
+
       hit = rpt->query(bv, bv_len);
       // TODO verify correctess of hits/misses against LL implementation
       
