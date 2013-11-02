@@ -31,6 +31,11 @@ void in_order::do_add_byte(int id, unsigned bytenum, unsigned byteval) {
 
 int in_order::do_query(uint8_t *bv, unsigned len) {
   unsigned num_matches = current_id_ + 1;
+  /*
+   * OPT:
+   * 1. Bit-pack so things fit in cache
+   * 2. call calloc once and use query/version numbers instead
+   */
   int *candidates = (int *) calloc(current_id_ + 1, sizeof(int));
   assert(candidates != NULL);
 

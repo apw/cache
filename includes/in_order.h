@@ -41,7 +41,6 @@ class in_order : public virtual rep {
   };
 
   typedef unordered_set<bytepair, hash_func> bytepair_set;
-  typedef unordered_set<int> id_set;
   typedef unordered_map<unsigned, bytepair_set> cache;
   cache c_;
 };

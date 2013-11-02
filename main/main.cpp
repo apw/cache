@@ -20,14 +20,10 @@ using namespace std;
 
 #define NUM_ARGS 2
 
-#define NUM_IMPS 2
+typedef enum {LL_IMP, IN_ORDER_IMP} imp_t;
 
-/*
- * THE FOLLOWING #define's MUST BE UNIQUE FROM ONE ANOTHER
- * AND < NUM_IMPS
- */
-#define IN_ORDER_IMP 0
-#define LL_IMP 1
+// order in which implementations will be run
+int imps[] = {IN_ORDER_IMP, LL_IMP};
 
 #define TIMEBUF_SZ 80
 char cur_time[TIMEBUF_SZ];
@@ -39,11 +35,7 @@ char *query_file_name;
 FILE *cache = NULL;
 FILE *query = NULL;
 
-// list of implementations to run
-int imps_to_run[NUM_IMPS] = {IN_ORDER_IMP};
-
 typedef shared_ptr<rep> rep_ptr;
-
 
 /*
  * We want to only have one representation active in memory
@@ -190,7 +182,7 @@ int main(int argc, char **argv) {
   int64_t func_call_overhead = warmup_time();
   (void) func_call_overhead;
 
-  for(int i = 0; i < NUM_IMPS; i++) {
+  for(int i = 0; i < (int) (sizeof(imps) / sizeof(int)); i++) {
     cache = fopen(cache_file_name, "r");
     if (!cache) {
       printf("Could not open cache_file \"%s\".\n", cache_file_name);
