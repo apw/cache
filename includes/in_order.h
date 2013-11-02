@@ -3,6 +3,7 @@
 
 #include "rep.h"
 #include <stdint.h>
+#include <iostream>
 #include <boost/unordered_map.hpp>
 #include <boost/unordered_set.hpp>
 
@@ -40,8 +41,20 @@ class in_order : public virtual rep {
     }
   };
 
+  typedef struct {
+    long operator() (const unsigned &k) const {
+      return k; 
+    }
+  } bytenum_hash;
+
+  typedef struct {
+    bool operator() (const unsigned &x, const unsigned &y) const { 
+      return x == y; 
+    }
+  } bytenum_eq;
+
   typedef unordered_set<bytepair, hash_func> bytepair_set;
-  typedef unordered_map<unsigned, bytepair_set> cache;
+  typedef unordered_map<unsigned, bytepair_set, bytenum_hash, bytenum_eq> cache;
   cache c_;
 };
 
