@@ -2,6 +2,7 @@ import sys
 import os
 import matplotlib.pyplot as plt
 import numpy as np
+import pylab
 
 # read in data from file
 fname = sys.argv[1]
@@ -12,6 +13,7 @@ with open(fname) as f:
 h = []
 m = []
 
+# read in each line, separating hits and misses
 for line in lines:
     split_line = line.split(" ")
     hm = split_line[0]
@@ -22,30 +24,16 @@ for line in lines:
         h.append(num)
     else:
         assert(0)
-    
-hist, bins = np.histogram(m, bins=20)
-hist2, bins2 = np.histogram(h, bins=20)
 
-N = 50
-minm = min(m + h)
-maxm = max(m + h)
+# append the two lists into a meta-list
+final_list = []
+final_list.append(m)
+final_list.append(h)
 
-h,b,c = plt.hist(h, N, range=(minm, maxm), log=True)
-m,b,c = plt.hist(m, N, range=(minm, maxm), log=True)
+# plot the meta-list grouped by hit/miss
+n, bins, patches = pylab.hist(final_list, 10, normed=1, histtype='bar',
+                              color=['red', 'blue'],
+                              label=['miss', 'hit'])
 
-plt.close('all')
-
-ind = np.arange(N)  # the x locations for the groups
-width = 0.35       # the width of the bars
-
-fig, ax = plt.subplots()
-rects1 = ax.bar(ind, h, width, color='b',log=True)
-
-womenMeans = m
-rects2 = ax.bar(ind+width, m, width, color='r',log=True)
-rects = [rects2]
-# plt.show(rects)
-# useful: http://matplotlib.org/faq/howto_faq.html#save-transparent-figures
-
-pngname, fileext = os.path.splitext(os.path.basename(fname))
-plt.savefig('graphs/' + pngname + '.png')
+pylab.legend()
+pylab.show()

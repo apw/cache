@@ -7,13 +7,15 @@ EXECUTABLE = bin/main
 
 KANGAROO_BODY = $(CC) $(CFLAGS)
 KANGAROO_TAIL = $(SOURCES) -o $(EXECUTABLE)
+MKDIRS = mkdir -p bin graphs output 
+RUN = ./$(EXECUTABLE)
 
 ifdef O
 CFLAGS += -O$(O)
 endif
 
 main:
-	mkdir -p bin graphs output
+	$(MKDIRS)
 	$(KANGAROO_BODY) $(KANGAROO_TAIL)
 
 dbg:
@@ -21,5 +23,10 @@ dbg:
 
 clean:
 	rm -rf bin/*
+
+run:
+	$(MKDIRS)
+	$(KANGAROO_BODY) $(KANGAROO_TAIL)
+	$(RUN) $(t) $(q)
 
 .PHONY: main dbg clean
