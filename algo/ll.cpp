@@ -72,6 +72,7 @@ int ll::congruent(uint8_t *x, tunnel_t const *t) {
     if (x[k] != byte)
       return 0;
   }
-  
+
+  // TODO return ID
   return 1;
 }

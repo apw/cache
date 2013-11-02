@@ -45,13 +45,13 @@ void in_order::prepare_to_query() {
 }
 
 int in_order::do_query(uint8_t *bv, unsigned len) {
-  unsigned num_matches = current_id_ + 1;
+  unsigned num_matches = current_id_;
   /*
    * OPT:
    * 1. Bit-pack so things fit in cache
    * 2. call calloc once and use query/version numbers instead
    */
-  int *candidates = (int *) calloc(current_id_ + 1, sizeof(int));
+  int *candidates = (int *) calloc(current_id_, sizeof(int));
   assert(candidates != NULL);
 
   for(unsigned i = 0; i < num_relevant_; i++) {
@@ -72,7 +72,7 @@ int in_order::do_query(uint8_t *bv, unsigned len) {
 	  // TODO check the remaining vector only
 	} else if (num_matches == 0) {
 	  free(candidates);
-	  return false;
+	  return 0;
 	}
       }
 
@@ -82,16 +82,15 @@ int in_order::do_query(uint8_t *bv, unsigned len) {
     //std::cout << "]" << std::endl;
   }
 
-  int match;
-  for(int i = 0; i <= current_id_; i++) {
+  int match = 0;
+  for(int i = 0; i < current_id_; i++) {
     if (candidates[i] == 1) {
       match = i;
       break;
     }
   }
-  (void)match;
 
   free(candidates);
-  return 1;
+  return match;
 }
 

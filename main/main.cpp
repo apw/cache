@@ -24,7 +24,7 @@ typedef enum {LL_IMP, IN_ORDER_IMP} imp_t;
 
 // order in which implementations will be run
 //int imps[] = {LL_IMP, IN_ORDER_IMP};
-int imps[] = {IN_ORDER_IMP};
+int imps[] = {IN_ORDER_IMP, LL_IMP};
 
 #define TIMEBUF_SZ 80
 char cur_time[TIMEBUF_SZ];
@@ -80,7 +80,7 @@ void cleanup(rep_ptr r) {
 void load(rep_ptr rp) {
   char *buf = NULL;
 
-  int id = 0;
+  int id = 1;
   size_t len;
   ssize_t r;
   while ((r = getline(&buf, &len, cache)) != -1) {
@@ -140,8 +140,6 @@ void run(rep_ptr rpt) {
   uint8_t bv[bv_len];
 
   unsigned expected_bytenum;
-  int hit;
-  (void) hit;
   do {
     assert(len > 0);
     assert(r > 1);
@@ -158,7 +156,7 @@ void run(rep_ptr rpt) {
       line += pos;
     }
     
-    hit = rpt->query(bv, bv_len);
+    rpt->query(bv, bv_len);
     // TODO verify correctess of hits/misses against LL implementation
 
     // ensure that the datafile contains pairs of numbers (bytenum and byteval)
