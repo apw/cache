@@ -6,7 +6,7 @@ import pylab
 
 PERCENTILE = 99.7
 BINS = 100
-SHAREX = False
+SHAREX = True
 SHAREY = True
 SUBPLOT_DIST = 0.5
 DATELEN = 19
