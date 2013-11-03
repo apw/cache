@@ -47,7 +47,7 @@ void in_order::do_add_byte(int id, unsigned bytenum, unsigned byteval) {
   numval nv;
   nv.bytenum = bytenum;
   nv.byteval = byteval;
-  s_.reserve(id);
+  s_.resize(id+1);
   s_[id].push_back(nv);
 }
 
