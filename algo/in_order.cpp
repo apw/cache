@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include <errno.h>
 
+#define SHORT_CIRCUIT_THRESHOLD 1
+
 in_order::in_order(const char *cur_time) : rep(IN_ORDER_OUTFNAME, cur_time) {
   relevant_ = NULL;
   num_relevant_ = 0;
@@ -89,18 +91,29 @@ int in_order::do_query(uint8_t *bv, unsigned len) {
 	  continue;
 	}
 
-	if (num_matches == 1) {
-	  match = find_match_id(candidates, current_id_);
-	  free(candidates);
-
-	  int vlen = s_[match].size();
-	  for(int j = 0; j < vlen; j++) {
-	    if (bv[s_[match][j].bytenum] != s_[match][j].byteval) {
-	      return 0;
+	if (num_matches == SHORT_CIRCUIT_THRESHOLD) {
+	  int vlen;
+	  int no_match;
+	  for(int k = 1; k <= current_id_; k++) {
+	    if (candidates[k] == 0) {
+	      vlen = s_[k].size();
+	      no_match = 0;
+	      for(int j = 0; j < vlen; j++) {
+		if (bv[s_[k][j].bytenum] != s_[k][j].byteval) {
+		  no_match = 1;
+		  break;
+		}
+	      }
+	      
+	      if (no_match) {
+		free(candidates);
+		return k;
+	      }
 	    }
 	  }
 
-	  return match;
+	  free(candidates);
+	  return 0;
 	} else if (num_matches == 0) {
 	  free(candidates);
 	  return 0;
