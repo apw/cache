@@ -22,8 +22,11 @@ class in_order : public virtual rep {
   void do_add_byte(int id, unsigned bytenum, unsigned byteval);
   void prepare_to_query(void);
   int do_query(uint8_t *bv, unsigned len);
+  void begin_sbv(int id);
+  void end_sbv(int id);
 
  private:
+  typedef rep super;
 
   class bytepair {
   public:
@@ -59,6 +62,16 @@ class in_order : public virtual rep {
 
   unsigned num_relevant_;
   unsigned *relevant_;
+
+  class numval {
+  public:
+    unsigned bytenum;
+    uint8_t byteval;
+  };
+
+  typedef vector<numval> vect;
+  typedef vector<vect> store;
+  store s_;
 };
 
 #endif
