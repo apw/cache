@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <assert.h>
 
-ll::ll(const char *cur_time) : rep(LL_OUTFNAME, cur_time) {
+ll::ll(const char *cur_time) : rep(cur_time, "ll") {
   head = NULL;
   tail = NULL;
   j = UINT_MAX;

@@ -12,6 +12,7 @@
 
 #include "../includes/rep.h"
 #include "../includes/in_order.h"
+#include "../includes/simple_cb.h"
 #include "../includes/ll.h"
 #include "../includes/cycle_timing.h"
 #include "../includes/common.h"
@@ -20,11 +21,10 @@ using namespace std;
 
 #define NUM_ARGS 2
 
-typedef enum {LL_IMP, IN_ORDER_IMP} imp_t;
+typedef enum {LL_IMP, IN_ORDER_IMP, SIMPLE_CB_IMP} imp_t;
 
 // order in which implementations will be run
-//int imps[] = {LL_IMP, IN_ORDER_IMP};
-int imps[] = {IN_ORDER_IMP, LL_IMP};
+int imps[] = {SIMPLE_CB_IMP, IN_ORDER_IMP, LL_IMP};
 
 #define TIMEBUF_SZ 80
 char cur_time[TIMEBUF_SZ];
@@ -54,6 +54,11 @@ static rep_ptr initialize_rep(int imp_num) {
   }
   case LL_IMP: {
     ll *i = new ll(cur_time);
+    r.reset(i);
+    break;
+  }
+  case SIMPLE_CB_IMP: {
+    simple_cb *i = new simple_cb(cur_time);
     r.reset(i);
     break;
   }

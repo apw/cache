@@ -12,9 +12,7 @@
 #include <stdio.h>
 #include <errno.h>
 
-#define SHORT_CIRCUIT_THRESHOLD 1
-
-in_order::in_order(const char *cur_time) : rep(IN_ORDER_OUTFNAME, cur_time) {
+in_order::in_order(const char *cur_time) : rep(cur_time, "in_order") {
   relevant_ = NULL;
   num_relevant_ = 0;
 }

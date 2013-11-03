@@ -9,13 +9,13 @@
 
 using namespace std;
 
-rep::rep(const char *outfile_name, const char *cur_time) {
+rep::rep(const char *cur_time, const char *outfile_basename) {
   current_id_= 0;
   num_hits_ = 0;
   num_misses_ = 0;
   
   char buf[256];
-  snprintf(buf, sizeof(buf), "output/%s_%s.raw", outfile_name, cur_time);
+  snprintf(buf, sizeof(buf), "output/%s_%s.raw", outfile_basename, cur_time);
 
   outfile_.open(buf);
   assert(outfile_.is_open());

@@ -14,7 +14,7 @@ using namespace std;
 
 class rep {
  public:
-  rep(const char *outfile_name, const char *cur_time);
+  rep(const char *cur_time, const char *outfile_basename);
   ~rep(void);
 
   void begin_sbv(int id);

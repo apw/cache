@@ -6,8 +6,6 @@
 
 #pragma once
 
-#define LL_OUTFNAME "ll"
-
 class ll : public virtual rep {
  public:
   ll(const char *cur_time);

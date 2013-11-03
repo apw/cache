@@ -14,7 +14,7 @@ using namespace boost;
 
 #pragma once
 
-#define IN_ORDER_OUTFNAME "in_order"
+#define SHORT_CIRCUIT_THRESHOLD 61
 
 class in_order : public virtual rep {
  public:
@@ -27,9 +27,7 @@ class in_order : public virtual rep {
   void begin_sbv(int id);
   void end_sbv(int id);
 
- private:
-  typedef rep super;
-
+ protected:
   class bytepair {
   public:
     int id;
@@ -74,6 +72,9 @@ class in_order : public virtual rep {
   typedef vector<numval> vect;
   typedef vector<vect> store;
   store s_;
+
+ private:
+  typedef rep super;
 };
 
 #endif
