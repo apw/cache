@@ -14,7 +14,7 @@ using namespace boost;
 
 #pragma once
 
-#define SHORT_CIRCUIT_THRESHOLD 61
+#define SHORT_CIRCUIT_THRESHOLD 1
 
 class in_order : public virtual rep {
  public:
