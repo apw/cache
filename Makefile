@@ -18,12 +18,16 @@ main:
 	$(MKDIRS)
 	$(KANGAROO_BODY) $(OH) $(KANGAROO_TAIL)
 
+dop:
+	rm -f output/*
+
 norm:
 	$(MKDIRS)
 	$(KANGAROO_BODY) $(KANGAROO_TAIL)
 
 dbg:
 	$(KANGAROO_BODY) -g $(KANGAROO_TAIL)
+	gdb $(EXECUTABLE)
 
 clean:
 	rm -rf bin/*

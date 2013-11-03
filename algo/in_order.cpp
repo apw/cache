@@ -95,7 +95,7 @@ int in_order::do_query(uint8_t *bv, unsigned len) {
 
 	  int vlen = s_[match].size();
 	  for(int j = 0; j < vlen; j++) {
-	    if (bv[s_[match][i].bytenum] != s_[match][i].byteval) {
+	    if (bv[s_[match][j].bytenum] != s_[match][j].byteval) {
 	      return 0;
 	    }
 	  }
