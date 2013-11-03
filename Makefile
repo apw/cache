@@ -43,6 +43,8 @@ run:
 
 hist:
 	$(MKDIRS)
-	python main/gen_hist.py $(h)
+	$(KANGAROO_BODY) $(OH) $(KANGAROO_TAIL)
+	./$(EXECUTABLE) $(t) $(q)
+	python main/gen_hist.py $(r1) $(r2)
 
 .PHONY: main dbg clean
