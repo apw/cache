@@ -6,6 +6,7 @@
 #include <boost/unordered_map.hpp>
 #include <boost/unordered_set.hpp>
 #include <iostream>
+#include <vector>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -46,6 +47,7 @@ void in_order::do_add_byte(int id, unsigned bytenum, unsigned byteval) {
   numval nv;
   nv.bytenum = bytenum;
   nv.byteval = byteval;
+  s_.reserve(id);
   s_[id].push_back(nv);
 }
 
