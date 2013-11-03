@@ -15,13 +15,3 @@ void get_str_time(char *buffer, size_t sz) {
   
   strftime(buffer, sz, "%Y-%m-%d-%H-%M-%S", timeinfo);
 }
-
-int find_match_id(int *candidates, int len) {
-  for(int i = 1; i <= len; i++) {
-    if (candidates[i] == 0) {
-      return i;
-    }
-  }
-
-  return 0;
-}

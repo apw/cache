@@ -67,7 +67,6 @@ void in_order::prepare_to_query() {
 }
 
 int in_order::do_query(uint8_t *bv, unsigned len) {
-  int match;
   unsigned num_matches = current_id_;
   /*
    * OPT:
@@ -91,21 +90,24 @@ int in_order::do_query(uint8_t *bv, unsigned len) {
 	  continue;
 	}
 
-	if (num_matches == SHORT_CIRCUIT_THRESHOLD) {
+	if (num_matches == 0) {
+	  free(candidates);
+	  return 0;
+	} else if (num_matches == SHORT_CIRCUIT_THRESHOLD) {
 	  int vlen;
-	  int no_match;
+	  int is_match;
 	  for(int k = 1; k <= current_id_; k++) {
 	    if (candidates[k] == 0) {
 	      vlen = s_[k].size();
-	      no_match = 0;
+	      is_match = 1;
 	      for(int j = 0; j < vlen; j++) {
 		if (bv[s_[k][j].bytenum] != s_[k][j].byteval) {
-		  no_match = 1;
+		  is_match = 0;
 		  break;
 		}
 	      }
 	      
-	      if (no_match) {
+	      if (is_match) {
 		free(candidates);
 		return k;
 	      }
@@ -114,20 +116,20 @@ int in_order::do_query(uint8_t *bv, unsigned len) {
 
 	  free(candidates);
 	  return 0;
-	} else if (num_matches == 0) {
-	  free(candidates);
-	  return 0;
-	}
+	} 
       }
-
-      //std::cout << "(val: " << (unsigned)b_iter->byteval << " -> id: " << b_iter->id << ")"; 
     }
-
-    //std::cout << "]" << std::endl;
   }
 
-  match = find_match_id(candidates, current_id_);
+  assert(num_matches > SHORT_CIRCUIT_THRESHOLD);
 
-  free(candidates);
-  return match;
+  for(int k = 1; k <= current_id_; k++) {
+    if (candidates[k] == 0) {
+      free(candidates);
+      return k;
+    }
+  }
+
+  assert(0);
+  return 0;
 }
