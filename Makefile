@@ -29,6 +29,10 @@ dbg:
 	$(KANGAROO_BODY) -g $(KANGAROO_TAIL)
 	gdb $(EXECUTABLE)
 
+gdb:
+	$(KANGAROO_BODY) -g $(KANGAROO_TAIL)
+	gdb $(EXECUTABLE)
+
 clean:
 	rm -rf bin/*
 
