@@ -14,7 +14,7 @@ class rset_uint {
 
   class iterator {
   public:
-    iterator(unsigned, unsigned);
+    iterator(rset_uint *);
     ~iterator(void);
 
     bool has_next(void);
@@ -24,6 +24,7 @@ class rset_uint {
   private:
     unsigned assigned_vnum_;
     unsigned cur_node_;
+    rset_uint *rset_;
   };
 
   iterator get_iterator(void);
