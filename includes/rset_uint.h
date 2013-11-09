@@ -9,8 +9,8 @@ class rset_uint {
   ~rset_uint(void);
 
   void restore(void);
-  bool lookup(unsigned, unsigned);
-  bool remove(unsigned, unsigned);
+  bool lookup(unsigned);
+  bool remove(unsigned);
 
   class iterator {
   public:
@@ -29,6 +29,7 @@ class rset_uint {
 
  private:
   unsigned cur_vnum_;
+  unsigned size_;
 
   typedef struct node {
     unsigned prev;
