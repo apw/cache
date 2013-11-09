@@ -6,7 +6,6 @@
 using namespace std;
 
 #define INVALID_P ((unsigned) -1)
-#define IS_VALID(var) (var < size_)
 
 rset_uint::rset_uint(unsigned size) {
   assert(size < INVALID_P);
@@ -24,6 +23,10 @@ rset_uint::~rset_uint() {
   free(set_);
 }
 
+bool rset_uint::is_valid(unsigned n) {
+  return n < size_;
+}
+
 void rset_uint::restore() {
   // fail on uint overflow
   assert(cur_vnum_ < cur_vnum_ + 1);
@@ -38,12 +41,12 @@ bool rset_uint::lookup(unsigned n) {
 unsigned rset_uint::get_next(unsigned n) {
   assert(lookup(n));
   unsigned next = (set_[n].n_vnum == cur_vnum_) ? set_[n].next : n + 1;
-  return next >= size_ ? INVALID_P : next;
+  return (next >= size_) ? INVALID_P : next;
 }
 
 unsigned rset_uint::get_prev(unsigned n) {
   assert(lookup(n));
-  return (set_[n].n_vnum == cur_vnum_) ? set_[n].prev : n - 1;
+  return (set_[n].p_vnum == cur_vnum_) ? set_[n].prev : n - 1;
 }
 
 bool rset_uint::remove(unsigned n) {
@@ -55,8 +58,8 @@ bool rset_uint::remove(unsigned n) {
 
     unsigned prev = get_prev(n);
     unsigned next = get_next(n);
-    if (IS_VALID(prev)) {
-      if (IS_VALID(next)) {
+    if (is_valid(prev)) {
+      if (is_valid(next)) {
 	set_[prev].next = next;
 
 	set_[next].prev = prev;
@@ -66,7 +69,7 @@ bool rset_uint::remove(unsigned n) {
       }
 
       set_[prev].n_vnum = cur_vnum_;
-    } else if (IS_VALID(next)) {
+    } else if (is_valid(next)) {
       set_[next].prev = INVALID_P;
       set_[next].p_vnum = cur_vnum_;
     }
@@ -87,13 +90,11 @@ rset_uint::iterator::~iterator() {
   
 }
 
-bool rset_uint::iterator::has_next() {
-  // TODO functionize IS_VALID
-  // IS_VALID:
-  return iterator::rset_->set_[iterator::cur_node_].next < rset_->size_;
+bool rset_uint::iterator::is_cur_valid() {
+  return rset_->is_valid(iterator::cur_node_);
 }
 
-bool rset_uint::iterator::get_cur() {
+unsigned rset_uint::iterator::get_cur() {
   return iterator::cur_node_;
 }
 

@@ -17,8 +17,8 @@ class rset_uint {
     iterator(rset_uint *);
     ~iterator(void);
 
-    bool has_next(void);
-    bool get_cur(void);
+    bool is_cur_valid(void);
+    unsigned get_cur(void);
     void next(void);
 
   private:
@@ -46,6 +46,8 @@ class rset_uint {
 
   unsigned get_next(unsigned);
   unsigned get_prev(unsigned);
+
+  bool is_valid(unsigned);
 };
 
 #endif
