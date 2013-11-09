@@ -16,7 +16,7 @@ rset_uint::rset_uint(unsigned size) {
   size_ = size;
   first_ = 0;
   set_[size - 1].next = INVALID_P;
-  set_size[0].prev = INVALID_P;
+  set_[0].prev = INVALID_P;
 }
 
 rset_uint::~rset_uint() {
@@ -77,9 +77,9 @@ bool rset_uint::remove(unsigned n) {
   return was_there;
 }
 
-rset_uint::iterator::iterator(unsigned v_num) {
+rset_uint::iterator::iterator(unsigned v_num, unsigned first) {
   iterator::assigned_vnum_ = v_num;
-  iterator::cur_node_ = first_;
+  iterator::cur_node_ = first;
 }
 
 rset_uint::iterator::~iterator() {
@@ -87,7 +87,7 @@ rset_uint::iterator::~iterator() {
 }
 
 bool rset_uint::iterator::has_next() {
-
+  //return IS_VALID(set_[iterator::cur_node_].next);
   return false;
 }
 
@@ -100,6 +100,6 @@ void rset_uint::iterator::next() {
 }
 
 rset_uint::iterator rset_uint::get_iterator() {
-  iterator it(cur_vnum_);
+  iterator it(cur_vnum_, first_);
   return it;
 }

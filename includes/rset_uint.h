@@ -14,7 +14,7 @@ class rset_uint {
 
   class iterator {
   public:
-    iterator(unsigned);
+    iterator(unsigned, unsigned);
     ~iterator(void);
 
     bool has_next(void);
@@ -43,8 +43,8 @@ class rset_uint {
   node *set_;
   unsigned first_;
 
-  int get_next(unsigned);
-  int get_prev(unsigned);
+  unsigned get_next(unsigned);
+  unsigned get_prev(unsigned);
 };
 
 #endif
