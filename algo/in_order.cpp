@@ -77,9 +77,13 @@ int in_order::do_query(uint8_t *bv, unsigned len) {
   for(unsigned i = 0; i < num_relevant_; i++) {
     assert(relevant_[i] < len);
 
+    num_steps_++;
+
     bytepair_set::const_iterator b_end = c_[relevant_[i]].end();
     for(bytepair_set::const_iterator b_iter = c_[relevant_[i]].begin(); 
 	b_iter != b_end; b_iter++) {
+      num_steps_++;
+
       if (b_iter->byteval != bv[relevant_[i]]) {
 	if (candidates[b_iter->id] == 0) {
 	  num_matches--;
@@ -99,6 +103,9 @@ int in_order::do_query(uint8_t *bv, unsigned len) {
 	      vlen = s_[k].size();
 	      is_match = 1;
 	      for(int j = 0; j < vlen; j++) {
+
+		num_steps_++;
+
 		if (bv[s_[k][j].bytenum] != s_[k][j].byteval) {
 		  is_match = 0;
 		  break;

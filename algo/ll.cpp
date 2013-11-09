@@ -49,9 +49,12 @@ void ll::prepare_to_query() {
 int ll::do_query(uint8_t *x, unsigned len) {
   tunnel_t *tun;
   
-  for (tun = head; tun; tun = tun->next)
-    if (congruent(x, tun))
+  for (tun = head; tun; tun = tun->next) {
+    num_steps_++;
+    if (congruent(x, tun)) {
       return 1;
+    }
+  }
   
   return 0;
 }
@@ -62,6 +65,8 @@ int ll::congruent(uint8_t *x, tunnel_t const *t) {
   
   /* Walk through the c causal coordinates of tunnel t.  */
   for (i = 0; i < t->c; i++) {
+    num_steps_++;
+
     /* Get the tunnel's i-th causal coordinate.  */
     k = t->ci[i];
     

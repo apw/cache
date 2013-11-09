@@ -13,6 +13,7 @@ rep::rep(const char *cur_time, const char *outfile_basename) {
   current_id_= 0;
   num_hits_ = 0;
   num_misses_ = 0;
+  num_steps_ = 0;
   
   char buf[256];
   snprintf(buf, sizeof(buf), "output/%s_%s.raw", outfile_basename, cur_time);
@@ -44,10 +45,21 @@ void rep::end_sbv(int id) {
 }
 
 bool rep::query(uint8_t *bv, unsigned len) {
+  num_steps_ = 0;
   int hit;
   int64_t time = time_magic(this, &rep::do_query, bv, len, &hit);
 
-  // TODO verify times are logged correctly in the file
+  /*
+  (void)time;
+  if (hit) {
+    num_hits_++;
+    outfile_ << "H " << num_steps_ << endl;
+  } else {
+    num_misses_++;
+    outfile_ << "M " << num_steps_ << endl;
+  }
+  */
+
   if (hit) {
     num_hits_++;
     outfile_ << "H " << time << endl;

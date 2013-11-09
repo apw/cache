@@ -28,6 +28,7 @@ class rep {
 
  protected:
   int current_id_;
+  int num_steps_;
 
  private:
   ofstream outfile_;
