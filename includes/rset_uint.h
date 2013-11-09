@@ -23,6 +23,7 @@ class rset_uint {
 
   private:
     unsigned assigned_vnum_;
+    unsigned cur_node_;
   };
 
   iterator get_iterator(void);
@@ -32,6 +33,7 @@ class rset_uint {
   unsigned size_;
 
   typedef struct node {
+    unsigned is_present;
     unsigned prev;
     unsigned next;
     unsigned n_vnum;
@@ -39,6 +41,10 @@ class rset_uint {
   } node;
 
   node *set_;
+  unsigned first_;
+
+  int get_next(unsigned);
+  int get_prev(unsigned);
 };
 
 #endif
