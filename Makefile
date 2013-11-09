@@ -1,7 +1,7 @@
 CC = g++-4.7
 CFLAGS = -Wall -Werror
 
-SOURCES = main/*.cpp algo/*.cpp arch/*.c
+SOURCES = main/*.cpp algo/*.cpp ds/*.cpp arch/*.c
 HEADERS = includes/*.h includes/*.hpp
 EXECUTABLE = bin/main
 
