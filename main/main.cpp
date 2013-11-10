@@ -85,7 +85,7 @@ void cleanup(rep_ptr r) {
 void load(rep_ptr rp) {
   char *buf = NULL;
 
-  int id = 1;
+  int id = 0;
   size_t len;
   ssize_t r;
   while ((r = getline(&buf, &len, cache)) != -1) {

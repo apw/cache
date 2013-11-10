@@ -13,7 +13,7 @@ class ll : public virtual rep {
 
   void do_add_byte(int id, unsigned bytenum, unsigned byteval);
   void prepare_to_query(void);
-  int do_query(uint8_t *bv, unsigned len);
+  unsigned do_query(uint8_t *bv, unsigned len);
 
  private:
   /* Data structure representing a tunnel.  */

@@ -16,8 +16,8 @@ static int null_func() {
 }
 
 /* Code for Yaniv and Neil for counting cycles on Intel platforms.  */
-int64_t time_magic(rep *r, int (rep::*magic)(uint8_t *, unsigned),
-		   uint8_t *arg1, unsigned arg2, int *ret) {
+int64_t time_magic(rep *r, unsigned (rep::*magic)(uint8_t *, unsigned),
+		   uint8_t *arg1, unsigned arg2, unsigned *ret) {
   int64_t tic, toc, dt[1];
   unsigned cycles[4];
   
