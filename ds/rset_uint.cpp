@@ -119,6 +119,12 @@ void rset_uint::iterator::next() {
   iterator::cur_node_ = rset_->get_next(iterator::cur_node_);
 }
 
+void rset_uint::iterator::remove_cur() {
+  unsigned tmp = iterator::cur_node_;
+  iterator::cur_node_ = rset_->get_next(iterator::cur_node_);
+  rset_->remove(tmp);
+}
+
 rset_uint::iterator rset_uint::get_iterator() {
   iterator it(this);
   return it;

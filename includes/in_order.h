@@ -31,21 +31,17 @@ class in_order : public virtual rep {
  protected:
   rset_uint *candidates_;
 
-  class bytepair {
-  public:
-    int id;
-    uint8_t byteval;
-    
-    bool operator==(const bytepair &b) const {
-      return id == b.id && byteval == b.byteval;
+  typedef struct {
+    long operator() (const unsigned &k) const {
+      return k; 
     }
-  };
+  } id_hash;
 
-  struct hash_func {
-    size_t operator()(const bytepair &b) const {
-      return b.id;
+  typedef struct {
+    bool operator() (const unsigned &x, const unsigned &y) const { 
+      return x == y; 
     }
-  };
+  } id_eq;
 
   typedef struct {
     long operator() (const unsigned &k) const {
@@ -59,8 +55,8 @@ class in_order : public virtual rep {
     }
   } bytenum_eq;
 
-  typedef unordered_set<bytepair, hash_func> bytepair_set;
-  typedef unordered_map<unsigned, bytepair_set, bytenum_hash, bytenum_eq> cache;
+  typedef unordered_map<unsigned, unsigned, id_hash, id_eq> bytenum_set;
+  typedef unordered_map<unsigned, bytenum_set, bytenum_hash, bytenum_eq> cache;
   cache c_;
 
   unsigned num_relevant_;

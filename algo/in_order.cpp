@@ -37,14 +37,11 @@ void in_order::end_sbv(int id) {
 
 void in_order::do_add_byte(int id, unsigned bytenum, unsigned byteval) {
   if (c_.find(bytenum) == c_.end()) {
-    bytepair_set bs;
+    bytenum_set bs;
     c_[bytenum] = bs;
   }
   
-  bytepair bp;
-  bp.id = id;
-  bp.byteval = byteval;
-  c_[bytenum].insert(bp);
+  c_[bytenum][id] = byteval;
 
   numval nv;
   nv.bytenum = bytenum;
@@ -69,39 +66,26 @@ void in_order::prepare_to_query() {
 }
 
 unsigned in_order::do_query(uint8_t *bv, unsigned len) {
-  /*
-  for(unsigned blah = 0; blah < len; blah++) {
-    //printf("[%u %u] ", blah, bv[blah]);
-  }
-  printf("\n");
-
-  for(unsigned blah = 0; blah < s_[7].size(); blah++) {
-    //printf("[%u %u] ", s_[7][blah].bytenum, s_[7][blah].byteval);
-    if (bv[s_[7][blah].bytenum] != s_[7][blah].byteval) {
-      printf("diff [%u %u]\n", s_[7][blah].bytenum, s_[7][blah].byteval);
-    }
-  }
-  printf("\n");
-  */
-
   candidates_->restore();
 
-  unsigned num_matches;
+  unsigned num_matches, cur_id;
   for(unsigned i = 0; i < num_relevant_; i++) {
     assert(relevant_[i] < len);
 
     num_steps_++;
 
-    bytepair_set::const_iterator b_end = c_[relevant_[i]].end();
-    for(bytepair_set::const_iterator b_iter = c_[relevant_[i]].begin(); 
-	b_iter != b_end; b_iter++) {
+    for(rset_uint::iterator bs_iter = candidates_->get_iterator();
+	bs_iter.is_cur_valid();) {
+
       num_steps_++;
 
-      if (b_iter->byteval != bv[relevant_[i]]) {
-	if (!candidates_->remove(b_iter->id)) {
-	  continue;
-	}
-	
+      cur_id = bs_iter.get_cur();
+
+      if (c_[relevant_[i]][cur_id] == bv[relevant_[i]]) {
+	bs_iter.next();
+      } else {
+	bs_iter.remove_cur();
+
 	num_matches = candidates_->get_size();
 	if (num_matches == 0) {
 	  return INVALID_ID;
@@ -131,7 +115,7 @@ unsigned in_order::do_query(uint8_t *bv, unsigned len) {
 	  }
 
 	  return INVALID_ID;
-	} 
+	}
       }
     }
   }

@@ -27,7 +27,7 @@ norm:
 
 sgdb:
 	$(KANGAROO_BODY) -g $(KANGAROO_TAIL)
-	sudo gdb $(EXECUTABLES)
+	sudo gdb $(EXECUTABLE)
 
 gdb:
 	$(KANGAROO_BODY) -g $(KANGAROO_TAIL)

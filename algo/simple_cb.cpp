@@ -26,11 +26,11 @@ void simple_cb::prepare_to_query() {
   cache::const_iterator c_end = c_.end();
   for(cache::const_iterator c_iter = c_.begin(); c_iter != c_end; c_iter++) {
     unordered_set<uint8_t> val_set;
-    bytepair_set::const_iterator b_end = c_[c_iter->first].end();
-    for(bytepair_set::const_iterator b_iter = c_[c_iter->first].begin(); 
+    bytenum_set::const_iterator b_end = c_[c_iter->first].end();
+    for(bytenum_set::const_iterator b_iter = c_[c_iter->first].begin(); 
 	b_iter != b_end; b_iter++) {
-      if (val_set.count(b_iter->byteval) == 0) {
-	val_set.insert(b_iter->byteval);
+      if (val_set.count(b_iter->second) == 0) {
+	val_set.insert(b_iter->second);
       }
     }
 

@@ -20,6 +20,7 @@ class rset_uint {
     bool is_cur_valid(void);
     unsigned get_cur(void);
     void next(void);
+    void remove_cur(void);
 
   private:
     unsigned assigned_vnum_;
