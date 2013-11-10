@@ -11,12 +11,12 @@
 #define NULL_ITERATIONS (1 << 21)
 
 // NULL function for measuring performance counter overhead
-static int null_func() {
+volatile static int null_func() {
   return 0;
 }
 
 /* Code for Yaniv and Neil for counting cycles on Intel platforms.  */
-int64_t time_magic(rep *r, unsigned (rep::*magic)(uint8_t *, unsigned),
+volatile int64_t time_magic(rep *r, unsigned (rep::*magic)(uint8_t *, unsigned),
 		   uint8_t *arg1, unsigned arg2, unsigned *ret) {
   int64_t tic, toc, dt[1];
   unsigned cycles[4];
@@ -49,7 +49,7 @@ int64_t time_magic(rep *r, unsigned (rep::*magic)(uint8_t *, unsigned),
   return dt[0];
 }
 
-static int64_t time_null_h(void) {
+volatile static int64_t time_null_h(void) {
   int64_t tic, toc, dt[1];
   unsigned cycles[4];
   
@@ -82,7 +82,7 @@ static int64_t time_null_h(void) {
   return dt[0];
 }
 
-int64_t warmup_time(void) {
+volatile int64_t warmup_time(void) {
   int64_t res;
   for (int i = 0; i < NULL_ITERATIONS; i++) {
     res = time_null_h();

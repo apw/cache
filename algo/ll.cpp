@@ -12,7 +12,15 @@ ll::ll(const char *cur_time) : rep(cur_time, "ll") {
 }
 
 ll::~ll() {
-  // TODO free stuff
+  tunnel *cur = head;
+  tunnel *old_cur;
+  while (cur) {
+    free(cur->ci);
+    free(cur->cv);
+    old_cur = cur;
+    cur = cur->next;
+    free(old_cur);
+  }
 }
 
 void ll::do_add_byte(int id, unsigned bytenum, unsigned byteval) {
