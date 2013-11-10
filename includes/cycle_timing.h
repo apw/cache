@@ -5,8 +5,8 @@
 
 #include "../includes/rep.h"
 
-int64_t warmup_time(void);
-int64_t time_magic(rep *r, unsigned (rep::*)(uint8_t *, unsigned), 
+volatile int64_t warmup_time(void);
+volatile int64_t time_magic(rep *r, unsigned (rep::*)(uint8_t *, unsigned), 
 		   uint8_t *, unsigned, unsigned *);
 
 #endif

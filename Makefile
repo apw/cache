@@ -1,49 +1,48 @@
 CC = g++-4.7
 CFLAGS = -Wall -Werror
 
-SOURCES = main/*.cpp algo/*.cpp ds/*.cpp arch/*.c
+OPTIMIZABLE_SOURCES = main/*.cpp algo/*.cpp ds/*.cpp
+OPTIMIZABLE_OBJECT = bin/opt.o
+VOLATILE_SOURCES = arch/*.c
+VOLATILE_OBJECT = bin/vol.o
 HEADERS = includes/*.h includes/*.hpp
 EXECUTABLE = bin/main
 
 KANGAROO_BODY = $(CC) $(CFLAGS)
-KANGAROO_TAIL = $(SOURCES) -o $(EXECUTABLE)
+#KANGAROO_TAIL = $(SOURCES) -o $(EXECUTABLE)
 MKDIRS = mkdir -p bin graphs output 
 
 OH = -O3
+OH_NO = -O0
 #ifdef O
 #CFLAGS += -O$(O)
 #endif
 
 main:
 	$(MKDIRS)
-	$(KANGAROO_BODY) $(OH) $(KANGAROO_TAIL)
+	$(KANGAROO_BODY) $(OH_NO) -c $(VOLATILE_SOURCES) -o $(VOLATILE_OBJECT)
+	$(KANGAROO_BODY) $(VOLATILE_OBJECT) $(OH) $(OPTIMIZABLE_SOURCES) -o $(EXECUTABLE)
 
 dop:
 	rm -f output/*
 
-norm:
-	$(MKDIRS)
-	$(KANGAROO_BODY) $(KANGAROO_TAIL)
-
 sgdb:
-	$(KANGAROO_BODY) -g $(KANGAROO_TAIL)
+	$(MAKE)
 	sudo gdb $(EXECUTABLES)
 
 gdb:
-	$(KANGAROO_BODY) -g $(KANGAROO_TAIL)
+	$(MAKE)
 	gdb $(EXECUTABLE)
 
 clean:
 	rm -rf bin/*
 
 run:
-	$(MKDIRS)
-	$(KANGAROO_BODY) $(OH) $(KANGAROO_TAIL)
+	$(MAKE)
 	./$(EXECUTABLE) $(t) $(q)
 
 hist:
-	$(MKDIRS)
-	$(KANGAROO_BODY) $(OH) $(KANGAROO_TAIL)
+	$(MAKE)
 	./$(EXECUTABLE) $(t) $(q)
 	python main/gen_hist.py $(r1) $(r2)
 
