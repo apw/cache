@@ -25,9 +25,9 @@ norm:
 	$(MKDIRS)
 	$(KANGAROO_BODY) $(KANGAROO_TAIL)
 
-dbg:
+sgdb:
 	$(KANGAROO_BODY) -g $(KANGAROO_TAIL)
-	gdb $(EXECUTABLE)
+	sudo gdb $(EXECUTABLES)
 
 gdb:
 	$(KANGAROO_BODY) -g $(KANGAROO_TAIL)

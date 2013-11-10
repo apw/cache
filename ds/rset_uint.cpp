@@ -1,5 +1,6 @@
 #include "../includes/rset_uint.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 
@@ -7,14 +8,15 @@ using namespace std;
 
 #define INVALID_P ((unsigned) -1)
 
-rset_uint::rset_uint(unsigned size) {
-  assert(size < INVALID_P);
-  set_ = (node *) calloc(size, sizeof(node));
+rset_uint::rset_uint(unsigned capacity) {
+  assert(capacity < INVALID_P);
+  set_ = (node *) calloc(capacity, sizeof(node));
   assert(set_ != NULL);
   cur_vnum_ = 1;
-  size_ = size;
+  capacity_ = capacity;
+  size_ = capacity;
   first_ = 0;
-  set_[size - 1].next = INVALID_P;
+  set_[capacity - 1].next = INVALID_P;
   set_[0].prev = INVALID_P;
 }
 
@@ -24,7 +26,7 @@ rset_uint::~rset_uint() {
 }
 
 bool rset_uint::is_valid(unsigned n) {
-  return n < size_;
+  return n < capacity_;
 }
 
 void rset_uint::restore() {
@@ -32,16 +34,26 @@ void rset_uint::restore() {
   assert(cur_vnum_ < cur_vnum_ + 1);
   cur_vnum_++;
   first_ = 0;
+  size_ = capacity_;
 }
 
 bool rset_uint::lookup(unsigned n) {
+  assert(n < capacity_);
   return set_[n].is_present < cur_vnum_;
+}
+
+unsigned rset_uint::get_size() {
+  return size_;
+}
+
+unsigned rset_uint::get_capacity() {
+  return capacity_;
 }
 
 unsigned rset_uint::get_next(unsigned n) {
   assert(lookup(n));
   unsigned next = (set_[n].n_vnum == cur_vnum_) ? set_[n].next : n + 1;
-  return (next >= size_) ? INVALID_P : next;
+  return (!is_valid(next)) ? INVALID_P : next;
 }
 
 unsigned rset_uint::get_prev(unsigned n) {
@@ -50,8 +62,13 @@ unsigned rset_uint::get_prev(unsigned n) {
 }
 
 bool rset_uint::remove(unsigned n) {
+  assert(n < capacity_);
+
   bool was_there = lookup(n);
   if (was_there) {
+    size_--;
+    assert(size_ < capacity_);
+
     if (first_ == n) {
       first_ = get_next(n);
     }

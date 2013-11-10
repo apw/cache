@@ -29,8 +29,12 @@ class rset_uint {
 
   iterator get_iterator(void);
 
+  unsigned get_size(void);
+  unsigned get_capacity(void);
+
  private:
   unsigned cur_vnum_;
+  unsigned capacity_;
   unsigned size_;
 
   typedef struct node {

@@ -2,6 +2,7 @@
 #define _IN_ORDER_H
 
 #include "rep.h"
+#include "rset_uint.h"
 #include <stdint.h>
 #include <iostream>
 #include <boost/unordered_map.hpp>
@@ -23,11 +24,13 @@ class in_order : public virtual rep {
 
   void do_add_byte(int id, unsigned bytenum, unsigned byteval);
   void prepare_to_query(void);
-  int do_query(uint8_t *bv, unsigned len);
+  unsigned do_query(uint8_t *bv, unsigned len);
   void begin_sbv(int id);
   void end_sbv(int id);
 
  protected:
+  rset_uint *candidates_;
+
   class bytepair {
   public:
     int id;

@@ -12,6 +12,8 @@
 
 using namespace std;
 
+#define INVALID_ID ((unsigned) -1)
+
 class rep {
  public:
   rep(const char *cur_time, const char *outfile_basename);
@@ -22,9 +24,9 @@ class rep {
   virtual void do_add_byte(int id, unsigned bytenum, unsigned byteval) = 0;
   void end_sbv(int id);
 
-  bool query(uint8_t *bv, unsigned len);
+  unsigned query(uint8_t *bv, unsigned len);
   virtual void prepare_to_query(void) = 0;
-  virtual int do_query(uint8_t *bv, unsigned len) = 0;
+  virtual unsigned do_query(uint8_t *bv, unsigned len) = 0;
 
  protected:
   int current_id_;

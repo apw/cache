@@ -20,6 +20,8 @@ simple_cb::simple_cb(const char *cur_time)
 }
 
 void simple_cb::prepare_to_query() {
+  candidates_ = new rset_uint(current_id_ + 1);
+
   vector<bytenum_prio> bp_arr;
   cache::const_iterator c_end = c_.end();
   for(cache::const_iterator c_iter = c_.begin(); c_iter != c_end; c_iter++) {

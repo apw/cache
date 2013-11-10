@@ -1,5 +1,6 @@
 #include "../includes/ll.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <assert.h>
@@ -46,9 +47,9 @@ void ll::prepare_to_query() {
   
 }
 
-int ll::do_query(uint8_t *x, unsigned len) {
+unsigned ll::do_query(uint8_t *x, unsigned len) {
   tunnel_t *tun;
-  
+
   for (tun = head; tun; tun = tun->next) {
     num_steps_++;
     if (congruent(x, tun)) {
@@ -56,7 +57,7 @@ int ll::do_query(uint8_t *x, unsigned len) {
     }
   }
   
-  return 0;
+  return INVALID_ID;
 }
 
 int ll::congruent(uint8_t *x, tunnel_t const *t) {
@@ -74,8 +75,9 @@ int ll::congruent(uint8_t *x, tunnel_t const *t) {
     byte = t->cv[i];
     
     /* Bail out early when any byte does not match.  */
-    if (x[k] != byte)
+    if (x[k] != byte) {
       return 0;
+    }
   }
 
   // TODO return ID
