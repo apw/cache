@@ -51,7 +51,10 @@ void simple_cb::prepare_to_query() {
   for (vector<bytenum_prio>::iterator bp_iter = bp_arr.begin();
        bp_iter != bp_end; bp_iter++) {
     //std::cout << bp_iter->prio << " " << bp_iter->bytenum << std::endl;
+    std::cout << bp_iter->bytenum << " "; // HI
     relevant_[i] = bp_iter->bytenum;
     i++;
   }
+
+  std::cout << std::endl; // HI
 }
