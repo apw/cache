@@ -10,7 +10,8 @@ SHAREX = True
 SHAREY = True
 SUBPLOT_DIST = 0.5
 DATELEN = 19
-FIRST_FILE_INDEX = 1
+PLOT_TYPE_INDEX = 1
+FIRST_FILE_INDEX = 2
 
 num_imps = len(sys.argv) - FIRST_FILE_INDEX
 
@@ -22,6 +23,15 @@ def create_hist(dat, col, lab, i):
                          color=[col],
                          label=[lab],
                          alpha=0.5)
+
+# we plot either cpu counts or questions
+plot_type = sys.argv[PLOT_TYPE_INDEX]
+if (plot_type == "cpu_counts"):
+    num_index = 1
+elif (plot_type == "questions"):
+    num_index = 2
+else:
+    assert(0)
 
 for index in range(0, num_imps):
     # read in data from file
@@ -47,14 +57,13 @@ for index in range(0, num_imps):
     for line in lines:
         split_line = line.split(" ")
         hm = split_line[0]
-        num = int(split_line[1])
+        num = int(split_line[num_index])
         if (hm == "M"):
             m.append(num)
         elif (hm == "H"):
             h.append(num)
         else:
             assert(0)
-                
                 
     h_max = np.percentile(h, PERCENTILE)
     m_max = np.percentile(m, PERCENTILE)
@@ -71,4 +80,4 @@ for index in range(0, num_imps):
 pngname, fileext = os.path.splitext(os.path.basename(sys.argv[FIRST_FILE_INDEX]))
 print pngname[-DATELEN:]
 fig.subplots_adjust(hspace=SUBPLOT_DIST)
-pylab.savefig('graphs/' + pngname[-19:] + '.png')
+pylab.savefig('graphs/' + plot_type + pngname[-19:] + '.png')
