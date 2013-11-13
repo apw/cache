@@ -145,6 +145,7 @@ void run(rep_ptr rpt) {
   uint8_t bv[bv_len];
 
   unsigned expected_bytenum;
+  unsigned query_count = 0;
   do {
     assert(len > 0);
     assert(r > 1);
@@ -160,13 +161,18 @@ void run(rep_ptr rpt) {
       expected_bytenum++;
       line += pos;
     }
-    
+
+    printf("\r[%u]", query_count);
+    fflush(stdout);
+    query_count++;
     rpt->query(bv, bv_len);
     // TODO verify correctess of hits/misses against LL implementation
 
     // ensure that the datafile contains pairs of numbers (bytenum and byteval)
     assert(matches == -1);
   } while ((r = getline(&buf, &len, query)) != -1);
+
+  printf("\n");
 
   free(buf);
 }
@@ -187,12 +193,14 @@ int main(int argc, char **argv) {
   (void) func_call_overhead;
 
   for(int i = 0; i < (int) (sizeof(imps) / sizeof(int)); i++) {
+    printf("opening cache file\n");
     cache = fopen(cache_file_name, "r");
     if (!cache) {
       printf("Could not open cache_file \"%s\".\n", cache_file_name);
       return 3;
     }
     
+    printf("opening query file\n");
     query = fopen(query_file_name, "r");
     if (!query) {
       fclose(cache);
@@ -200,15 +208,26 @@ int main(int argc, char **argv) {
       return 4;
     }
 
+    printf("initializing rep %d\n", i);
     rep_ptr r = initialize_rep(imps[i]);
     assert(r);
 
+    printf("loading rep %d\n", i);
     load(r);
+
+    printf("preparing to query rep %d\n", i);
     r->prepare_to_query();
+    
+    printf("running rep %d\n", i);
     run(r);
+
+    printf("cleaning up rep %d\n", i);
     cleanup(r);
     
+    printf("closing cache file %d\n", i);
     fclose(cache);
+
+    printf("closing query file %d\n", i);
     fclose(query);
   }
 
