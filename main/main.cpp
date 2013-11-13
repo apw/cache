@@ -24,7 +24,8 @@ using namespace std;
 typedef enum {LL_IMP, IN_ORDER_IMP, SIMPLE_CB_IMP} imp_t;
 
 // order in which implementations will be run
-int imps[] = {SIMPLE_CB_IMP, IN_ORDER_IMP, LL_IMP};
+//int imps[] = {SIMPLE_CB_IMP, IN_ORDER_IMP, LL_IMP};
+int imps[] = {SIMPLE_CB_IMP, LL_IMP};
 
 #define TIMEBUF_SZ 80
 char cur_time[TIMEBUF_SZ];
