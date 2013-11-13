@@ -3,6 +3,9 @@
 
 using namespace std;
 
+/*
+ * STORY 2
+ */
 class rset_uint {
  public:
   rset_uint(unsigned);
