@@ -61,11 +61,8 @@ void in_order::prepare_to_query() {
   cache::const_iterator c_end = c_.end();
   for(cache::const_iterator c_iter = c_.begin(); c_iter != c_end; c_iter++) {
     relevant_[i] = c_iter->first;
-    printf("%u ", relevant_[i]); // HI
     i++;
   }
-
-  printf("\n\n"); // HI
 }
 
 unsigned in_order::do_query(uint8_t *bv, unsigned len) {
