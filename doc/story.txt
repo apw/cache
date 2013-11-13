@@ -1,0 +1,12 @@
+STORY 1:
+We could not figure out why in_order was performing better than simple_cb.
+[First version of function had “return a.prio > b.prio;” for the purpose of sorting relevant bytenums by their variance. Now, we also prioritize by bytenum (for locality).]
+Our results showed that for collatz with q2000 and t2000 this worked much better. We believe this is because the particular ordering of the bytenums happened to be particularly good, causing simple_cb to be better than in_order. We now have to see whether this particular order is great for performance by chance or by science.
+This is strong evidence for why learning from queries will prove to be extremely useful: the reason for simple_cb being slower than in_order was because only 2 of the 300 bytenums had a high variance, which means that there was a long tail of 298 bytenums that we were checking for which some ordering is likely to be better than another. Since there is no other way to distinguish between the 298 without using variance, learning which bytenums are better for queries will benefit us. 
+
+STORY 2:
+Our original in_order implementation mapped bytenums to sets of (byteval, id). After removing a bunch of candidates from out potential-candidate set, when we would index into a bytenum, we would still have to re-examine the bytenums. To fix this we did the following:
+--Instead of set, used hash table mapping ids to bytevals
+--wrote rset_uint
+This allowed us to examine only those ids that are still candidates whenever we would index into a bytenum.
+
