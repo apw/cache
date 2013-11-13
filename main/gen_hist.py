@@ -17,12 +17,13 @@ num_imps = len(sys.argv) - FIRST_FILE_INDEX
 
 fig, axarr = plt.subplots(num_imps, sharex=SHAREX, sharey=SHAREY)
 
-def create_hist(dat, col, lab, i):
+def create_hist(dat, h, m, col, lab, i, maximum):
     return axarr[i].hist(dat, bins=BINS, histtype='bar',
-                         weights=np.ones_like(dat)/float(len(dat)),
+                         weights=np.ones_like(dat)/(float(len(h)) + float(len(m))),
                          color=[col],
                          label=[lab],
-                         alpha=0.5)
+                         alpha=0.5,
+                         range=(0,maximum))
 
 # we plot either cpu counts or questions
 plot_type = sys.argv[PLOT_TYPE_INDEX]
@@ -65,13 +66,18 @@ for index in range(0, num_imps):
         else:
             assert(0)
                 
-    h_max = np.percentile(h, PERCENTILE)
-    m_max = np.percentile(m, PERCENTILE)
+#    h_max = np.percentile(h, PERCENTILE)
+#    m_max = np.percentile(m, PERCENTILE)
+    h_max = np.max(h)
+    m_max = np.max(m)
+    overall_max = max([h_max, m_max])
 
-    n, bins, patches = create_hist([i for i in h if i <= h_max],
-                                   'blue', 'hits', index)
-    n, bins, patches = create_hist([j for j in m if j <= m_max],
-                                   'red', 'misses', index)
+    new_h = [i for i in h if i <= h_max]
+    new_m = [j for j in m if j <= m_max]
+    n, bins, patches = create_hist(new_h, new_h, new_m,
+                                   'blue', 'hits', index, overall_max)
+    n, bins, patches = create_hist(new_m, new_h, new_m,
+                                   'red', 'misses', index, overall_max)
 
     axarr[index].legend()
     axarr[index].set_title('Hit & Miss Distribution for \n'
