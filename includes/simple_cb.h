@@ -32,11 +32,10 @@ class simple_cb : public in_order {
   struct {
     bool operator() (bytenum_prio a, bytenum_prio b) {
       if (a.prio != b.prio) {
-	return a.prio < b.prio;
+	return a.prio > b.prio;
       }
-      return a.bytenum < b.bytenum;
 
-      //return a.prio < b.prio;
+      return a.bytenum < b.bytenum;
     }
   } prio_compare;
 };
