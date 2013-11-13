@@ -46,23 +46,12 @@ unsigned rep::query(uint8_t *bv, unsigned len) {
   unsigned hit;
   int64_t time = time_magic(this, &rep::do_query, bv, len, &hit);
 
-  /*
-  (void)time;
   if (hit != INVALID_ID) {
     num_hits_++;
-    outfile_ << "H " << num_steps_ << endl;
+    outfile_ << "H " << time << " " << num_steps_ << endl;
   } else {
     num_misses_++;
-    outfile_ << "M " << num_steps_ << endl;
-  }
-  */
-
-  if (hit != INVALID_ID) {
-    num_hits_++;
-    outfile_ << "H " << time << endl;
-  } else {
-    num_misses_++;
-    outfile_ << "M " << time << endl;
+    outfile_ << "M " << time << " " << num_steps_ << endl;
   }
 
   assert(!outfile_.fail());

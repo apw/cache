@@ -28,7 +28,7 @@ dop:
 
 sgdb:
 	$(MAKE)
-	sudo gdb $(EXECUTABLES)
+	sudo gdb $(EXECUTABLE)
 
 gdb:
 	$(MAKE)

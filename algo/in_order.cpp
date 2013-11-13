@@ -68,11 +68,9 @@ void in_order::prepare_to_query() {
 unsigned in_order::do_query(uint8_t *bv, unsigned len) {
   candidates_->restore();
 
-  unsigned num_matches, cur_id;
+  unsigned cur_id;
   for(unsigned i = 0; i < num_relevant_; i++) {
     assert(relevant_[i] < len);
-
-    num_steps_++;
 
     for(rset_uint::iterator bs_iter = candidates_->get_iterator();
 	bs_iter.is_cur_valid();) {
@@ -81,15 +79,13 @@ unsigned in_order::do_query(uint8_t *bv, unsigned len) {
 
       cur_id = bs_iter.get_cur();
 
-      if (c_[relevant_[i]][cur_id] == bv[relevant_[i]]) {
+      if (c_[relevant_[i]].find(cur_id) == c_[relevant_[i]].end()
+	  || c_[relevant_[i]][cur_id] == bv[relevant_[i]]) {
 	bs_iter.next();
       } else {
 	bs_iter.remove_cur();
 
-	num_matches = candidates_->get_size();
-	if (num_matches == 0) {
-	  return INVALID_ID;
-	} else if (num_matches == SHORT_CIRCUIT_THRESHOLD) {
+	if (candidates_->get_size() == SHORT_CIRCUIT_THRESHOLD) {
 	  int vlen;
 	  int is_match;
 	  unsigned k;
