@@ -15,7 +15,6 @@ uset_uint::uset_uint(unsigned capacity) {
   
   set_ = (unsigned *) calloc(capacity, sizeof(unsigned));
   assert(set_ != NULL);
-  // TODO pit pack stuff :D
 }
 
 uset_uint::~uset_uint() {
