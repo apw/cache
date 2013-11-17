@@ -67,11 +67,8 @@ void uset_uint::undo_trans() {
 
 
 uset_uint::iterator::iterator(uset_uint *uset) {
-  /*
   iterator::uset_ = uset;
-  iterator::assigned_vnum_ = uset->cur_vnum_;
-  iterator::cur_node_ = uset->first_;
-  */
+  iterator::cur_element_ = 0;
 }
 
 uset_uint::iterator::~iterator() {
@@ -79,23 +76,23 @@ uset_uint::iterator::~iterator() {
 }
 
 bool uset_uint::iterator::is_cur_valid() {
-  return false;
+  return iterator::cur_element_ < uset_->size_;
 }
 
 unsigned uset_uint::iterator::get_cur() {
-  return 0;
+  return iterator::cur_element_;
 }
 
 void uset_uint::iterator::next() {
-  //iterator::cur_node_ = uset_->get_next(iterator::cur_node_);
+  do {
+    iterator::cur_element_++;
+  } while(iterator::cur_element_ < uset_->size_ 
+	  && !uset_->lookup(iterator::cur_element_));
 }
 
 void uset_uint::iterator::remove_cur() {
-  /*
-  unsigned tmp = iterator::cur_node_;
-  iterator::cur_node_ = uset_->get_next(iterator::cur_node_);
-  uset_->remove(tmp);
-  */
+  iterator::uset_->remove(iterator::cur_element_);
+  iterator::cur_element_++;
 }
 
 uset_uint::iterator uset_uint::get_iterator() {
