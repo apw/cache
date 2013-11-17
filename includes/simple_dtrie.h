@@ -5,7 +5,7 @@
 #include "rset_uint.h"
 #include "uset_uint.h"
 #include "common.h"
-#include "frac.h"
+
 #include <stdint.h>
 #include <iostream>
 #include <boost/unordered_map.hpp>
