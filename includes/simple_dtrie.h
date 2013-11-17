@@ -4,6 +4,8 @@
 #include "rep.h"
 #include "rset_uint.h"
 #include "uset_uint.h"
+#include "common.h"
+#include "frac.h"
 #include <stdint.h>
 #include <iostream>
 #include <boost/unordered_map.hpp>
@@ -57,20 +59,6 @@ class simple_dtrie : public virtual rep {
   typedef unordered_map<unsigned, byteval_map, bytenum_hash, bytenum_eq> cache;
   cache c_;
 
-  typedef struct {
-    long operator() (const unsigned &k) const {
-      return k; 
-    }
-  } prop_map_hash;
-
-  typedef struct {
-    bool operator() (const unsigned &x, const unsigned &y) const { 
-      return x == y; 
-    }
-  } prop_map_eq;
-
-  typedef unordered_map<unsigned, float, prop_map_hash, prop_map_eq> prop_map;
-
   class c_trie {
   public:
     c_trie(cache *);
@@ -87,6 +75,26 @@ class simple_dtrie : public virtual rep {
     cache *cache_;
   };
 
+  class q_trie {
+  public:
+    q_trie(void);
+    ~q_trie(void);
+
+    void update(uint8_t *bv, unsigned len);
+    void cond(unsigned bytenum, uint8_t byteval);
+    void uncond(void);
+
+  private:
+    typedef unordered_map<uint8_t, unsigned> prop_map;
+    typedef struct {
+      unsigned denom;
+      prop_map pm;
+    } bytenum_md;
+
+    typedef unordered_map<unsigned, bytenum_md> query_md;
+
+    query_md q_;
+  };
 
  private:
   typedef rep super;

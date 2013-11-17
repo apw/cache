@@ -34,12 +34,11 @@ void simple_dtrie::end_sbv(int id) {
 
 void simple_dtrie::do_add_byte(int id, unsigned bytenum, unsigned byteval) {
   if (c_.find(bytenum) == c_.end()) {
-    byteval_map bs;
-    c_[bytenum] = bs;
+    byteval_map bm;
+    c_[bytenum] = bm;
+  }
 
-    id_set ids;
-    c_[bytenum][byteval] = ids;
-  } else if (c_[bytenum].find(byteval) == c_[bytenum].end()) {
+  if (c_[bytenum].find(byteval) == c_[bytenum].end()) {
     id_set ids;
     c_[bytenum][byteval] = ids;
   }
@@ -50,8 +49,6 @@ void simple_dtrie::do_add_byte(int id, unsigned bytenum, unsigned byteval) {
 simple_dtrie::c_trie::c_trie(cache *c) {
   cache_ = c;
   u_ = new uset_uint(cache_->size());
-
-  
 }
 
 simple_dtrie::c_trie::~c_trie() {
@@ -78,8 +75,36 @@ void simple_dtrie::c_trie::cond(unsigned bytenum, uint8_t byteval) {
   u_->end_trans();
 }
 
-void simple_dtrie::c_trie::uncond(void) {
+void simple_dtrie::c_trie::uncond() {
   u_->undo_trans();
+}
+
+simple_dtrie::q_trie::q_trie() {
+  
+}
+
+simple_dtrie::q_trie::~q_trie() {
+  
+}
+
+void simple_dtrie::q_trie::update(uint8_t *bv, unsigned len) {
+  // calculate proportion by (prop_map.size[byteval].size() / denom)
+  for(unsigned i = 0; i < len; i++) {
+    q_[i].denom++;
+    if (q_[i].pm.find(bv[i]) == q_[i].pm.end()) {
+      q_[i].pm[bv[i]] = 1;
+    } else {
+      q_[i].pm[bv[i]]++;
+    }
+  }
+}
+
+void simple_dtrie::q_trie::cond(unsigned bytenum, uint8_t byteval) {
+  
+}
+
+void simple_dtrie::q_trie::uncond() {
+  
 }
 
 void simple_dtrie::prepare_to_query() {
