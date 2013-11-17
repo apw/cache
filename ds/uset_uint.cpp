@@ -39,7 +39,7 @@ bool uset_uint::remove(unsigned n) {
   
   unsigned was_there = set_[n];
   set_[n]++;
-  return was_there;
+  return was_there == 0;
 }
 
 void uset_uint::begin_trans() {

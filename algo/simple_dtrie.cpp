@@ -34,7 +34,7 @@ void simple_dtrie::end_sbv(int id) {
 
 void simple_dtrie::do_add_byte(int id, unsigned bytenum, unsigned byteval) {
   if (c_.find(bytenum) == c_.end()) {
-    byteval_set bs;
+    byteval_map bs;
     c_[bytenum] = bs;
 
     id_set ids;
@@ -45,6 +45,45 @@ void simple_dtrie::do_add_byte(int id, unsigned bytenum, unsigned byteval) {
   }
 
   c_[bytenum][byteval].push_back(id);
+}
+
+simple_dtrie::c_trie::c_trie(cache *c) {
+  cache_ = c;
+  u_ = new uset_uint(cache_->size());
+}
+
+simple_dtrie::c_trie::~c_trie() {
+  delete u_;
+}
+
+void simple_dtrie::c_trie::cond(unsigned bytenum, uint8_t byteval) {
+  u_->begin_trans();
+
+  if (cache_->find(bytenum) != cache_->end()) {
+    byteval_map bm = cache_->operator[](bytenum);
+    byteval_map::const_iterator b_end = bm.end();
+    for(byteval_map::const_iterator b_iter = bm.begin(); b_iter != b_end; b_iter++) {
+      if (b_iter->first == byteval) {
+	continue;
+      }
+      
+      for(unsigned i = 0; i < b_iter->second.size(); i++) {
+	u_->remove(b_iter->second[i]);
+      }
+    }
+  }
+
+  u_->end_trans();
+}
+
+void simple_dtrie::c_trie::uncond(void) {
+  u_->undo_trans();
+}
+
+simple_dtrie::prop_map simple_dtrie::c_trie::get_prop_map(unsigned bytenum) {
+  // TODO
+  prop_map pm;
+  return pm;
 }
 
 void simple_dtrie::prepare_to_query() {

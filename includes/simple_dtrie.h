@@ -53,9 +53,48 @@ class simple_dtrie : public virtual rep {
   } bytenum_eq;
 
   typedef vector<unsigned> id_set;
-  typedef unordered_map<uint8_t, id_set, byteval_hash, byteval_eq> byteval_set;
-  typedef unordered_map<unsigned, byteval_set, bytenum_hash, bytenum_eq> cache;
+  typedef unordered_map<uint8_t, id_set, byteval_hash, byteval_eq> byteval_map;
+  typedef unordered_map<unsigned, byteval_map, bytenum_hash, bytenum_eq> cache;
   cache c_;
+
+  /*
+  // TODO
+  // check what types are needed here
+  // use these in def of prop_map
+  typedef struct {
+    long operator() (const unsigned &k) const {
+      return k; 
+    }
+  } prop_map_hash;
+
+  typedef struct {
+    bool operator() (const unsigned &x, const unsigned &y) const { 
+      return x == y; 
+    }
+  } prop_map_eq;
+  */
+
+  typedef unordered_map<unsigned, float> prop_map;
+
+  class c_trie {
+  public:
+    c_trie(cache *);
+    ~c_trie(void);
+
+    void cond(unsigned bytenum, uint8_t byteval);
+    void uncond(void);
+
+    /*
+     * TODO use some iterator to get current row of bytenums
+     */
+    void construct(void);
+
+    prop_map get_prop_map(unsigned bytenum);
+    
+  private:
+    uset_uint *u_;
+    cache *cache_;
+  };
 
  private:
   typedef rep super;
