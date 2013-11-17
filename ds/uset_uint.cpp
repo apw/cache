@@ -36,6 +36,9 @@ unsigned uset_uint::get_capacity() {
 bool uset_uint::remove(unsigned n) {
   remove_set rs = u_.back();
   rs.push_back(n);
+
+  u_.pop_back(); // !!!
+  u_.push_back(rs); // !!!
   
   unsigned was_there = set_[n];
   set_[n]++;
