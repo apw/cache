@@ -46,6 +46,8 @@ class uset_uint {
   typedef vector<remove_set *> undo_set;
   
   undo_set u_;
+
+  bool in_trans_;
 };
 
 #endif

@@ -12,7 +12,8 @@ uset_uint::uset_uint(unsigned capacity) {
   assert(capacity > 0);
   capacity_ = capacity;
   size_ = capacity;
-  
+  in_trans_ = false;
+
   set_ = (unsigned *) calloc(capacity, sizeof(unsigned));
   assert(set_ != NULL);
 }
@@ -42,6 +43,7 @@ unsigned uset_uint::get_capacity() {
 }
 
 bool uset_uint::remove(unsigned n) {
+  assert(in_trans_);
   assert(u_.size() > 0);
   remove_set *rs = u_.back();
   rs->push_back(n);
@@ -56,15 +58,20 @@ bool uset_uint::remove(unsigned n) {
 }
 
 void uset_uint::begin_trans() {
+  assert(!in_trans_);
+  in_trans_ = true;
+
   remove_set *rs = new remove_set();
   u_.push_back(rs);
 }
 
 void uset_uint::end_trans() {
-  
+  assert(in_trans_);
+  in_trans_ = false;
 }
 
 void uset_uint::undo_trans() {  
+  assert(!in_trans_);
   assert(u_.size() > 0);
   remove_set *rs = u_.back();
   unsigned n;
