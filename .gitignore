@@ -3,6 +3,7 @@
 *~
 *.dat
 bin/*
+test/dsTest/bin/*
 graphs/*
 output/*
 *.trace
