@@ -192,7 +192,8 @@ static void test_do_n_undo_m_transactions(int n, int m) {
   intCollection *cols[n];
   bool res;
   for (i = 0; i < n; i++) {
-    cols[i] = genUniqueInts(TESTMAX, TESTNUM);
+    cols[i] = genGloballyUniqueInts(TESTMAX, TESTNUM);
+    assert(cols[i] != NULL);
   }
 
   // remove the values in each of the n intCollections in turn
@@ -225,7 +226,7 @@ static void test_do_n_undo_m_transactions(int n, int m) {
 
   // clean up and return
   for (i = 0; i < n; i++) {
-    destroyIntCollection(cols[n]);
+    destroyIntCollection(cols[i]);
   }
 
   delete us;
@@ -255,7 +256,7 @@ void uset_uint_test_simple(void) {
     } else {
       num_undo = rand() % MAXDO;
     }
-    test_do_n_undo_m_transactions(num_do, num_do);
+    test_do_n_undo_m_transactions(num_do, num_undo);
     
   }
 
@@ -271,6 +272,7 @@ void uset_uint_test_errors(void) {
 }
 
 int main(void) {
+  //(*** TODO TEST SIZE OF USET_UINT ***)
   //  rset_uint_test_simple();
   uset_uint_test_simple();
   uset_uint_test_errors();

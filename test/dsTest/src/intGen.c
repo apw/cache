@@ -1,8 +1,46 @@
 #include <stdlib.h>
 #include <time.h>
+#include <assert.h>
 #include "../include/intGen.h"
 
+
+static intCollection *globalIntCollection = NULL;
+
 static intCollection *getEmptyIntCollection(int max, int num);
+
+static void uniqueHelper(intCollection *srcCol,
+			 intCollection *destCol, int max, int num) {
+  /*
+   * currently just keep trying until get unique numbers;
+   * should do something smarter
+   */
+  int curRand;
+  int numUnique = 0;
+  srand(time(NULL)); // seed rand for each call to genUniqueInts
+  while(numUnique < num) {
+    // get random numbers until we get a unique number
+    curRand = rand() % max;
+    if (containsInt(curRand, srcCol)) {
+      continue;
+    }
+
+    // store this number and update metadata in dest
+    destCol->col[numUnique] = curRand;
+    if (curRand > destCol->realMax) {
+      destCol->realMax = curRand;
+    }
+
+    // if src is not the same as dest, store the same data in dest
+    if (srcCol != destCol) {
+      srcCol->col[numUnique] = curRand;
+      if (curRand > srcCol->realMax) {
+	srcCol->realMax = curRand;
+      }
+    }
+
+    numUnique++;
+  }  
+}
 
 intCollection *genUniqueInts(int max, int num) {
   if (max > RAND_MAX) {
@@ -14,30 +52,40 @@ intCollection *genUniqueInts(int max, int num) {
     return NULL;
   }
 
-  /*
-   * currently just keep trying until get unique numbers;
-   * should do something smarter
-   */
-  int curRand;
-  int numUnique = 0;
-  srand(time(NULL)); // seed rand for each call to genUniqueInts
-  while(numUnique < num) {
-    // get random numbers until we get a unique number
-    curRand = rand() % max;
-    if (containsInt(curRand, intCol)) {
-      continue;
-    }
-
-    // store this number and update metadata
-    intCol->col[numUnique] = curRand;
-    if (curRand > intCol->realMax) {
-      intCol->realMax = curRand;
-    }
-
-    numUnique++;
-  }
+  // actually generate the unique ints
+  uniqueHelper(intCol, intCol, max, num);
 
   return intCol;
+}
+
+static void copyIntCollection(intCollection *src, intCollection *dest) {
+  assert(src);
+  assert(dest);
+
+  dest->size = src->size;
+  dest->index = src->index;
+  dest->realMax = src->realMax;
+  dest->givenMax = src->givenMax;
+
+  for (int i = 0; i < src->size; i++) {
+    dest->col[i] = src->col[i];
+  }
+
+  return;
+}
+
+intCollection *genGloballyUniqueInts(int max, int num) {
+  intCollection *res = getEmptyIntCollection(max, num);
+  assert(res);
+
+  if (globalIntCollection == NULL) {
+    globalIntCollection = genUniqueInts(max, num);
+    copyIntCollection(globalIntCollection, res);
+  } else {
+    uniqueHelper(globalIntCollection, res, max, num);
+  }
+
+  return res;
 }
 
 intCollection *genRandomInts(int max, int num) {
