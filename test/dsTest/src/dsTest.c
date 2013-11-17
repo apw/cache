@@ -1,18 +1,22 @@
 #include <iterator>
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
 #include "../include/intGen.h"
 #include "../../../includes/rset_uint.h"
+#include "../../../includes/uset_uint.h"
 
-#define TESTMAX (1 << 16)
+/*
+ * TESTMAX should be significantly larger than (TESTNUM * MAXDO);
+ * if this is not the case, test_undo_n_transactions will enter
+ * an infinite-loop trying to generate unique numbers because
+ * genUniqueInts doesn't to error checking for this scenario yet
+ */
+#define TESTMAX (1 << 20)
 #define TESTNUM (1 << 10)
 #define RESETNUM (1 << 3)
-#define SKIPSIZE 5
-
-//#define TESTMAX 10
-//#define TESTNUM 9
-//#define RESETNUM 8
+#define MAXDO (1 << 4)
 
 void standard_default(void) {
   // get unique collection
@@ -72,7 +76,8 @@ void standard_default(void) {
   destroyIntCollection(col);
 }
 
-void test_simple(void) {
+void rset_uint_test_simple(void) {
+  printf("[BEGINNING] rset_uint_test_simple\n");
   // get unique int collection
   intCollection *col;
 
@@ -86,7 +91,7 @@ void test_simple(void) {
     fflush(stdout);
     // get unique ints to remove from the rset
     col = genUniqueInts(TESTMAX, TESTNUM);
-    assert(col != NULL);
+    assert(col);
 
     // remove some random elements
     unsigned i;
@@ -129,10 +134,145 @@ void test_simple(void) {
 
   // clean up and return
   delete r;
+  printf("[PASSED] rset_uint_test_simple\n");
   return;
 }
 
+static void undo_n_transactions(uset_uint *us, unsigned n) {
+  for (int i = 0; i < n; i++) {
+    us->undo_trans();
+  }
+}
+
+static bool remove_all_col_vals_from_uset(intCollection *col, uset_uint *us) {
+  int cur_int;
+  bool res;
+  while (!gotAllInts(col)) {
+    cur_int = getInt(col);
+    res = us->remove((unsigned) cur_int);
+    if (res == false) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+static bool col_vals_uset_helper(intCollection *col, uset_uint *us, bool b) {
+  int cur_int;
+  bool res;
+  while (!gotAllInts(col)) {
+    cur_int = getInt(col);
+    res = us->lookup((unsigned) cur_int);
+    if (res == b) {
+      return false;
+    }
+  }
+
+  return true;  
+}
+
+static bool all_col_vals_in_uset(intCollection *col, uset_uint *us) {
+  return col_vals_uset_helper(col, us, true);
+}
+
+static bool all_col_vals_not_in_uset(intCollection *col, uset_uint *us) {
+  return col_vals_uset_helper(col, us, false);
+}
+
+static void test_do_n_undo_m_transactions(int n, int m) {
+  // can't undo more transactions than we do
+  assert(m <= n);
+
+  // get a uset_uint to test
+  uset_uint *us = new uset_uint(TESTMAX);
+
+  // get n intCollections, each with values unique across all collections
+  int i;
+  intCollection *cols[n];
+  bool res;
+  for (i = 0; i < n; i++) {
+    cols[i] = genUniqueInts(TESTMAX, TESTNUM);
+  }
+
+  // remove the values in each of the n intCollections in turn
+  for (i = 0; i < n; i++) {
+    us->begin_trans();
+    res = remove_all_col_vals_from_uset(cols[i], us);
+    assert(res == true);
+    us->end_trans();
+  }
+
+  // undo last m transactions
+  for (i = 0; i < m; i++) {
+    us->undo_trans();
+  }
+
+  /*
+   * verify that the transactions that weren't undone still have their values
+   * removed
+   */
+  int num_valid_transactions = n-m;
+  int last_valid_transaction_index = num_valid_transactions-1;
+  for (i = 0; i < num_valid_transactions; i++) {
+    res = all_col_vals_not_in_uset(cols[i], us);
+  }
+
+   // verify that the transactions that were undone have their values present
+  for(; i < n; i++) {
+    res = all_col_vals_in_uset(cols[i], us);
+  }
+
+  // clean up and return
+  for (i = 0; i < n; i++) {
+    destroyIntCollection(cols[n]);
+  }
+
+  delete us;
+  return;
+}
+
+void uset_uint_test_simple(void) {
+  printf("[BEGINNING] uset_uint_test_simple\n");
+  for (int i = 0; i < RESETNUM; i++) {
+    printf("[%d]\r", i);
+    
+    // test that we can do and undo 0 transactions
+    test_do_n_undo_m_transactions(0, 0);
+
+    // test that we can do and undo 1 transaction
+    test_do_n_undo_m_transactions(1, 1);
+
+    // test that we can do and undo the same number of transactions
+    srand(time(NULL));
+    int num_do = rand() % MAXDO;
+    test_do_n_undo_m_transactions(num_do, num_do);
+    
+    // test that we can do and undo a different number of transactions
+    int num_undo;
+    if (num_do == 0) {
+      num_undo = 0;
+    } else {
+      num_undo = rand() % MAXDO;
+    }
+    test_do_n_undo_m_transactions(num_do, num_do);
+    
+  }
+
+  printf("[PASSED] uset_uint_test_simple\n");
+  return;
+}
+
+void uset_uint_test_errors(void) {
+  // test that if we try to undo more times than redo, something logical happens
+  printf("[BEGINNING] uset_uint_test_errors\n");
+  assert(0);
+  printf("[PASSED] uset_uint_test_errors\n");
+}
+
 int main(void) {
-  test_simple();
+  //  rset_uint_test_simple();
+  uset_uint_test_simple();
+  uset_uint_test_errors();
   return 0;
 }
