@@ -50,6 +50,8 @@ void simple_dtrie::do_add_byte(int id, unsigned bytenum, unsigned byteval) {
 simple_dtrie::c_trie::c_trie(cache *c) {
   cache_ = c;
   u_ = new uset_uint(cache_->size());
+
+  
 }
 
 simple_dtrie::c_trie::~c_trie() {
@@ -78,12 +80,6 @@ void simple_dtrie::c_trie::cond(unsigned bytenum, uint8_t byteval) {
 
 void simple_dtrie::c_trie::uncond(void) {
   u_->undo_trans();
-}
-
-simple_dtrie::prop_map simple_dtrie::c_trie::get_prop_map(unsigned bytenum) {
-  // TODO
-  prop_map pm;
-  return pm;
 }
 
 void simple_dtrie::prepare_to_query() {

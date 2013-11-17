@@ -39,6 +39,10 @@ bool uset_uint::remove(unsigned n) {
   
   unsigned was_there = set_[n];
   set_[n]++;
+  if (set_[n] == 1) {
+    size_--;
+  }
+
   return was_there == 0;
 }
 
@@ -59,6 +63,9 @@ void uset_uint::undo_trans() {
     rs.pop_back();
     assert(set_[n] > 0);
     set_[n]--;
+    if (set_[n] == 0) {
+      size_++;
+    }
   }
 
   u_.pop_back();
@@ -75,7 +82,7 @@ uset_uint::iterator::~iterator() {
 }
 
 bool uset_uint::iterator::is_cur_valid() {
-  return iterator::cur_element_ < uset_->size_;
+  return iterator::cur_element_ < uset_->capacity_;
 }
 
 unsigned uset_uint::iterator::get_cur() {
@@ -85,7 +92,7 @@ unsigned uset_uint::iterator::get_cur() {
 void uset_uint::iterator::next() {
   do {
     iterator::cur_element_++;
-  } while(iterator::cur_element_ < uset_->size_ 
+  } while(iterator::cur_element_ < uset_->capacity_ 
 	  && !uset_->lookup(iterator::cur_element_));
 }
 
