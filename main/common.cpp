@@ -1,3 +1,4 @@
+#include "../includes/common.h"
 #include <ctime>
 
 using namespace std;

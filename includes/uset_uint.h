@@ -43,9 +43,11 @@ class uset_uint {
   unsigned *set_;
 
   typedef vector<unsigned> remove_set;
-  typedef vector<remove_set> undo_set;
+  typedef vector<remove_set *> undo_set;
   
   undo_set u_;
+
+  bool in_trans_;
 };
 
 #endif

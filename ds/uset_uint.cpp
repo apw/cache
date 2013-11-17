@@ -12,16 +12,25 @@ uset_uint::uset_uint(unsigned capacity) {
   assert(capacity > 0);
   capacity_ = capacity;
   size_ = capacity;
-  
+  in_trans_ = false;
+
   set_ = (unsigned *) calloc(capacity, sizeof(unsigned));
   assert(set_ != NULL);
 }
 
 uset_uint::~uset_uint() {
   free(set_);
+
+  remove_set *rs;
+  while(u_.size() > 0) {
+    rs = u_.back();
+    delete rs;
+    u_.pop_back();
+  }
 }
 
 bool uset_uint::lookup(unsigned n) {
+  assert(n < capacity_);
   return set_[n] == 0;
 }
 
@@ -34,12 +43,11 @@ unsigned uset_uint::get_capacity() {
 }
 
 bool uset_uint::remove(unsigned n) {
-  remove_set rs = u_.back();
-  rs.push_back(n);
+  assert(in_trans_);
+  assert(u_.size() > 0);
+  remove_set *rs = u_.back();
+  rs->push_back(n);
 
-  u_.pop_back(); // !!!
-  u_.push_back(rs); // !!!
-  
   unsigned was_there = set_[n];
   set_[n]++;
   if (set_[n] == 1) {
@@ -50,20 +58,26 @@ bool uset_uint::remove(unsigned n) {
 }
 
 void uset_uint::begin_trans() {
-  remove_set rs;
+  assert(!in_trans_);
+  in_trans_ = true;
+
+  remove_set *rs = new remove_set();
   u_.push_back(rs);
 }
 
 void uset_uint::end_trans() {
-  
+  assert(in_trans_);
+  in_trans_ = false;
 }
 
 void uset_uint::undo_trans() {  
-  remove_set rs = u_.back();
+  assert(!in_trans_);
+  assert(u_.size() > 0);
+  remove_set *rs = u_.back();
   unsigned n;
-  while(rs.size() > 0) {
-    n = rs.back();
-    rs.pop_back();
+  while(rs->size() > 0) {
+    n = rs->back();
+    rs->pop_back();
     assert(set_[n] > 0);
     set_[n]--;
     if (set_[n] == 0) {
@@ -72,6 +86,7 @@ void uset_uint::undo_trans() {
   }
 
   u_.pop_back();
+  delete rs;
 }
 
 

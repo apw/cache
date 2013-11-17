@@ -1,12 +1,13 @@
 #include <stdlib.h>
 #include <time.h>
 #include <assert.h>
+#include <stdio.h>
 #include "../include/intGen.h"
 
 
 static intCollection *globalIntCollection = NULL;
 
-static intCollection *getEmptyIntCollection(int max, int num);
+
 
 static void uniqueHelper(intCollection *srcCol,
 			 intCollection *destCol, int max, int num) {
@@ -30,9 +31,14 @@ static void uniqueHelper(intCollection *srcCol,
       destCol->realMax = curRand;
     }
 
-    // if src is not the same as dest, store the same data in dest
+    // if src is not the same as dest, append the same data into dest
+    int *res;
     if (srcCol != destCol) {
-      srcCol->col[numUnique] = curRand;
+      srcCol->size++;
+      res = (int *) realloc(srcCol->col, (size_t) (srcCol->size * sizeof(int)));
+      assert(res);
+      srcCol->col = res;
+      srcCol->col[srcCol->size-1] = curRand;
       if (curRand > srcCol->realMax) {
 	srcCol->realMax = curRand;
       }
@@ -58,7 +64,7 @@ intCollection *genUniqueInts(int max, int num) {
   return intCol;
 }
 
-static void copyIntCollection(intCollection *src, intCollection *dest) {
+void copyIntCollection(intCollection *src, intCollection *dest) {
   assert(src);
   assert(dest);
 
@@ -133,7 +139,7 @@ void destroyIntCollection(intCollection *col) {
   return;
 }
 
-static intCollection *getEmptyIntCollection(int max, int num) {
+intCollection *getEmptyIntCollection(int max, int num) {
   intCollection *ret = (intCollection *) malloc(sizeof(intCollection));
   if (ret == NULL) {
     return NULL;

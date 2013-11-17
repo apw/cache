@@ -7,6 +7,11 @@ typedef struct intCollection {
 } intCollection;
 
 /*
+ * get an empty int collection to hold num int's in [0, max)
+ */
+intCollection *getEmptyIntCollection(int max, int num);
+
+/*
  * generate num unique integers in [0, max)
  * returns a collection of these numbers on success, NULL
  * on failure
@@ -30,6 +35,12 @@ intCollection *genGloballyUniqueInts(int max, int num);
  * for most practical purposes it should be close enough to random
  */
 intCollection *genRandomInts(int max, int num);
+
+/*
+ * copy an intCollection from src to dest; both must be pre-allocated
+ * with one of the above functions that returns an intCollection *
+ */
+void copyIntCollection(intCollection *src, intCollection *dest);
 
 /*
  * returns an int from col that we haven't "getInt-ed" already iff
