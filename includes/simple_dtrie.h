@@ -61,15 +61,14 @@ class simple_dtrie : public virtual rep {
 
   class c_trie {
   public:
-    c_trie(cache *);
+    c_trie(void);
     ~c_trie(void);
 
+    void load_cache(cache *);
     void cond(unsigned bytenum, uint8_t byteval);
     void uncond(void);
+    float get_prop(unsigned bytenum, uint8_t byteval);
 
-    /*
-     * TODO use some iterator to get current row of bytenums
-     */    
   private:
     uset_uint *u_;
     cache *cache_;
@@ -83,6 +82,7 @@ class simple_dtrie : public virtual rep {
     void update(uint8_t *bv, unsigned len);
     void cond(unsigned bytenum, uint8_t byteval);
     void uncond(void);
+    float get_prop(unsigned bytenum, uint8_t byteval);
 
   private:
     typedef unordered_map<uint8_t, unsigned> prop_map;
@@ -95,6 +95,11 @@ class simple_dtrie : public virtual rep {
 
     query_md q_;
   };
+
+  c_trie cond_cache_;
+  q_trie cond_query_;
+
+  float get_cond_utility(unsigned bytenum);
 
  private:
   typedef rep super;
