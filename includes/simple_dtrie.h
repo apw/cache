@@ -69,6 +69,21 @@ class simple_dtrie : public virtual rep {
     void uncond(void);
     float get_prop(unsigned bytenum, uint8_t byteval);
 
+    class iterator {
+    public:
+      iterator(c_trie *);
+      ~iterator(void);
+      
+      bool is_cur_valid(void);
+      unsigned get_cur(void);
+      void next(void);
+      
+    private:
+      uset_uint::iterator u_iter_;
+    };
+
+    iterator get_iterator();
+
   private:
     uset_uint *u_;
     cache *cache_;
@@ -100,6 +115,7 @@ class simple_dtrie : public virtual rep {
   q_trie cond_query_;
 
   float get_cond_utility(unsigned bytenum);
+  unsigned get_highest_utility_bytenum(void);
 
  private:
   typedef rep super;

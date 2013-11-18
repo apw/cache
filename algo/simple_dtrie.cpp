@@ -151,6 +151,50 @@ float simple_dtrie::q_trie::get_prop(unsigned bytenum, uint8_t byteval) {
   return q_[bytenum].pm[byteval] / q_[bytenum].denom;
 }
 
+unsigned simple_dtrie::get_highest_utility_bytenum() {
+  unsigned max_bytenum = INVALID_BYTENUM;
+  unsigned bytenum;
+  float max_u = 0.0;
+  float u;
+  for(c_trie::iterator iter = cond_cache_.get_iterator(); 
+      iter.is_cur_valid(); iter.next()) {
+    bytenum = iter.get_cur();
+    u = get_cond_utility(bytenum);
+    if (max_u < u) {
+      max_u = u;
+      max_bytenum = bytenum;
+    }
+  }
+  
+  return max_bytenum;
+}
+
+simple_dtrie::c_trie::iterator simple_dtrie::c_trie::get_iterator() {
+  simple_dtrie::c_trie::iterator it(this);
+  return it;
+}
+
+simple_dtrie::c_trie::iterator::iterator(c_trie *ct) : u_iter_(ct->u_) {
+  
+}
+
+simple_dtrie::c_trie::iterator::~iterator() {
+
+}
+
+bool simple_dtrie::c_trie::iterator::is_cur_valid() {
+  return u_iter_.is_cur_valid();
+}
+
+unsigned simple_dtrie::c_trie::iterator::get_cur() {
+  return u_iter_.get_cur();
+}
+
+void simple_dtrie::c_trie::iterator::next() {
+  return u_iter_.next();
+}
+
+
 float simple_dtrie::get_cond_utility(unsigned bytenum) {
   if (c_.find(bytenum) == c_.end()) {
     return 0.0;
