@@ -13,8 +13,8 @@
  * an infinite-loop trying to generate unique numbers because
  * genUniqueInts doesn't to error checking for this scenario yet
  */
-#define TESTMAX (1 << 8)
-#define TESTNUM (1 << 2)
+#define TESTMAX (1 << 16)
+#define TESTNUM (1 << 8)
 #define RESETNUM (1 << 3)
 #define MAXDO (1 << 4)
 
@@ -390,7 +390,6 @@ void uset_uint_test_errors(void) {
 
 
 static void uset_uint_one_iterator_simple_walk(int n, int m) {
-  printf("%d %d\n", n, m);
   // can't undo more transactions than we do
   assert(m <= n);
 
@@ -433,29 +432,26 @@ static void uset_uint_one_iterator_simple_walk(int n, int m) {
   int num_seen = 0;
   while (it.is_cur_valid()) {
     printf("[%d]\r", num_seen);
+    fflush(stdout);
+
     num_seen++;
     cur_int  = (int) it.get_cur();
-    
-    // make sure the int is from one of the valid transactions
-    if (num_valid_transactions > 0) {
-      res = false;
-    } else {
-      res = true;
-    }
-    for (i = num_valid_transactions; i < n; i++) {
-      printf("%d\n", i);
-      fflush(stdout);
-      if (containsInt(cur_int, cols[i])) {
-	res = true;
-	break;
+
+    // make sure cur_int is in the right range
+    assert(cur_int < TESTMAX && cur_int >= 0);
+
+    // make sure cur_int is not an int we removed from us
+    if (n > 0) {
+      for (i = 0; i < num_valid_transactions; i++) {
+	assert(!containsInt(cur_int, cols[i]));
+	}
       }
-    }
-    
-    assert(res);
+
+    it.next();
   }
 
   // make sure we iterated over the expected number of ints
-  assert(num_seen == num_valid_transactions*TESTNUM);
+  assert(num_seen == TESTMAX-(num_valid_transactions*TESTNUM));
 
   /*
    * verify that the transactions that weren't undone still have their values
@@ -491,7 +487,12 @@ void uset_uint_test_iterator(void) {
   int num_do = rand() % MAXDO;
   uset_uint_one_iterator_simple_walk(num_do, num_do);
 
-  int num_undo = rand() % num_do;
+  int num_undo;
+  if (num_do > 0) {
+    num_undo = rand() % num_do;
+  } else {
+    num_undo = 0;
+  }
   uset_uint_one_iterator_simple_walk(num_do, num_undo);
   
   printf("[PASSED] uset_uint_test_iterator\n");
