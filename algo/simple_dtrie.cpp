@@ -15,11 +15,13 @@
 #include <vector>
 
 simple_dtrie::simple_dtrie(const char *cur_time) : rep(cur_time, "simple_dtrie") {
-  
+  d_ = NULL;  
 }
 
 simple_dtrie::~simple_dtrie() {
-  
+  if (d_ != NULL) {
+    delete d_;
+  }
 }
 
 // TODO: probs don't need this
@@ -47,7 +49,8 @@ void simple_dtrie::do_add_byte(int id, unsigned bytenum, unsigned byteval) {
 }
 
 simple_dtrie::c_trie::c_trie() {
-
+  cache_ = NULL;
+  u_ = NULL;
 }
 
 simple_dtrie::c_trie::~c_trie() {
@@ -83,7 +86,7 @@ void simple_dtrie::c_trie::uncond() {
   u_->undo_trans();
 }
 
-float simple_dtrie::c_trie::get_prop(unsigned bytenum, uint8_t byteval) {
+double simple_dtrie::c_trie::get_prop(unsigned bytenum, uint8_t byteval) {
   if (cache_->find(bytenum) == cache_->end()) {
     return 0.0;
   }
@@ -142,31 +145,13 @@ void simple_dtrie::q_trie::uncond() {
   
 }
 
-float simple_dtrie::q_trie::get_prop(unsigned bytenum, uint8_t byteval) {
+double simple_dtrie::q_trie::get_prop(unsigned bytenum, uint8_t byteval) {
   if (q_.find(bytenum) == q_.end()
       || q_[bytenum].pm.find(byteval) == q_[bytenum].pm.end()) {
     return 0.0;
   }
 
   return q_[bytenum].pm[byteval] / q_[bytenum].denom;
-}
-
-unsigned simple_dtrie::get_highest_utility_bytenum() {
-  unsigned max_bytenum = INVALID_BYTENUM;
-  unsigned bytenum;
-  float max_u = 0.0;
-  float u;
-  for(c_trie::iterator iter = cond_cache_.get_iterator(); 
-      iter.is_cur_valid(); iter.next()) {
-    bytenum = iter.get_cur();
-    u = get_cond_utility(bytenum);
-    if (max_u < u) {
-      max_u = u;
-      max_bytenum = bytenum;
-    }
-  }
-  
-  return max_bytenum;
 }
 
 simple_dtrie::c_trie::iterator simple_dtrie::c_trie::get_iterator() {
@@ -194,15 +179,24 @@ void simple_dtrie::c_trie::iterator::next() {
   return u_iter_.next();
 }
 
+simple_dtrie::d_trie::d_trie() {
+  cache_ = NULL;  
+}
 
-float simple_dtrie::get_cond_utility(unsigned bytenum) {
-  if (c_.find(bytenum) == c_.end()) {
+simple_dtrie::d_trie::~d_trie() {
+
+}
+
+double simple_dtrie::d_trie::get_cond_utility(unsigned bytenum) {
+  if (cache_->find(bytenum) == cache_->end()) {
     return 0.0;
   }
 
-  float acc = 0.0;
-  byteval_map::const_iterator b_end = c_[bytenum].end();
-  for(byteval_map::const_iterator b_iter = c_[bytenum].begin(); 
+  byteval_map bm = cache_->operator[](bytenum);
+
+  double acc = 0.0;
+  byteval_map::const_iterator b_end = bm.end();
+  for(byteval_map::const_iterator b_iter = bm.begin(); 
       b_iter != b_end; b_iter++) {
     acc += cond_query_.get_prop(bytenum, b_iter->first)
       * (1 - cond_cache_.get_prop(bytenum, b_iter->first));    
@@ -211,8 +205,47 @@ float simple_dtrie::get_cond_utility(unsigned bytenum) {
   return acc;
 }
 
+unsigned simple_dtrie::d_trie::get_highest_utility_bytenum() {
+  unsigned max_bytenum = INVALID_BYTENUM;
+  unsigned bytenum;
+  double max_u = 0.0;
+  double u;
+  for(c_trie::iterator iter = cond_cache_.get_iterator(); 
+      iter.is_cur_valid(); iter.next()) {
+    bytenum = iter.get_cur();
+    u = get_cond_utility(bytenum);
+    if (max_u < u) {
+      max_u = u;
+      max_bytenum = bytenum;
+    }
+  }
+  
+  return max_bytenum;
+}
+
+void simple_dtrie::d_trie::load_cache(cache *c) {
+  cache_ = c;
+  cond_cache_.load_cache(c);
+}
+
+void simple_dtrie::d_trie::update(uint8_t *bv, unsigned len) {
+  cond_query_.update(bv, len);
+}
+
+void simple_dtrie::d_trie::cond(unsigned bytenum, uint8_t byteval) {
+  cond_cache_.cond(bytenum, byteval);
+  cond_query_.cond(bytenum, byteval);
+}
+
+void simple_dtrie::d_trie::uncond() {
+  cond_cache_.uncond();
+  cond_query_.uncond();
+}
+
 void simple_dtrie::prepare_to_query() {
-  cond_cache_.load_cache(&c_);
+  assert(d_ == NULL);
+  d_ = new d_trie();
+  d_->load_cache(&c_);
 }
 
 unsigned simple_dtrie::do_query(uint8_t *bv, unsigned len) {

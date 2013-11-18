@@ -67,7 +67,7 @@ class simple_dtrie : public virtual rep {
     void load_cache(cache *);
     void cond(unsigned bytenum, uint8_t byteval);
     void uncond(void);
-    float get_prop(unsigned bytenum, uint8_t byteval);
+    double get_prop(unsigned bytenum, uint8_t byteval);
 
     class iterator {
     public:
@@ -97,7 +97,7 @@ class simple_dtrie : public virtual rep {
     void update(uint8_t *bv, unsigned len);
     void cond(unsigned bytenum, uint8_t byteval);
     void uncond(void);
-    float get_prop(unsigned bytenum, uint8_t byteval);
+    double get_prop(unsigned bytenum, uint8_t byteval);
 
   private:
     typedef unordered_map<uint8_t, unsigned> prop_map;
@@ -111,11 +111,26 @@ class simple_dtrie : public virtual rep {
     query_md q_;
   };
 
-  c_trie cond_cache_;
-  q_trie cond_query_;
+  class d_trie {
+  public:
+    d_trie(void);
+    ~d_trie(void);
 
-  float get_cond_utility(unsigned bytenum);
-  unsigned get_highest_utility_bytenum(void);
+    void load_cache(cache *);
+    void update(uint8_t *bv, unsigned len);
+    void cond(unsigned bytenum, uint8_t byteval);
+    void uncond(void);
+
+  private:
+    double get_cond_utility(unsigned bytenum);
+    unsigned get_highest_utility_bytenum(void);
+
+    cache *cache_;
+    c_trie cond_cache_;
+    q_trie cond_query_;  
+  };
+
+  d_trie *d_;
 
  private:
   typedef rep super;
