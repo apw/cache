@@ -120,7 +120,7 @@ void uset_uint::iterator::next() {
 
 void uset_uint::iterator::remove_cur() {
   iterator::uset_->remove(iterator::cur_element_);
-  iterator::cur_element_++;
+  next();
 }
 
 uset_uint::iterator uset_uint::get_iterator() {
