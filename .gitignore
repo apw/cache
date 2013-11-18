@@ -9,3 +9,4 @@ output/*
 *.trace
 .DS_Store
 run_500.sh
+*.o

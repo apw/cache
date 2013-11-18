@@ -13,8 +13,8 @@
  * an infinite-loop trying to generate unique numbers because
  * genUniqueInts doesn't to error checking for this scenario yet
  */
-#define TESTMAX (1 << 20)
-#define TESTNUM (1 << 2)
+#define TESTMAX (1 << 16)
+#define TESTNUM (1 << 8)
 #define RESETNUM (1 << 3)
 #define MAXDO (1 << 4)
 
@@ -202,6 +202,7 @@ static void test_do_n_undo_m_transactions(int n, int m) {
 
   // get a uset_uint to test
   uset_uint *us = new uset_uint(TESTMAX);
+  assert(us);
 
   // get n intCollections, each with values unique across all collections
   int i;
@@ -294,6 +295,7 @@ void uset_double_remove_diff_trans(void) {
   
   // clean up and return
   destroyIntCollection(col);
+  delete us;
   printf("[PASSED] uset_double_remove_diff_trans\n");
   return;
 }
@@ -330,6 +332,7 @@ void uset_double_remove_same_trans(void) {
 
   // clean up and return
   destroyIntCollection(col);
+  delete us;
   printf("[PASSED] uset_double_remove_same_trans\n");
   return;
 }
@@ -385,12 +388,124 @@ void uset_uint_test_errors(void) {
   return;
 }
 
+
+static void uset_uint_one_iterator_simple_walk(int n, int m) {
+  // can't undo more transactions than we do
+  assert(m <= n);
+
+  // get a uset_uint and associated iterator to test
+  uset_uint *us = new uset_uint(TESTMAX);
+  assert(us);
+  uset_uint::iterator it = us->get_iterator();
+
+  // get n intCollections, each with values unique across all collections
+  int i;
+  intCollection *cols[n];
+  bool res;
+  for (i = 0; i < n; i++) {
+    cols[i] = genGloballyUniqueInts(TESTMAX, TESTNUM);
+    assert(cols[i] != NULL);
+  }
+
+  assert(us->get_size() == TESTMAX);
+
+  // remove the values in each of the n intCollections in turn
+  for (i = 0; i < n; i++) {
+    us->begin_trans();
+    res = remove_all_col_vals_from_uset(cols[i], us);
+    assert(res == true);
+    us->end_trans();
+    assert(us->get_size() == TESTMAX-((i+1)*TESTNUM));
+  }
+
+  assert(us->get_size() == TESTMAX-((n)*TESTNUM));
+
+  // undo last m transactions
+  for (i = 0; i < m; i++) {
+    us->undo_trans();
+    assert(us->get_size() == (TESTMAX-((n)*TESTNUM))+((i+1)*TESTNUM));
+  }
+
+  // verify that the iterator returns only values we didn't remove
+  int cur_int;
+  int num_valid_transactions = n-m;
+  int num_seen = 0;
+  while (it.is_cur_valid()) {
+    printf("[%d]\r", num_seen);
+    fflush(stdout);
+
+    num_seen++;
+    cur_int  = (int) it.get_cur();
+
+    // make sure cur_int is in the right range
+    assert(cur_int < TESTMAX && cur_int >= 0);
+
+    // make sure cur_int is not an int we removed from us
+    if (n > 0) {
+      for (i = 0; i < num_valid_transactions; i++) {
+	assert(!containsInt(cur_int, cols[i]));
+	}
+      }
+
+    it.next();
+  }
+
+  // make sure we iterated over the expected number of ints
+  assert(num_seen == TESTMAX-(num_valid_transactions*TESTNUM));
+
+  /*
+   * verify that the transactions that weren't undone still have their values
+   * removed
+   */
+  int last_valid_transaction_index = num_valid_transactions-1;
+  for (i = 0; i < num_valid_transactions; i++) {
+    res = all_col_vals_not_in_uset(cols[i], us);
+  }
+
+   // verify that the transactions that were undone have their values present
+  for(; i < n; i++) {
+    res = all_col_vals_in_uset(cols[i], us);
+  }
+
+
+  // clean up and return
+  for (i = 0; i < n; i++) {
+    destroyIntCollection(cols[i]);
+  }
+
+  delete us;
+  return;
+}
+
+
+void uset_uint_test_iterator(void) {
+  printf("[BEGINNING] uset_uint_test_iterator\n");
+  uset_uint_one_iterator_simple_walk(0, 0);
+  uset_uint_one_iterator_simple_walk(1, 1);
+
+  srand(time(NULL));
+  int num_do = rand() % MAXDO;
+  uset_uint_one_iterator_simple_walk(num_do, num_do);
+
+  int num_undo;
+  if (num_do > 0) {
+    num_undo = rand() % num_do;
+  } else {
+    num_undo = 0;
+  }
+  uset_uint_one_iterator_simple_walk(num_do, num_undo);
+  
+  printf("[PASSED] uset_uint_test_iterator\n");
+  return;
+}
+
 int main(void) {
-  //  rset_uint_test_simple();
-  (*** TODO TEST ITERATOR ***)
+  //  (*** TODO TEST ITERATOR ***)
   uset_uint_test_simple();
   uset_double_remove_diff_trans();
   uset_double_remove_same_trans();
-  uset_uint_test_errors();
+  uset_uint_test_iterator();
+  //uset_uint_test_errors();
+  //rset_uint_test_simple();
   return 0;
 }
