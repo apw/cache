@@ -56,14 +56,31 @@ $ ./oracle -2 -c c.dat
 #### 2.1.3 Verify cache symbol code
 
 The oracle assigns a *symbol code* to each cache entry by permuting each
-raw code in such a way as to result in a valid binary search tree.  The
-`-3` option causes `oracle` to dump its symbol codes and exit.
+raw code in such a way as to result in a valid binary search tree.
+
+The `-3` option causes `oracle` to dump its symbol codes and exit:
 
 ```
 $ ./oracle -3 -c c.dat
 -15 -8 -13 -11 -14 -9 -10 -12 
 -15 +8 +9 -12 -13 +10 -14 -11 
 ```
+
+#### 2.1.4 Verify cache symbol code with dot plot
+
+The `-4` option causes `oracle` to emit its symbol codes in the GraphViz
+language appropriate for `dot` and exit:
+
+```
+$ ./oracle -4 -c c.dat > c.dot
+$ dot c.dot -T pdf -o c.pdf
+```
+
+The resultant plot for our example is:
+
+![Instability](doc/dot/c.pdf)
+
+#### 2.1.5 Verify cache symbol code with force directed plot
 
 ## 3 Telemetry
 
