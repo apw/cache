@@ -4,11 +4,15 @@
 
 ## 2 Tutorial
 
-### 2.1 Generate cache
+### 2.1 Generate data set
+
+#### 2.1.2 Simple cache
 
 Cache entries <em>c<sup>(i)</sup></em>
-are elements of <em>{\*,0,1}<sup>+<sup></em>,
+are elements of <em>{\*,0,1}<sup>k<sup></em>,
+with *k &le; n*,
 where <em>\*</em> is the "don't care" symbol that matches either *0* or *1*.
+
 We generate a simple cache as:
 
 ```
@@ -23,7 +27,27 @@ this example, *n = 16*, and the two entries are
 <em>c<sup>(1)</sup> = (\*,\*,\*,\*,\*,\*,\*,\*,0,0,0,1,1,1,1,1)</em>, since
 we order the bits from least significant to most significant.
 
-#### 2.1.1 Verify cache
+#### 2.1.2 Simple query stream
+
+Query entries <em>q<sup>(i)</sup></em>
+are elements of <em>{0,1}<sup>n<sup></em>.
+
+We generate a simple query stream as:
+
+```
+$ echo 0 255 1 255 0 0 1 0 | rs 2 4 > q.dat
+```
+
+This produces a query stream *q* of size *|q| = 2*,
+whose two entries are of the form
+<em>q<sup>(i)</sup> = (q<sub>0</sub><sup>(i)</sup>, ..., q<sub>n-1</sub><sup>(i)</sup>)</em>. In
+this example the two entries are
+<em>q<sup>(0)</sup> = (1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)</em> and
+<em>q<sup>(1)</sup> = (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)</em>.
+
+### 2.2 Debugging options
+
+#### 2.2.1 Verify cache
 
 The `-1` option causes `oracle` to load the cache into its internal
 data structure, then dump that data structure and exit.  The following
@@ -33,7 +57,7 @@ command should produce no output:
 $ diff -u -w <(cat c.dat) <(./oracle -1 -c c.dat)
 ```
 
-#### 2.1.2 Verify cache raw code
+#### 2.2.2 Verify cache raw code
 
 The oracle assigns a *raw code* to each cache entry as it reads it.  Scanning
 from left to right, when it encounters a bit that is *not* a don't care bit, it
@@ -53,7 +77,7 @@ $ ./oracle -2 -c c.dat
 +8 +9 +10 -11 -12 -13 -14 -15 
 ```
 
-#### 2.1.3 Verify cache symbol code
+#### 2.2.3 Verify cache symbol code
 
 The oracle assigns a *symbol code* to each cache entry by permuting each
 raw code in such a way as to result in a valid binary search tree.
@@ -66,7 +90,7 @@ $ ./oracle -3 -c c.dat
 -15 +8 +9 -12 -13 +10 -14 -11 
 ```
 
-#### 2.1.4 Verify cache symbol code with dot plot
+#### 2.2.4 Verify cache symbol code with dot plot
 
 The `-4` option causes `oracle` to emit its symbol codes in the GraphViz
 language appropriate for `dot`:
@@ -80,7 +104,7 @@ The resultant plot for our example is:
 
 ![dot layout](doc/dot/c.png)
 
-#### 2.1.5 Verify cache symbol code with force directed plot
+#### 2.2.5 Verify cache symbol code with force directed plot
 
 When we have many cache entries of high dimension, the `dot` layout
 engine is simply
@@ -99,7 +123,7 @@ The resultant plot for our example is:
 
 <img src="doc/fdp/c.png" width="98%"/>
 
-#### 2.1.6 Verify queries
+#### 2.2.6 Verify queries
 
 The `-6` option causes `oracle` to load the queries into its internal
 data structure, then dump that data structure and exit.  The following
