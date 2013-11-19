@@ -92,16 +92,19 @@ This should be understood as:
 The goal of this project is to minimize the expected query time of `q.dat`
 against some (magical) data structure over `c.dat`.
 
-### 2.1 Generate data set
+### 2.1 Synthetic data set
+
+In order to focus on fine-grain details, we will work in this section
+with a tiny data set
+that we generate synthetically.
 
 #### 2.1.2 Simple cache
 
 Cache entries <em>c<sup>(i)</sup></em>
 are elements of <em>{\*,0,1}<sup>k<sup></em>,
 with *k &le; n*,
-where <em>\*</em> is the "don't care" symbol that matches either *0* or *1*.
-
-We generate a simple cache as:
+where <em>\*</em> is the "don't care" symbol that matches
+either *0* or *1*.  We generate a simple cache as:
 
 ```
 $ echo 1 255 1 248 | rs 2 2 > c.dat
@@ -118,9 +121,8 @@ we order the bits from least significant to most significant.
 #### 2.1.2 Simple query stream
 
 Query entries <em>x<sup>(i)</sup></em>
-are elements of <em>{0,1}<sup>n<sup></em>.
-
-We generate a simple query stream as:
+are elements
+of <em>{0,1}<sup>n<sup></em>. We generate a simple query stream as:
 
 ```
 $ echo 0 255 1 255 0 0 1 0 | rs 2 4 > q.dat
@@ -134,6 +136,8 @@ this example the two entries are
 <em>x<sup>(1)</sup> = (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)</em>.
 
 ### 2.2 Debugging options
+
+We now show how to work with each step of the `oracle` machinery.
 
 #### 2.2.1 Verify cache
 
@@ -168,9 +172,8 @@ $ ./oracle -2 -c c.dat
 #### 2.2.3 Verify cache symbol code
 
 The oracle assigns a *symbol code* to each cache entry by permuting each
-raw code in such a way as to result in a valid binary search tree.
-
-The `-3` option causes `oracle` to dump its symbol codes and exit:
+raw code in such a way as to result in a valid binary search
+tree. The `-3` option causes `oracle` to dump its symbol codes and exit:
 
 ```
 $ ./oracle -3 -c c.dat
