@@ -73,12 +73,12 @@ language appropriate for `dot` and exit:
 
 ```
 $ ./oracle -4 -c c.dat > c.dot
-$ dot c.dot -T pdf -o c.pdf
+$ dot c.dot -T svg -o c.svg
 ```
 
 The resultant plot for our example is:
 
-![Instability](doc/dot/c.pdf)
+![Instability](doc/dot/c.png)
 
 #### 2.1.5 Verify cache symbol code with force directed plot
 
