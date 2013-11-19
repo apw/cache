@@ -2,7 +2,95 @@
 
 ## 1 Introduction
 
-## 2 Tutorial
+As part of a new approach
+to parallelization<sup>[4]</sup>
+we need a distributed cache for sparse subsets
+of extraordinarily large vectors. Imagine that
+you have a set of really large *n*-bit vectors, where
+*n > 10<sup>9</sup>*.  A
+cache entry consists of some subset of those bits
+that must take on a particular value, while the
+rest of the vector can take on any value. Given
+a vector, we wish to find all cache entries that
+match. To make this concrete, let's set
+*n = 20* and assume that you
+have a sequence of 20-bit vectors
+and I have three cache entries:
+
+```
+Entry 1: bits 1, 3, and 5 must take on the values 101
+Entry 2: bits 7,8, and 9 must take on the values 111
+Entry 3: bits 1 and 19 must take on the values 01
+```
+
+Then any vector of the form `*1*0*1**************`
+will match entry 1, while any vector of the form
+`*******111**********`
+will match entry 2, and any vector of the form: 
+`*0*****************1`
+will match entry 3. So, the vector `01000100000000000001`
+matches both entry 1 and entry 3.
+Our goal is to design an efficient cache representation
+and lookup algorithm that, among other things,
+takes advantage of the fact that cache entries 1 and 3
+reference the same bit.
+
+## 2 Design
+
+Our data sets comprise two files per kernel.
+Each row of both files<sup>[5],[6],[7],[8]</sup> is a
+sequence of plain text, space separated, index-value pairs
+terminated by a newline character.  Each index represents
+a byte offset into a state vector, so each value is thus
+between 0 and 255. Taken together, the two files
+represent the cache and
+query data recorded while the
+ASC virtual machine<sup>[4]</sup> is executing various kernels.
+
+For example, `c.dat`<sup>[5]</sup> for the `Collatz` data set
+is a cache
+containing 25,643 entries that *could* achieve *superlinear*
+speed-up of execution of the
+`Collatz`
+kernel if only we could query it fast.  Each line in `c.dat` is a
+partial state vector representing the start state of a speculative
+execution.
+Then, `q.dat`<sup>[6]</sup> for
+the `Collatz` data set is a recording of the first 1,335,172 queries that
+our virtual machine made against `c.dat`. Each line in `q.dat` is a
+state vector of computation that the virtual machine is sending to the
+cache asking for a match.
+
+Each line of both files has the format
+*key<sub>0</sub> value<sub>0</sub> ... key<sub>d-1</sub> value<sub>d-1</sub>*,
+where *d = n/8* is the number of bytes required to represent *n*
+bits. For example, the first line of `c.dat` is:
+
+```
+20 248 21 255 22 255 23 191 ... 142 119 143 215 276 11 277 0 278 0 279 0 
+```
+
+This should be understood as:
+
+> For the first cache entry, in order to match against it the
+> incoming state vector must have byte 20 equal to 248, ...,
+> byte 279 equal to 0.
+
+Notice that this first entry is invariant to translations on certain
+bytes, e.g. all those indices less than 20, so it doesn't even mention
+them. Then, the first line of `q.dat` is:
+
+```
+0 1 1 0 2 0 3 0 ... 294 0 295 0 296 133 297 31 298 0 299 0
+```
+
+This should be understood as:
+
+> For the first state vector, byte 0 has value 1, byte 1 has value 0,
+> byte 2 has value 0, ..., byte 299 has value 0.
+
+The goal of this project is to minimize the expected query time of `q.dat`
+against some (magical) data structure over `c.dat`.
 
 ### 2.1 Generate data set
 
@@ -160,4 +248,62 @@ is about 290 cycles.
 
 ![Instability](doc/rdtsc/step.pdf)
 
+## 4 Alternatives
+
+### 4.1 Optimal Probability-Weighted Binary Search Trees
+
+I spent quite a bit of time going through the decision tree literature,
+but couldn't seem to find a reference that fits our problem closely
+enough.  Most
+uses of decision trees are in machine learning, where they are used for
+prediction. We want to make use of the same statistics that the machine
+learning people use to fit a decision tree, but our loss function is not
+prediction error, it is rather expected search time.  
+
+However, I think I finally stumbled upon something that may be very
+promising, called the 
+(probability-weighted) Optimal Binary Search Tree (OBST)<sup>[1]</sup>.
+
+I knew about OBSTs from undergraduate algorithms courses, but I dismissed
+them for our project because I have never before seen the version of them
+given by Chen<sup>[1]</sup>, in which the dynamic programming solution
+exploits *both* the cache contents *and* the query distribution.
+
+The two big challenges we would face in exploiting this idea are defining
+an order relation on keys and fitting a distribution to the sequence of
+queries.
+
+### 4.2 Symmetrizers
+
+Obviously we want to match state vectors instead of molecules, but the
+work by Piponi<sup>[3]</sup> is key because it puts our problem in the
+nice framework of group theory: a symmetry of a cache entry is an
+operation to its start state that leaves it invariant. In our
+case of reads before writes, the symmetries are *any* operation
+to the "don't care" bits. 
+
 ## References
+
+[1]  Optimal Binary Search Trees 
+[1]: http://alg12.wikischolars.columbia.edu/file/view/OPTIMALBST.pdf
+
+[2]  Information Theory, Inference, and Learning Algorithms
+[2]: http://www.inference.phy.cam.ac.uk/itprnn/book.pdf
+
+[3]  Hashing Molecules
+[3]: http://blog.sigfpe.com/2009/06/hashing-molecules.html
+
+[4]  ASC: Automatically Scalable Computation
+[4]: http://people.seas.harvard.edu/~apw/papers/asplos2014_r-paper289.pdf
+
+[5]  COLLATZ cache data set
+[5]: http://silicoinformatics.seas.harvard.edu/kernels/004.collatz/tiny/collatz.901.c.dat.gz
+
+[6]  COLLATZ query data set
+[6]: http://silicoinformatics.seas.harvard.edu/kernels/004.collatz/tiny/collatz.901.q.dat.gz
+
+[7]  ISING cache data set
+[7]: http://silicoinformatics.seas.harvard.edu/kernels/007.ising/medium/c.dat.gz
+
+[8]  ISING query data set
+[8]: http://silicoinformatics.seas.harvard.edu/kernels/007.ising/medium/q.dat.gz
