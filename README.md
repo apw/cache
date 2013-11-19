@@ -84,7 +84,8 @@ The resultant plot for our example is:
 
 When we have many cache entries of high dimension, the `dot` layout
 engine is simply
-not appropriate and we need to use the `fdp` layout engine instead.
+not appropriate and we need to use the `fdp` layout engine instead,
+foregoing most labels.
 
 The `-5` option causes `oracle` to emit its symbol codes in the GraphViz
 language appropriate for `fdp`:
@@ -96,7 +97,7 @@ $ sfdp -Goverlap_scaling=-9 c.dot -T svg -o c.svg
 
 The resultant plot for our example is:
 
-<img src="doc/fdp/c.png" width="60%"/>
+<img src="doc/fdp/c.png" width="98%"/>
 
 ## 3 Telemetry
 
