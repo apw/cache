@@ -6,18 +6,22 @@
 
 ### 2.1 Generate cache
 
-Cache entries *c<sub>i<sub>* are elements of <em>{\*,0,1}<sup>+<sup></em>,
+Cache entries <em>c<sup>(i)</sup></em>
+are elements of <em>{\*,0,1}<sup>+<sup></em>,
 where <em>\*</em> is the "don't care" symbol that matches either *0* or *1*.
 We generate a simple cache as:
 
 ```
-$ echo 1 255 1 7 | rs 2 2 > c.dat
+$ echo 1 255 1 248 | rs 2 2 > c.dat
 ```
 
 This produces a cache *c* of size *|c| = 2*,
-whose two entries are
-<em>c<sub>1</sub> = (\*,\*,\*,\*,\*,\*,\*,\*,1,1,1,1,1,1,1,1)</em> and
-<em>c<sub>2</sub> = (\*,\*,\*,\*,\*,\*,\*,\*,1,1,1,0,0,0,0,0)</em>.
+whose two entries are of the form
+<em>c<sup>(i)</sup> = (c<sub>0</sub><sup>(i)</sup>, ..., c<sub>n-1</sub><sup>(i)</sup>)</em>. In
+this example, *n = 16*, and the two entries are
+<em>c<sup>(0)</sup> = (\*,\*,\*,\*,\*,\*,\*,\*,1,1,1,1,1,1,1,1)</em> and
+<em>c<sup>(1)</sup> = (\*,\*,\*,\*,\*,\*,\*,\*,0,0,0,1,1,1,1,1)</em>, since
+we order the bits from least significant to most significant.
 
 #### 2.1.1 Verify cache
 
@@ -29,13 +33,14 @@ command should produce no output:
 $ diff -u -w <(cat c.dat) <(./oracle -1 -c c.dat)
 ```
 
-#### 2.1.1 Verify cache raw code
+#### 2.1.2 Verify cache raw code
 
 The oracle assigns a *raw code* to each cache entry as it reads it.  Scanning
 from left to right, when it encounters a bit that is *not* a don't care bit, it
 extends the raw code for the current cache entry with the new bit index, using
 the sign of the index to encode a specified value of *1* as *-1* and a
-specified value of *0* as *+1*.
+specified value of *0* as *+1* under the map
+<em>c<sub>j</sub><sup>(i)</sup> = (-1)<sup>x<sub>j</sub><sup>(i)</sup></sup>.
 
 The `-2` option causes `oracle` to load
 the cache, assign the raw code, dump the raw code, then exit.  The reader can
@@ -45,7 +50,19 @@ verify the encoding of cache entries <em>c<sub>1</sub> and
 ```
 $ ./oracle -2 -c c.dat
 -8 -9 -10 -11 -12 -13 -14 -15 
--8 -9 -10 +11 +12 +13 +14 +15 
++8 +9 +10 -11 -12 -13 -14 -15 
+```
+
+#### 2.1.3 Verify cache symbol code
+
+The oracle assigns a *symbol code* to each cache entry by permuting each
+raw code in such a way as to result in a valid binary search tree.  The
+`-3` option causes `oracle` to dump its symbol codes and exit.
+
+```
+$ ./oracle -3 -c c.dat
+-15 -8 -13 -11 -14 -9 -10 -12 
+-15 +8 +9 -12 -13 +10 -14 -11 
 ```
 
 ## 3 Telemetry
