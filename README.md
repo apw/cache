@@ -35,8 +35,6 @@ and lookup algorithm that, among other things,
 takes advantage of the fact that cache entries 1 and 3
 reference the same bit.
 
-## 2 Design
-
 Our data sets comprise two files per kernel.
 Each row of both files<sup>[5],[6],[7],[8]</sup> is a
 sequence of plain text, space separated, index-value pairs
@@ -91,6 +89,29 @@ This should be understood as:
 
 The goal of this project is to minimize the expected query time of `q.dat`
 against some (magical) data structure over `c.dat`.
+
+## 2 Oracle
+
+We don't yet know which data structure is right for this problem.  The purpose
+of the `oracle` described in what follows is to *separate* our
+design problem into
+two parts.  First, assume that the `oracle` just hands you a
+data structure *a*. Second,
+*evaluate* that data structure using our loss function *L(q | a, c)*. Designing
+this loss function *L* is a major focus of this work,
+since if we get it right, then
+we can tell `oracle` to carry out a search over *a* in the design space
+*A*; e.g. simulated annealing or Nelder–Mead minimization.
+
+Our approach arises from the decision theory viewpoint<sup>[2]</sup>,
+in which one
+makes progress on fearsome problems by first
+separating them into two parts: *utility*, and *probability*.  Often,
+the problem taken as a whole is extremely difficult to reason about, but
+after this separation becomes a simpler matter of selecting the
+solution (or action) that according to the probability distribution
+minimizes one's expected loss (or equivalently, maximizes one's expected
+utility).
 
 ### 2.1 Synthetic data set
 
