@@ -200,17 +200,21 @@ $ diff -u -w <(cat c.dat) <(./oracle -1 -c c.dat)
 
 #### 2.2.2 Verify cache raw code
 
-The oracle assigns a *raw code* to each cache entry as it reads it.  Scanning
-from left to right, when it encounters a bit that is *not* a don't care bit, it
-extends the raw code for the current cache entry with the new bit index, using
-the sign of the index to encode a specified value of *1* as *-1* and a
-specified value of *0* as *+1* under the map
-<em>c<sub>j</sub><sup>(i)</sup> = (-1)<sup>x<sub>j</sub><sup>(i)</sup></sup>.
+The oracle assigns a *raw code* to each cache entry
+*c<sup>(i)</sup>* as it scans it.  When it
+encounters a bit *j* that is *not* a "don't care" bit, it
+extends the raw code for the current cache entry with
+the new bit index *j*,
+using the sign of the index to encode
+*c<sub>j</sub><sup>(i)</sup> = 1*
+as *-j* and *c<sub>j</sub><sup>(i)</sup> = 0* as *+j*.  It
+does this using the "polar map"
+<em>j(-1)<sup>c<sub>j</sub><sup>(i)</sup></sup>.
 
 The `-2` option causes `oracle` to load
 the cache, assign the raw code, dump the raw code, then exit.  The reader can
-verify the encoding of cache entries <em>c<sub>1</sub> and
-<em>c<sub>2</sub> from above as follows:
+verify the encoding of cache entries <em>c<sup>(1)</sup> and
+<em>c<sup>(1)</sup> from above as follows:
 
 ```
 $ ./oracle -2 -c c.dat
