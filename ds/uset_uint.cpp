@@ -93,6 +93,10 @@ void uset_uint::undo_trans() {
 uset_uint::iterator::iterator(uset_uint *uset) {
   iterator::uset_ = uset;
   iterator::cur_element_ = 0;
+  while(iterator::cur_element_ < uset_->capacity_ 
+	&& !uset_->lookup(iterator::cur_element_)) {
+    iterator::cur_element_++;
+  }
 }
 
 uset_uint::iterator::~iterator() {
@@ -116,7 +120,7 @@ void uset_uint::iterator::next() {
 
 void uset_uint::iterator::remove_cur() {
   iterator::uset_->remove(iterator::cur_element_);
-  iterator::cur_element_++;
+  next();
 }
 
 uset_uint::iterator uset_uint::get_iterator() {

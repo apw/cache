@@ -5,21 +5,23 @@
 
 #include <stdint.h>
 #include <assert.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <errno.h>
+
 #include <boost/unordered_map.hpp>
 #include <boost/unordered_set.hpp>
 #include <iostream>
 #include <vector>
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <errno.h>
-
 simple_dtrie::simple_dtrie(const char *cur_time) : rep(cur_time, "simple_dtrie") {
-  
+  d_ = NULL;  
 }
 
 simple_dtrie::~simple_dtrie() {
-  
+  if (d_ != NULL) {
+    delete d_;
+  }
 }
 
 // TODO: probs don't need this
@@ -46,13 +48,18 @@ void simple_dtrie::do_add_byte(int id, unsigned bytenum, unsigned byteval) {
   c_[bytenum][byteval].push_back(id);
 }
 
-simple_dtrie::c_trie::c_trie(cache *c) {
-  cache_ = c;
-  u_ = new uset_uint(cache_->size());
+simple_dtrie::c_trie::c_trie() {
+  cache_ = NULL;
+  u_ = NULL;
 }
 
 simple_dtrie::c_trie::~c_trie() {
   delete u_;
+}
+
+void simple_dtrie::c_trie::load_cache(cache *c) {
+  cache_ = c;
+  u_ = new uset_uint(cache_->size());
 }
 
 void simple_dtrie::c_trie::cond(unsigned bytenum, uint8_t byteval) {
@@ -79,6 +86,38 @@ void simple_dtrie::c_trie::uncond() {
   u_->undo_trans();
 }
 
+double simple_dtrie::c_trie::get_prop(unsigned bytenum, uint8_t byteval) {
+  if (cache_->find(bytenum) == cache_->end()) {
+    return 0.0;
+  }
+
+  byteval_map bm = cache_->operator[](bytenum);
+  if (bm.find(byteval) == bm.end()) {
+    return 0.0;
+  }
+
+  unsigned n = 0, b = 0;
+  cache::const_iterator c_end = cache_->end();
+  for(cache::const_iterator c_iter = cache_->begin(); c_iter != c_end; c_iter++) {
+    byteval_map::const_iterator b_end = bm.end();
+    for(byteval_map::const_iterator b_iter = bm.begin(); 
+	b_iter != b_end; b_iter++) {
+      if (b_iter->first == byteval) {
+	for(unsigned i = 0; i < b_iter->second.size(); i++) {
+	  n += u_->lookup(b_iter->second[i]) ? b_iter->second[i] : 0;
+	}
+      } else {
+	for(unsigned i = 0; i < b_iter->second.size(); i++) {
+	  b += u_->lookup(b_iter->second[i]) ? b_iter->second[i] : 0;
+	}
+      }
+    }    
+  }
+
+
+  return n / (n + b);
+}
+
 simple_dtrie::q_trie::q_trie() {
   
 }
@@ -88,7 +127,6 @@ simple_dtrie::q_trie::~q_trie() {
 }
 
 void simple_dtrie::q_trie::update(uint8_t *bv, unsigned len) {
-  // calculate proportion by (prop_map.size[byteval].size() / denom)
   for(unsigned i = 0; i < len; i++) {
     q_[i].denom++;
     if (q_[i].pm.find(bv[i]) == q_[i].pm.end()) {
@@ -107,8 +145,107 @@ void simple_dtrie::q_trie::uncond() {
   
 }
 
+double simple_dtrie::q_trie::get_prop(unsigned bytenum, uint8_t byteval) {
+  if (q_.find(bytenum) == q_.end()
+      || q_[bytenum].pm.find(byteval) == q_[bytenum].pm.end()) {
+    return 0.0;
+  }
+
+  return q_[bytenum].pm[byteval] / q_[bytenum].denom;
+}
+
+simple_dtrie::c_trie::iterator simple_dtrie::c_trie::get_iterator() {
+  simple_dtrie::c_trie::iterator it(this);
+  return it;
+}
+
+simple_dtrie::c_trie::iterator::iterator(c_trie *ct) : u_iter_(ct->u_) {
+  
+}
+
+simple_dtrie::c_trie::iterator::~iterator() {
+
+}
+
+bool simple_dtrie::c_trie::iterator::is_cur_valid() {
+  return u_iter_.is_cur_valid();
+}
+
+unsigned simple_dtrie::c_trie::iterator::get_cur() {
+  return u_iter_.get_cur();
+}
+
+void simple_dtrie::c_trie::iterator::next() {
+  return u_iter_.next();
+}
+
+simple_dtrie::d_trie::d_trie() {
+  cache_ = NULL;  
+}
+
+simple_dtrie::d_trie::~d_trie() {
+
+}
+
+double simple_dtrie::d_trie::get_cond_utility(unsigned bytenum) {
+  if (cache_->find(bytenum) == cache_->end()) {
+    return 0.0;
+  }
+
+  byteval_map bm = cache_->operator[](bytenum);
+
+  double acc = 0.0;
+  byteval_map::const_iterator b_end = bm.end();
+  for(byteval_map::const_iterator b_iter = bm.begin(); 
+      b_iter != b_end; b_iter++) {
+    acc += cond_query_.get_prop(bytenum, b_iter->first)
+      * (1 - cond_cache_.get_prop(bytenum, b_iter->first));    
+  }
+  
+  return acc;
+}
+
+unsigned simple_dtrie::d_trie::get_highest_utility_bytenum() {
+  unsigned max_bytenum = INVALID_BYTENUM;
+  unsigned bytenum;
+  double max_u = 0.0;
+  double u;
+  for(c_trie::iterator iter = cond_cache_.get_iterator(); 
+      iter.is_cur_valid(); iter.next()) {
+    bytenum = iter.get_cur();
+    u = get_cond_utility(bytenum);
+    if (max_u < u) {
+      max_u = u;
+      max_bytenum = bytenum;
+    }
+  }
+  
+  return max_bytenum;
+}
+
+void simple_dtrie::d_trie::load_cache(cache *c) {
+  cache_ = c;
+  cond_cache_.load_cache(c);
+}
+
+void simple_dtrie::d_trie::update(uint8_t *bv, unsigned len) {
+  cond_query_.update(bv, len);
+}
+
+void simple_dtrie::d_trie::cond(unsigned bytenum, uint8_t byteval) {
+  cond_cache_.cond(bytenum, byteval);
+  cond_query_.cond(bytenum, byteval);
+}
+
+void simple_dtrie::d_trie::uncond() {
+  cond_cache_.uncond();
+  cond_query_.uncond();
+}
+
 void simple_dtrie::prepare_to_query() {
-  // TODO
+  assert(d_ == NULL);
+  d_ = new d_trie();
+  d_->load_cache(&c_);
 }
 
 unsigned simple_dtrie::do_query(uint8_t *bv, unsigned len) {

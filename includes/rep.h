@@ -13,6 +13,7 @@
 using namespace std;
 
 #define INVALID_ID ((unsigned) -1)
+#define INVALID_BYTENUM ((unsigned) -1)
 
 class rep {
  public:

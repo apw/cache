@@ -61,15 +61,29 @@ class simple_dtrie : public virtual rep {
 
   class c_trie {
   public:
-    c_trie(cache *);
+    c_trie(void);
     ~c_trie(void);
 
+    void load_cache(cache *);
     void cond(unsigned bytenum, uint8_t byteval);
     void uncond(void);
+    double get_prop(unsigned bytenum, uint8_t byteval);
 
-    /*
-     * TODO use some iterator to get current row of bytenums
-     */    
+    class iterator {
+    public:
+      iterator(c_trie *);
+      ~iterator(void);
+      
+      bool is_cur_valid(void);
+      unsigned get_cur(void);
+      void next(void);
+      
+    private:
+      uset_uint::iterator u_iter_;
+    };
+
+    iterator get_iterator();
+
   private:
     uset_uint *u_;
     cache *cache_;
@@ -83,6 +97,7 @@ class simple_dtrie : public virtual rep {
     void update(uint8_t *bv, unsigned len);
     void cond(unsigned bytenum, uint8_t byteval);
     void uncond(void);
+    double get_prop(unsigned bytenum, uint8_t byteval);
 
   private:
     typedef unordered_map<uint8_t, unsigned> prop_map;
@@ -95,6 +110,27 @@ class simple_dtrie : public virtual rep {
 
     query_md q_;
   };
+
+  class d_trie {
+  public:
+    d_trie(void);
+    ~d_trie(void);
+
+    void load_cache(cache *);
+    void update(uint8_t *bv, unsigned len);
+    void cond(unsigned bytenum, uint8_t byteval);
+    void uncond(void);
+
+  private:
+    double get_cond_utility(unsigned bytenum);
+    unsigned get_highest_utility_bytenum(void);
+
+    cache *cache_;
+    c_trie cond_cache_;
+    q_trie cond_query_;  
+  };
+
+  d_trie *d_;
 
  private:
   typedef rep super;
