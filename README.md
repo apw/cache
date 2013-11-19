@@ -51,8 +51,8 @@ containing 25,643 entries that *could* achieve *superlinear*
 speed-up of execution of the
 `Collatz`
 kernel if only we could query it fast.  Each line in `c.dat` is a
-partial state vector representing the start state of a speculative
-execution.
+partial state vector that represents up to symmetries
+the start state of a completed speculative execution.
 Then, `q.dat`<sup>[6]</sup> for
 the `Collatz` data set is a recording of the first 1,335,172 queries that
 our virtual machine made against `c.dat`. Each line in `q.dat` is a
@@ -348,14 +348,14 @@ to the "don't care" bits.
 [4]  ASC: Automatically Scalable Computation
 [4]: http://people.seas.harvard.edu/~apw/papers/asplos2014_r-paper289.pdf
 
-[5]  COLLATZ cache data set
+[5]  `Collatz` cache data set
 [5]: http://silicoinformatics.seas.harvard.edu/kernels/004.collatz/tiny/collatz.901.c.dat.gz
 
-[6]  COLLATZ query data set
+[6]  `Collatz` query data set
 [6]: http://silicoinformatics.seas.harvard.edu/kernels/004.collatz/tiny/collatz.901.q.dat.gz
 
-[7]  ISING cache data set
+[7]  `Ising` cache data set
 [7]: http://silicoinformatics.seas.harvard.edu/kernels/007.ising/medium/c.dat.gz
 
-[8]  ISING query data set
+[8]  `Ising` query data set
 [8]: http://silicoinformatics.seas.harvard.edu/kernels/007.ising/medium/q.dat.gz
