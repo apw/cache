@@ -1,5 +1,5 @@
 strict graph G {
-	node[shape=point,width=0.3,style=filled,fillcolor=palegreen];
+	node[ shape=point, width=0.3, style=filled, fillcolor=palegreen,  fontname="helvetica", fontsize=8];
 	"e3b042" -- "1e14c8" 
 	"1e14c8" -- "3babe8" 
 	"3babe8" -- "89aff3" 
@@ -7,8 +7,8 @@ strict graph G {
 	"8cd28f" -- "45b67f" 
 	"45b67f" -- "66996f" 
 	"66996f" -- "3f2d44" 
-	"3f2d44" -- "0x7f9430c039b0" 
-	"0x7f9430c039b0" [shape=box3d, label=<c<SUB>0</SUB>>, style=filled, fillcolor=red];
+	"3f2d44" -- "0x7fe20ac039b0" 
+	"0x7fe20ac039b0" [shape=box3d, label=<c<SUP>(0)</SUP>>, style=filled, fillcolor=red];
 	"e3b042" -- "1e14c8" 
 	"1e14c8" -- "78beee" 
 	"78beee" -- "8d13ff" 
@@ -16,6 +16,6 @@ strict graph G {
 	"007146" -- "5fbe73" 
 	"5fbe73" -- "c4372d" 
 	"c4372d" -- "be8df2" 
-	"be8df2" -- "0x7f9430c03ad0" 
-	"0x7f9430c03ad0" [shape=box3d, label=<c<SUB>1</SUB>>, style=filled, fillcolor=red];
+	"be8df2" -- "0x7fe20ac03ad0" 
+	"0x7fe20ac03ad0" [shape=box3d, label=<c<SUP>(1)</SUP>>, style=filled, fillcolor=red];
 }
