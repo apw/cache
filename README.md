@@ -97,7 +97,7 @@ of the `oracle` described in what follows is to *separate* our
 design problem into
 two parts.  First, assume that the `oracle` just hands you a
 data structure *a*. Second,
-*evaluate* that data structure using our loss function *L(q | a, c)*. Designing
+*evaluate* that data structure using our loss function *L(x | a, c)*. Designing
 this loss function *L* is a major focus of this work,
 since if we get it right, then
 we can tell `oracle` to carry out a search over *a* in the design space
@@ -112,6 +112,9 @@ after this separation becomes a simpler matter of selecting the
 solution (or action) that according to the probability distribution
 minimizes one's expected loss (or equivalently, maximizes one's expected
 utility).
+
+That is, we wish to solve or
+approximate *arg<sub>a</sub>min E<sub>x</sub>[L(x | a, c)]*.
 
 ### 2.1 Synthetic data set
 
