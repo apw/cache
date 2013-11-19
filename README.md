@@ -112,15 +112,19 @@ of the `oracle` described in what follows is to *separate* our
 design problem into
 two parts.  First, assume that the `oracle` just hands you the
 parameter *a*. Second,
-*evaluate* the parametrized data structure
+*evaluate* the parametrized data structure *T<sup>a</sup>*
 using a loss function *L(x | a, c)*. Designing
 this loss function *L* is a major focus of this work,
 since if we get it right, then
 we can tell `oracle` to carry out a search over *a* in the design space
 *A*; e.g. using simulated annealing or Nelder–Mead minimization.
 
-Our approach arises from the decision theory viewpoint<sup>[2]</sup>,
-in which one
+For a single query *x*, the most attractive loss function *L* is
+simply the number of bits in *x* accessed during the traversal of
+*T<sup>a</sup>* induced by *x*.
+
+Our approach arises from a decision-theoretic
+viewpoint<sup>[2]</sup>, in which one
 makes progress on fearsome problems by first
 separating them into two parts: *utility*, and *probability*.  Often,
 the problem taken as a whole is extremely difficult to reason about, but
@@ -130,7 +134,12 @@ minimizes one's expected loss (or equivalently, maximizes one's expected
 utility).
 
 That is, we wish to solve or
-approximate *arg<sub>a</sub>min E<sub>p</sub>[L(x | a, c)]*.  
+approximate *arg<sub>a</sub>min E<sub>p</sub>[L(x | a, c)]*.  Currently,
+we don't know *p*.  So we describe below an oracle that (by some means)
+produces a parameter *a*, then evaluates
+the *empirical* loss of a given query sequence *q*
+for a given cache *c* encoded in the
+parametrized decision tree *T<sup>a</sup>*.
 
 ### 2.1 Synthetic data set
 
