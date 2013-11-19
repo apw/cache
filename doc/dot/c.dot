@@ -1,0 +1,37 @@
+strict digraph G {
+	rankdir = LR;
+	"e3b042" [label=<x<sub>15</sub>>, style=filled, fillcolor=palegreen];
+	"e3b042" -> "1e14c8" [headlabel = "1", labeldistance=2];
+	"1e14c8" [label=<x<sub>8</sub>>, style=filled, fillcolor=palegreen];
+	"1e14c8" -> "3babe8" [headlabel = "1", labeldistance=2];
+	"3babe8" [label=<x<sub>13</sub>>, style=filled, fillcolor=palegreen];
+	"3babe8" -> "89aff3" [headlabel = "1", labeldistance=2];
+	"89aff3" [label=<x<sub>11</sub>>, style=filled, fillcolor=palegreen];
+	"89aff3" -> "8cd28f" [headlabel = "1", labeldistance=2];
+	"8cd28f" [label=<x<sub>14</sub>>, style=filled, fillcolor=palegreen];
+	"8cd28f" -> "45b67f" [headlabel = "1", labeldistance=2];
+	"45b67f" [label=<x<sub>9</sub>>, style=filled, fillcolor=palegreen];
+	"45b67f" -> "66996f" [headlabel = "1", labeldistance=2];
+	"66996f" [label=<x<sub>10</sub>>, style=filled, fillcolor=palegreen];
+	"66996f" -> "3f2d44" [headlabel = "1", labeldistance=2];
+	"3f2d44" [label=<x<sub>12</sub>>, style=filled, fillcolor=palegreen];
+	"3f2d44" -> "0x7fe42ac039b0" [headlabel = "1" labeldistance=2];
+	"0x7fe42ac039b0" [shape=box, label=<c<SUB>0</SUB>>, style=filled, fillcolor=red];
+	"e3b042" [label=<x<sub>15</sub>>, style=filled, fillcolor=palegreen];
+	"e3b042" -> "1e14c8" [headlabel = "1", labeldistance=2];
+	"1e14c8" [label=<x<sub>8</sub>>, style=filled, fillcolor=palegreen];
+	"1e14c8" -> "78beee" [headlabel = "0", labeldistance=2];
+	"78beee" [label=<x<sub>9</sub>>, style=filled, fillcolor=palegreen];
+	"78beee" -> "8d13ff" [headlabel = "0", labeldistance=2];
+	"8d13ff" [label=<x<sub>12</sub>>, style=filled, fillcolor=palegreen];
+	"8d13ff" -> "007146" [headlabel = "1", labeldistance=2];
+	"007146" [label=<x<sub>13</sub>>, style=filled, fillcolor=palegreen];
+	"007146" -> "5fbe73" [headlabel = "1", labeldistance=2];
+	"5fbe73" [label=<x<sub>10</sub>>, style=filled, fillcolor=palegreen];
+	"5fbe73" -> "c4372d" [headlabel = "0", labeldistance=2];
+	"c4372d" [label=<x<sub>14</sub>>, style=filled, fillcolor=palegreen];
+	"c4372d" -> "be8df2" [headlabel = "1", labeldistance=2];
+	"be8df2" [label=<x<sub>11</sub>>, style=filled, fillcolor=palegreen];
+	"be8df2" -> "0x7fe42ac03ad0" [headlabel = "1" labeldistance=2];
+	"0x7fe42ac03ad0" [shape=box, label=<c<SUB>1</SUB>>, style=filled, fillcolor=red];
+}
