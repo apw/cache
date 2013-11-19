@@ -29,7 +29,7 @@ we order the bits from least significant to most significant.
 
 #### 2.1.2 Simple query stream
 
-Query entries <em>q<sup>(i)</sup></em>
+Query entries <em>x<sup>(i)</sup></em>
 are elements of <em>{0,1}<sup>n<sup></em>.
 
 We generate a simple query stream as:
@@ -40,10 +40,10 @@ $ echo 0 255 1 255 0 0 1 0 | rs 2 4 > q.dat
 
 This produces a query stream *q* of size *|q| = 2*,
 whose two entries are of the form
-<em>q<sup>(i)</sup> = (q<sub>0</sub><sup>(i)</sup>, ..., q<sub>n-1</sub><sup>(i)</sup>)</em>. In
+<em>x<sup>(i)</sup> = (x<sub>0</sub><sup>(i)</sup>, ..., x<sub>n-1</sub><sup>(i)</sup>)</em>. In
 this example the two entries are
-<em>q<sup>(0)</sup> = (1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)</em> and
-<em>q<sup>(1)</sup> = (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)</em>.
+<em>x<sup>(0)</sup> = (1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)</em> and
+<em>x<sup>(1)</sup> = (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)</em>.
 
 ### 2.2 Debugging options
 
