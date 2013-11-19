@@ -92,29 +92,45 @@ against some (magical) data structure over `c.dat`.
 
 ## 2 Oracle
 
-We don't yet know which data structure is right for this problem.  The purpose
+We don't yet know which data structure is right for this problem.  However,
+we think that a binary decision tree can be shown to be very close to
+information-theoretic optimal.  The question is, *which* binary decision
+tree?  For a cache of size *|c|*
+there are many possible labelings.  Should we label the root node
+with the index of the most "contested" bit?  What about its
+left and right children?
+
+We hope to make progress on this question by *parametrizing*
+it.  That is, we imagine a template decision tree *T* whose
+paths are all of length *n*.  Then,
+we wish to find or be given a parameter *a* that tells us
+how to label the nodes of *T* in a way that gives us the
+best lookup time for our queries *q*.
+
+The purpose
 of the `oracle` described in what follows is to *separate* our
 design problem into
-two parts.  First, assume that the `oracle` just hands you a
-data structure *a*. Second,
-*evaluate* that data structure using our loss function *L(x | a, c)*. Designing
+two parts.  First, assume that the `oracle` just hands you the
+parameter *a*. Second,
+*evaluate* the parametrized data structure
+using a loss function *L(x | a, c)*. Designing
 this loss function *L* is a major focus of this work,
 since if we get it right, then
 we can tell `oracle` to carry out a search over *a* in the design space
-*A*; e.g. simulated annealing or Nelder–Mead minimization.
+*A*; e.g. using simulated annealing or Nelder–Mead minimization.
 
 Our approach arises from the decision theory viewpoint<sup>[2]</sup>,
 in which one
 makes progress on fearsome problems by first
 separating them into two parts: *utility*, and *probability*.  Often,
 the problem taken as a whole is extremely difficult to reason about, but
-after this separation becomes a simpler matter of selecting the
-solution (or action) that according to the probability distribution
+after this separation it becomes a simpler matter of selecting the
+action *a* that according to the probability distribution *p*
 minimizes one's expected loss (or equivalently, maximizes one's expected
 utility).
 
 That is, we wish to solve or
-approximate *arg<sub>a</sub>min E<sub>x</sub>[L(x | a, c)]*.
+approximate *arg<sub>a</sub>min E<sub>p</sub>[L(x | a, c)]*.  
 
 ### 2.1 Synthetic data set
 
