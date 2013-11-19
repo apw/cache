@@ -19,6 +19,16 @@ whose two entries are
 <em>c<sub>1</sub> = (\*,\*,\*,\*,\*,\*,\*,\*,1,1,1,1,1,1,1,1)</em> and
 <em>c<sub>2</sub> = (\*,\*,\*,\*,\*,\*,\*,\*,1,1,1,0,0,0,0,0)</em>.
 
+#### 2.1.1 Verify cache
+
+The `-1` option causes `oracle` to load the cache into its internal
+data structure, then dump that data structure and exit.  The following
+command should produce no output:
+
+```
+$ diff -u -w <(cat c.dat) <(./oracle -1 -c c.dat)
+```
+
 ## 3 Telemetry
 
 ### 3.1 Intel cycle counting
