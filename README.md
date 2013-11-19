@@ -29,6 +29,25 @@ command should produce no output:
 $ diff -u -w <(cat c.dat) <(./oracle -1 -c c.dat)
 ```
 
+#### 2.1.1 Verify cache raw code
+
+The oracle assigns a *raw code* to each cache entry as it reads it.  Scanning
+from left to right, when it encounters a bit that is *not* a don't care bit, it
+extends the raw code for the current cache entry with the new bit index, using
+the sign of the index to encode a specified value of *1* as *-1* and a
+specified value of *0* as *+1*.
+
+The `-2` option causes `oracle` to load
+the cache, assign the raw code, dump the raw code, then exit.  The reader can
+verify the encoding of cache entries <em>c<sub>1</sub> and
+<em>c<sub>2</sub> from above as follows:
+
+```
+$ ./oracle -2 -c c.dat
+-8 -9 -10 -11 -12 -13 -14 -15 
+-8 -9 -10 +11 +12 +13 +14 +15 
+```
+
 ## 3 Telemetry
 
 ### 3.1 Intel cycle counting
