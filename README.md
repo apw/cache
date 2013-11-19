@@ -99,6 +99,16 @@ The resultant plot for our example is:
 
 <img src="doc/fdp/c.png" width="98%"/>
 
+#### 2.1.6 Verify queries
+
+The `-6` option causes `oracle` to load the queries into its internal
+data structure, then dump that data structure and exit.  The following
+command should produce no output:
+
+```
+$ diff -u -w <(cat q.dat) <(./oracle -6 -q q.dat)
+```
+
 ## 3 Telemetry
 
 ### 3.1 Intel cycle counting
