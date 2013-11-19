@@ -15,13 +15,11 @@
 #include <vector>
 
 simple_dtrie::simple_dtrie(const char *cur_time) : rep(cur_time, "simple_dtrie") {
-  d_ = NULL;  
+  
 }
 
 simple_dtrie::~simple_dtrie() {
-  if (d_ != NULL) {
-    delete d_;
-  }
+  
 }
 
 // TODO: probs don't need this
@@ -179,15 +177,15 @@ void simple_dtrie::c_trie::iterator::next() {
   return u_iter_.next();
 }
 
-simple_dtrie::d_trie::d_trie() {
+simple_dtrie::cq_trie::cq_trie() {
   cache_ = NULL;  
 }
 
-simple_dtrie::d_trie::~d_trie() {
+simple_dtrie::cq_trie::~cq_trie() {
 
 }
 
-double simple_dtrie::d_trie::get_cond_utility(unsigned bytenum) {
+double simple_dtrie::cq_trie::get_cond_utility(unsigned bytenum) {
   if (cache_->find(bytenum) == cache_->end()) {
     return 0.0;
   }
@@ -205,7 +203,7 @@ double simple_dtrie::d_trie::get_cond_utility(unsigned bytenum) {
   return acc;
 }
 
-unsigned simple_dtrie::d_trie::get_highest_utility_bytenum() {
+unsigned simple_dtrie::cq_trie::get_highest_utility_bytenum() {
   unsigned max_bytenum = INVALID_BYTENUM;
   unsigned bytenum;
   double max_u = 0.0;
@@ -223,29 +221,67 @@ unsigned simple_dtrie::d_trie::get_highest_utility_bytenum() {
   return max_bytenum;
 }
 
-void simple_dtrie::d_trie::load_cache(cache *c) {
+void simple_dtrie::cq_trie::load_cache(cache *c) {
   cache_ = c;
   cond_cache_.load_cache(c);
 }
 
-void simple_dtrie::d_trie::update(uint8_t *bv, unsigned len) {
+void simple_dtrie::cq_trie::update(uint8_t *bv, unsigned len) {
   cond_query_.update(bv, len);
 }
 
-void simple_dtrie::d_trie::cond(unsigned bytenum, uint8_t byteval) {
+void simple_dtrie::cq_trie::cond(unsigned bytenum, uint8_t byteval) {
   cond_cache_.cond(bytenum, byteval);
   cond_query_.cond(bytenum, byteval);
 }
 
-void simple_dtrie::d_trie::uncond() {
+void simple_dtrie::cq_trie::uncond() {
   cond_cache_.uncond();
   cond_query_.uncond();
 }
 
+simple_dtrie::d_trie::d_trie() {
+  
+}
+
+simple_dtrie::d_trie::~d_trie() {
+  
+}
+
+void simple_dtrie::d_trie::load(cq_trie *cq) {
+  cond_data_ = cq;
+  load_helper(&root);
+}
+
+void simple_dtrie::d_trie::load_helper(node *n) {
+  n->bytenum = cond_data_->get_highest_utility_bytenum();
+  n->id = INVALID_ID;
+  /*
+  // TODO give cq_trie an iterator that will iterate over
+  // a new iterator of c_trie which will iterate over bytevals 
+  // for a given bytenum
+
+  byteval_map bm = cache_->operator[](n->bytenum);
+
+  byteval_map::const_iterator b_end = bm.end();
+  for(byteval_map::const_iterator b_iter = bm.begin(); 
+      b_iter != b_end; b_iter++) {
+    // only iterate over bytevals if they have one id that is still exists
+    // use get_prop > 0 of the c_trie
+
+    cond_data_->cond(n->bytenum, b_iter->first);
+    // construct subtrie here
+    // assign subtrie as child
+    cond_data_->uncond();
+  }
+
+  // what about base case?
+  */
+}
+
 void simple_dtrie::prepare_to_query() {
-  assert(d_ == NULL);
-  d_ = new d_trie();
-  d_->load_cache(&c_);
+  cq_.load_cache(&c_);
+  d_.load(&cq_);
 }
 
 unsigned simple_dtrie::do_query(uint8_t *bv, unsigned len) {

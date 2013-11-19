@@ -111,26 +111,49 @@ class simple_dtrie : public virtual rep {
     query_md q_;
   };
 
-  class d_trie {
+  class cq_trie {
   public:
-    d_trie(void);
-    ~d_trie(void);
+    cq_trie(void);
+    ~cq_trie(void);
 
     void load_cache(cache *);
     void update(uint8_t *bv, unsigned len);
     void cond(unsigned bytenum, uint8_t byteval);
     void uncond(void);
 
-  private:
     double get_cond_utility(unsigned bytenum);
     unsigned get_highest_utility_bytenum(void);
 
+  private:
     cache *cache_;
     c_trie cond_cache_;
     q_trie cond_query_;  
   };
 
-  d_trie *d_;
+  class d_trie {
+  public:
+    d_trie(void);
+    ~d_trie(void);
+
+    void load(cq_trie *);
+    
+  private:
+    typedef struct node {
+      unordered_map<uint8_t, struct node> c;
+      unsigned bytenum;
+      unsigned id;
+    } node;
+    
+    typedef unordered_map<uint8_t, node> children;
+
+    void load_helper(node *);
+    
+    node root;
+    cq_trie *cond_data_;
+  };
+
+  cq_trie cq_;
+  d_trie d_;
 
  private:
   typedef rep super;

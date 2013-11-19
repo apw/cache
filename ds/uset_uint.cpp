@@ -127,4 +127,3 @@ uset_uint::iterator uset_uint::get_iterator() {
   iterator it(this);
   return it;
 }
-
