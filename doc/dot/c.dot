@@ -15,8 +15,8 @@ strict digraph G {
 	"66996f" [label=<x<sub>10</sub>>, style=filled, fillcolor=palegreen];
 	"66996f" -> "3f2d44" [headlabel = "1", labeldistance=2];
 	"3f2d44" [label=<x<sub>12</sub>>, style=filled, fillcolor=palegreen];
-	"3f2d44" -> "0x7fe42ac039b0" [headlabel = "1" labeldistance=2];
-	"0x7fe42ac039b0" [shape=box, label=<c<SUB>0</SUB>>, style=filled, fillcolor=red];
+	"3f2d44" -> "0x7fa519c039b0" [headlabel = "1" labeldistance=2];
+	"0x7fa519c039b0" [shape=box, label=<c<SUP>(0)</SUP>>, style=filled, fillcolor=red];
 	"e3b042" [label=<x<sub>15</sub>>, style=filled, fillcolor=palegreen];
 	"e3b042" -> "1e14c8" [headlabel = "1", labeldistance=2];
 	"1e14c8" [label=<x<sub>8</sub>>, style=filled, fillcolor=palegreen];
@@ -32,6 +32,6 @@ strict digraph G {
 	"c4372d" [label=<x<sub>14</sub>>, style=filled, fillcolor=palegreen];
 	"c4372d" -> "be8df2" [headlabel = "1", labeldistance=2];
 	"be8df2" [label=<x<sub>11</sub>>, style=filled, fillcolor=palegreen];
-	"be8df2" -> "0x7fe42ac03ad0" [headlabel = "1" labeldistance=2];
-	"0x7fe42ac03ad0" [shape=box, label=<c<SUB>1</SUB>>, style=filled, fillcolor=red];
+	"be8df2" -> "0x7fa519c03ad0" [headlabel = "1" labeldistance=2];
+	"0x7fa519c03ad0" [shape=box, label=<c<SUP>(1)</SUP>>, style=filled, fillcolor=red];
 }
