@@ -373,3 +373,6 @@ to the "don't care" bits.
 
 [8]  `Ising` query data set
 [8]: http://silicoinformatics.seas.harvard.edu/kernels/007.ising/medium/q.dat.gz
+
+[9]  Constructing Optimal Binary Decision Trees is NP-Complete
+[9]: http://barbra-coco.dyndns.org/eiyou/data/NPComplete.pdf
