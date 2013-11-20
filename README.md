@@ -96,6 +96,12 @@ We don't yet know which data structure is right for this problem.  However,
 we think that a binary decision tree can be shown to be very close to
 information-theoretic optimal.
 
+**Problem 1** (Decision Tree): Given a set of *n* binary
+tests *t = {t<sub>0</sub>, ..., t<sub>n-1</sub>}* and a set
+of *m* payloads *x = {x<sub>0</sub>, ..., x<sub>m-1</sub>}*,
+output a binary tree where each leaf is labeled with an item from
+*x* and each internal node is labeled with a test from *t*.
+
 **Definition 1**: A *decision tree* is a tree in which each vertex represents
 a question and each descending edge from that vertex represents a possible
 answer to that question.
@@ -361,3 +367,6 @@ to the "don't care" bits.
 
 [9]  Constructing Optimal Binary Decision Trees is NP-Complete
 [9]: http://barbra-coco.dyndns.org/eiyou/data/NPComplete.pdf
+
+[10]  Approximating Optimal Binary Decision Trees
+[10]: http://cs.williams.edu/~heeringa/publications/approx2008.pdf
