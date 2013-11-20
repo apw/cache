@@ -219,7 +219,7 @@ using the sign of the index to encode
 *c<sub>j</sub><sup>(i)</sup> = 1* with the symbol
 *-j* and *c<sub>j</sub><sup>(i)</sup> = 0* with the
 symbol *+j*.  It uses the "polar map"
-<em>j(-1)<sup>c<sub>j</sub><sup>(i)</sup></sup>
+<em>j(-1)<sup>c<sub>j</sub><sup>(i)</sup></sup></em>
 to accomplish this encoding.
 
 The `-2` option causes `oracle` to load
