@@ -129,9 +129,9 @@ labels.
 
 **Problem 1** (Binary Decision Tree) Given a set of *n* binary
 tests *t = {t<sup>(1)</sup>, ..., t<sup>(n)</sup>}* and a set
-of *m* items *x = {x<sup>(1)</sup>, ..., x<sup>(m)</sup>}*,
+of *m* items *c = {c<sup>(1)</sup>, ..., c<sup>(m)</sup>}*,
 output a binary tree where each leaf is labeled with an item from
-*x* and each internal node is labeled with a test from *t*.
+*c* and each internal node is labeled with a test from *t*.
 
 The key question is, *which* binary decision
 tree?  For a cache of size *m = |c|*
