@@ -319,26 +319,10 @@ is about 290 cycles.
 
 ### 4.1 Optimal Probability-Weighted Binary Search Trees
 
-I spent quite a bit of time going through the decision tree literature,
-but couldn't seem to find a reference that fits our problem closely
-enough.  Most
-uses of decision trees are in machine learning, where they are used for
-prediction. We want to make use of the same statistics that the machine
-learning people use to fit a decision tree, but our loss function is not
-prediction error, it is rather expected search time.  
-
-However, I think I finally stumbled upon something that may be very
-promising, called the 
-(probability-weighted) Optimal Binary Search Tree (OBST)<sup>[1]</sup>.
-
-I knew about OBSTs from undergraduate algorithms courses, but I dismissed
-them for our project because I have never before seen the version of them
-given by Chen<sup>[1]</sup>, in which the dynamic programming solution
-exploits *both* the cache contents *and* the query distribution.
-
-The two big challenges we would face in exploiting this idea are defining
-an order relation on keys and fitting a distribution to the sequence of
-queries.
+The (probability-weighted) Optimal Binary Search Tree (OBST)<sup>[1]</sup>
+admits a dynamic programming solution that
+exploits *both* the cache contents *and* the query distribution. However,
+it seems impossible to define a total order on our cache entries.
 
 ### 4.2 Symmetrizers
 
