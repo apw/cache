@@ -218,8 +218,7 @@ the new bit index *j*,
 using the sign of the index to encode
 *c<sub>j</sub><sup>(i)</sup> = 1* with the symbol
 *-j* and *c<sub>j</sub><sup>(i)</sup> = 0* with the
-the symbol *+j*.  It
-uses the "polar map"
+symbol *+j*.  It uses the "polar map"
 <em>j(-1)<sup>c<sub>j</sub><sup>(i)</sup></sup>
 to accomplish this encoding.
 
