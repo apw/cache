@@ -94,7 +94,17 @@ against some (magical) data structure over `c.dat`.
 
 We don't yet know which data structure is right for this problem.  However,
 we think that a binary decision tree can be shown to be very close to
-information-theoretic optimal.  The question is, *which* binary decision
+information-theoretic optimal.
+
+**Definition 1**: A *decision tree* is a tree in which each vertex represents
+a question and each descending edge from that vertex represents a possible
+answer to that question.
+
+Note that binary *decision* trees are distict from binary *search* trees; the
+latter have more structure in that they impose a total order over node
+labels.
+
+The question is, *which* binary decision
 tree?  For a cache of size *|c|*
 there are many possible labelings.  Should we label the root node
 with the index of the most "contested" bit?  What about its
