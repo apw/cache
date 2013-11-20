@@ -115,7 +115,7 @@ importantly, allows us to state a strict optimality criterion.
 **Definition 1** (Strict Optimality) *T* is strictly optimal for
 cache *c* and queries *q* if its mean witness
 length *\<k\> = E<sub>x</sub>[|w|]* is
-less than or equal to that of all other data structures.
+less than or equal to that of all other black boxes.
 
 It seems exceedingly likely that this strict optimum
 will turn out to be an extremely complicated circuit that
@@ -149,7 +149,7 @@ or obtain oracle access to
 the parameter *a* that induces a binary
 decision tree *T<sup>a</sup>*
 whose mean witness length *\<k\> = E<sub>x</sub>[|w|]*
-is the minimum or appoximately the minimum over all
+is the minimum or approximately the minimum over all
 binary decision trees.
 
 ## 3 Oracle
