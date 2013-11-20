@@ -102,11 +102,13 @@ a query sequence *q*, whose entries <em>x<sup>(i)</sup></em>
 are elements of <em>{0,1}<sup>n<sup></em>. 
 
 Our problem is to find a black box *T* that
-accepts if the *n*-bit query vector *x* "hits" in the
-cache *c*, and rejects if *x* "misses". In
+accepts when an *n*-bit query
+vector *x<sup>(i)</sup>* "hits" in the
+cache *c*, and rejects if *x<sup>(i)</sup>* "misses". In
 both cases, we will require *T* to provide us with a witness *w*, where
 *w = (w<sub>1</sub>, ..., w<sub>k</sub>)* is
-the length-*k* sequence of bit indices of *x* that *T*
+the length-*k* sequence of bit indices
+of *x<sup>(i)</sup>* that *T*
 examined before deciding. The witness *w* allows us to
 locate the matching entry in the hit case
 and serves as a counterexample in the miss case, but more
