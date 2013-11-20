@@ -216,14 +216,16 @@ encounters a bit *j* that is *not* a "don't care" bit, it
 extends the raw code for the current cache entry with
 the new bit index *j*,
 using the sign of the index to encode
-*c<sub>j</sub><sup>(i)</sup> = 1*
-as *-j* and *c<sub>j</sub><sup>(i)</sup> = 0* as *+j*.  It
-does this using the "polar map"
-<em>j(-1)<sup>c<sub>j</sub><sup>(i)</sup></sup>.
+*c<sub>j</sub><sup>(i)</sup> = 1* with the symbol
+*-j* and *c<sub>j</sub><sup>(i)</sup> = 0* with the
+the symbol *+j*.  It
+uses the "polar map"
+<em>j(-1)<sup>c<sub>j</sub><sup>(i)</sup></sup>
+to accomplish this encoding.
 
 The `-2` option causes `oracle` to load
 the cache, assign the raw code, dump the raw code, then exit.  The reader can
-verify the encoding of cache entries <em>c<sup>(1)</sup> and
+verify the encoding of cache entries <em>c<sup>(0)</sup> and
 <em>c<sup>(1)</sup> from above as follows:
 
 ```
@@ -235,7 +237,7 @@ $ ./oracle -2 -c c.dat
 #### 2.2.3 Verify cache symbol code
 
 The oracle assigns a *symbol code* to each cache entry by permuting each
-raw code in such a way as to result in a valid binary search
+raw code in such a way as to result in a valid binary decision
 tree. The `-3` option causes `oracle` to dump its symbol codes and exit:
 
 ```
