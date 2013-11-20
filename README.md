@@ -87,89 +87,119 @@ This should be understood as:
 > For the first state vector, byte 0 has value 1, byte 1 has value 0,
 > byte 2 has value 0, ..., byte 299 has value 0.
 
-The goal of this project is to minimize the expected query time of `q.dat`
-against some (magical) data structure over `c.dat`.
+The goal of this project is to find an algorithm that constructs
+a black box *T* that minimizes the expected query time of `q.dat`
+against `c.dat`.
 
-## 2 Oracle
+## 2 Problem Statement
 
-We don't yet know which data structure is right for this problem.  However,
-we think that a binary decision tree can be shown to be very close to
-information-theoretic optimal.
+We have a cache *c* whose
+entries <em>c<sup>(i)</sup></em>
+are elements of <em>{\*,0,1}<sup>n<sup></em>,
+where <em>\*</em> is the "don't care" symbol that matches
+either *0* or *1*.  We have
+a query sequence *q*, whose entries <em>x<sup>(i)</sup></em>
+are elements of <em>{0,1}<sup>n<sup></em>. 
 
-**Problem 1** (Decision Tree): Given a set of *n* binary
-tests *t = {t<sub>0</sub>, ..., t<sub>n-1</sub>}* and a set
-of *m* payloads *x = {x<sub>0</sub>, ..., x<sub>m-1</sub>}*,
-output a binary tree where each leaf is labeled with an item from
-*x* and each internal node is labeled with a test from *t*.
+Our problem is to find a black box *T* that
+accepts if the *n*-bit query vector *x* "hits" in the
+cache *c*, and rejects if *x* "misses". In
+both cases, we will require *T* to provide us with a witness *w*, where
+*w = (w<sub>1</sub>, ..., w<sub>k</sub>)* is
+the length-*k* sequence of bit indices of *x* that *T*
+examined before deciding. The witness *w* allows us to
+locate the matching entry in the hit case
+and serves as a counterexample in the miss case, but more
+importantly, allows us to state a strict optimality criterion.
 
-**Definition 1**: A *decision tree* is a tree in which each vertex represents
-a question and each descending edge from that vertex represents a possible
-answer to that question.
+**Definition 1** (Strict Optimality) *T* is strictly optimal for
+cache *c* and queries *q* if its mean witness
+length *\<k\> = E<sub>x</sub>[|w|]* is
+less than or equal to that of all other data structures.
 
-Note that binary *decision* trees are distict from binary *search* trees; the
+It seems exceedingly likely that this strict optimum
+will turn out to be an extremely complicated circuit that
+will in general take exponential time to find, so
+we will settle for finding or approximating optimality
+in the smaller
+hypothesis class of *binary decision trees*. Note that
+binary *decision* trees are distinct from binary *search* trees; the
 latter have more structure in that they impose a total order over node
 labels.
 
-The question is, *which* binary decision
-tree?  For a cache of size *|c|*
-there are many possible labelings.  Should we label the root node
-with the index of the most "contested" bit?  What about its
+**Problem 1** (Binary Decision Tree) Given a set of *n* binary
+tests *t = {t<sup>(1)</sup>, ..., t<sup>(n)</sup>}* and a set
+of *m* items *x = {x<sup>(1)</sup>, ..., x<sup>(m)</sup>}*,
+output a binary tree where each leaf is labeled with an item from
+*x* and each internal node is labeled with a test from *t*.
+
+The key question is, *which* binary decision
+tree?  For a cache of size *m = |c|*
+there are many decision trees consistent with
+the statement of Problem 1.  Should
+we assign to the root node the
+test for the most "contested" bit?  If so,
+under which distribution: that of the cache or that of
+the queries?  What about its
 left and right children?
 
 We hope to make progress on this question by *parametrizing*
-it.  That is, we imagine a template decision tree *T* whose
-paths are all of length *n*.  Then,
-we wish to find or be given a parameter *a* that tells us
-how to label the nodes of *T* in a way that gives us the
-best lookup time for our queries *q*.
+it.  That is, we wish to brute force, intellegently find,
+or obtain oracle access to
+the parameter *a* that induces a binary
+decision tree *T<sup>a</sup>*
+whose mean witness length *\<k\> = E<sub>x</sub>[|w|]*
+is the minimum or appoximately the minimum over all
+binary decision trees.
+
+## 3 Oracle
 
 The purpose
 of the `oracle` described in what follows is to *separate* our
 design problem into
 two parts.  First, assume that the `oracle` just hands you the
 parameter *a*. Second,
-*evaluate* the parametrized data structure *T<sup>a</sup>*
-using a loss function *L(x | a, c)*. Designing
-this loss function *L* is a major focus of this work,
+*evaluate* the parametrized binary decision tree *T<sup>a</sup>*
+using your loss function *L(q | a)*. This loss
+function *L* is a major focus of our work,
 since if we get it right, then
-we can tell `oracle` to carry out a search over *a* in the design space
-*A*; e.g. using simulated annealing or Nelder–Mead minimization.
+we can tell `oracle` to carry out a search over *a*; e.g. using
+simulated annealing or Nelder–Mead minimization.
 
-For a single query *x*, the most attractive loss function *L* is
-simply the number of bits in *x* accessed during the traversal of
-*T<sup>a</sup>* induced by *x*.
+**Definition 2** (Loss Function) Our loss
+function *L(q | a) = E<sub>x</sub>[|w|]* is simply
+the mean number of bits of *q* accessed during each
+traversal of *T<sup>a</sup>* induced by queries *q*.
 
 Our approach arises from a decision-theoretic
-viewpoint<sup>[2]</sup>, in which one
-makes progress on fearsome problems by first
+viewpoint<sup>[2]</sup>, in which one tries to
+make progress on seemingly fearsome problems by first
 separating them into two parts: *utility*, and *probability*.  Often,
 the problem taken as a whole is extremely difficult to reason about, but
-after this separation it becomes a simpler matter of selecting the
+after this separation it becomes a somewhat simpler matter of *searching*
+for the
 action *a* that according to the probability distribution *p*
 minimizes one's expected loss (or equivalently, maximizes one's expected
 utility).
 
 That is, we wish to solve or
-approximate *arg<sub>a</sub>min E<sub>p</sub>[L(x | a, c)]*.  Currently,
-we don't know *p*.  So we describe below an oracle that (by some means)
+approximate *arg<sub>a</sub>min E<sub>p</sub>[L(q | a)]*.  Currently,
+we don't have a closed-form solution for *p*.  So in what follows
+we describe an oracle that (by some means)
 produces a parameter *a*, then evaluates
 the *empirical* loss of a given query sequence *q*
 for a given cache *c* encoded in the
-parametrized decision tree *T<sup>a</sup>*.
+parametrized binary decision tree *T<sup>a</sup>*.
 
-### 2.1 Synthetic data set
+### 3.1 Synthetic data set
 
 In order to focus on fine-grain details, we will work in this section
 with a tiny data set
 that we generate synthetically.
 
-#### 2.1.2 Simple cache
+#### 3.1.2 Simple cache
 
-Cache entries <em>c<sup>(i)</sup></em>
-are elements of <em>{\*,0,1}<sup>k<sup></em>,
-with *k &le; n*,
-where <em>\*</em> is the "don't care" symbol that matches
-either *0* or *1*.  We generate a simple cache as:
+We generate a simple cache as:
 
 ```
 $ echo 1 255 1 248 | rs 2 2 > c.dat
@@ -183,11 +213,9 @@ this example, *n = 16*, and the two entries are
 <em>c<sup>(1)</sup> = (\*,\*,\*,\*,\*,\*,\*,\*,0,0,0,1,1,1,1,1)</em>, since
 we order the bits from least significant to most significant.
 
-#### 2.1.2 Simple query stream
+#### 3.1.2 Simple query stream
 
-Query entries <em>x<sup>(i)</sup></em>
-are elements
-of <em>{0,1}<sup>n<sup></em>. We generate a simple query stream as:
+We generate a simple query stream as:
 
 ```
 $ echo 0 255 1 255 0 0 1 0 | rs 2 4 > q.dat
@@ -200,11 +228,11 @@ this example the two entries are
 <em>x<sup>(0)</sup> = (1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)</em> and
 <em>x<sup>(1)</sup> = (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)</em>.
 
-### 2.2 Debugging options
+### 3.2 Debugging options
 
 We now show how to work with each step of the `oracle` machinery.
 
-#### 2.2.1 Verify cache
+#### 3.2.1 Verify cache
 
 The `-1` option causes `oracle` to load the cache into its internal
 data structure, then dump that data structure and exit.  The following
@@ -214,7 +242,7 @@ command should produce no output:
 $ diff -u -w <(cat c.dat) <(./oracle -1 -c c.dat)
 ```
 
-#### 2.2.2 Verify cache raw code
+#### 3.2.2 Verify cache raw code
 
 The oracle assigns a *raw code* to each cache entry
 *c<sup>(i)</sup>* as it scans it.  When it
@@ -239,7 +267,7 @@ $ ./oracle -2 -c c.dat
 +8 +9 +10 -11 -12 -13 -14 -15 
 ```
 
-#### 2.2.3 Verify cache symbol code
+#### 3.2.3 Verify cache symbol code
 
 The oracle assigns a *symbol code* to each cache entry by permuting each
 raw code in such a way as to result in a valid binary decision
@@ -251,7 +279,7 @@ $ ./oracle -3 -c c.dat
 -15 +8 +9 -12 -13 +10 -14 -11 
 ```
 
-#### 2.2.4 Verify cache symbol code with dot plot
+#### 3.2.4 Verify cache symbol code with dot plot
 
 The `-4` option causes `oracle` to emit its symbol codes in the GraphViz
 language appropriate for `dot`:
@@ -265,7 +293,7 @@ The resultant plot for our example is:
 
 ![dot layout](doc/dot/c.png)
 
-#### 2.2.5 Verify cache symbol code with force directed plot
+#### 3.2.5 Verify cache symbol code with force directed plot
 
 When we have many cache entries of high dimension, the `dot` layout
 engine is simply
@@ -284,7 +312,7 @@ The resultant plot for our example is:
 
 <img src="doc/fdp/c.png" width="98%"/>
 
-#### 2.2.6 Verify queries
+#### 3.2.6 Verify queries
 
 The `-6` option causes `oracle` to load the queries into its internal
 data structure, then dump that data structure and exit.  The following
@@ -294,15 +322,15 @@ command should produce no output:
 $ diff -u -w <(cat q.dat) <(./oracle -6 -q q.dat)
 ```
 
-## 3 Telemetry
+## 4 Telemetry
 
-### 3.1 Intel cycle counting
+### 4.1 Intel cycle counting
 
 In [arch/cycle_timing.c](arch/cycle_timing.c) is
 our cycle counting logic.  Note that we
 are careful to use execution barriers.
 
-#### 3.1.1 Justification for calibration loop
+#### 4.1.1 Justification for calibration loop
 
 We wrote [arch/cycle_timing.c](arch/cycle_timing.c) that way because the
 Intel manual states that we has to "calibrate" `rdtsc` in two
@@ -321,16 +349,16 @@ is about 290 cycles.
 
 ![Instability](doc/rdtsc/step.pdf)
 
-## 4 Alternatives
+## 5 Alternatives
 
-### 4.1 Optimal Probability-Weighted Binary Search Trees
+### 5.1 Optimal Probability-Weighted Binary Search Trees
 
 The (probability-weighted) Optimal Binary Search Tree (OBST)<sup>[1]</sup>
 admits a dynamic programming solution that
 exploits *both* the cache contents *and* the query distribution. However,
 it seems impossible to define a total order on our cache entries.
 
-### 4.2 Symmetrizers
+### 6.2 Symmetrizers
 
 Obviously we want to match state vectors instead of molecules, but the
 work by Piponi<sup>[3]</sup> is key because it puts our problem in the
@@ -370,3 +398,9 @@ to the "don't care" bits.
 
 [10]  Approximating Optimal Binary Decision Trees
 [10]: http://cs.williams.edu/~heeringa/publications/approx2008.pdf
+
+[11]  Constrained Binary Identification Problem
+[11]: http://infoscience.epfl.ch/record/183435/files/STACS2013_app.pdf
+
+[12]  Analysis of Algorithms: Trees
+[12]: http://aofa.cs.princeton.edu/lectures/lectures13/AA06-Trees.pdf
