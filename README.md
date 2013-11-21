@@ -370,6 +370,12 @@ operation to its start state that leaves it invariant. In our
 case of reads before writes, the symmetries are *any* operation
 to the "don't care" bits. 
 
+### 6.3 Branching Programs
+
+We may find that a BDD library such as BuDDy<sup>[14]</sup> or CUDD<sup>[13]</sup> is
+fast enough to use instead of our own decision tree.  This would bring
+with it a great many algebraic advantages.
+
 ## References
 
 [1]  Optimal Binary Search Trees 
@@ -407,3 +413,9 @@ to the "don't care" bits.
 
 [12]  Analysis of Algorithms: Trees
 [12]: http://aofa.cs.princeton.edu/lectures/lectures13/AA06-Trees.pdf
+
+[13]  CUDD: CU Decision Diagram Package
+[13]: http://vlsi.colorado.edu/~fabio/CUDD/
+
+[14]  BuDDy - A Binary Decision Diagram Package
+[14]: http://vlsicad.eecs.umich.edu/BK/Slots/cache/www.itu.dk/research/buddy/
