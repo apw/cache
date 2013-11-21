@@ -145,7 +145,8 @@ under which distribution: that of the cache or that of
 the queries?  What about its
 left and right children?
 
-We hope to make progress on this question by *parametrizing*
+We hope to make progress on this question
+by *parametrizing*
 it.  That is, we wish to brute force, intellegently find,
 or obtain oracle access to
 the parameter *a* that induces a binary
