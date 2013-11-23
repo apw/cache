@@ -102,11 +102,13 @@ a query sequence *q*, whose entries <em>x<sup>(i)</sup></em>
 are elements of <em>{0,1}<sup>n<sup></em>. 
 
 Our problem is to find a black box *T* that
-accepts if the *n*-bit query vector *x* "hits" in the
-cache *c*, and rejects if *x* "misses". In
+accepts when an *n*-bit query
+vector *x<sup>(i)</sup>* "hits" in the
+cache *c*, and rejects if *x<sup>(i)</sup>* "misses". In
 both cases, we will require *T* to provide us with a witness *w*, where
 *w = (w<sub>1</sub>, ..., w<sub>k</sub>)* is
-the length-*k* sequence of bit indices of *x* that *T*
+the length-*k* sequence of bit indices
+of *x<sup>(i)</sup>* that *T*
 examined before deciding. The witness *w* allows us to
 locate the matching entry in the hit case
 and serves as a counterexample in the miss case, but more
@@ -143,7 +145,8 @@ under which distribution: that of the cache or that of
 the queries?  What about its
 left and right children?
 
-We hope to make progress on this question by *parametrizing*
+We hope to make progress on this question
+by *parametrizing*
 it.  That is, we wish to brute force, intellegently find,
 or obtain oracle access to
 the parameter *a* that induces a binary
@@ -367,6 +370,12 @@ operation to its start state that leaves it invariant. In our
 case of reads before writes, the symmetries are *any* operation
 to the "don't care" bits. 
 
+### 6.3 Branching Programs
+
+We may find that a BDD library such as BuDDy<sup>[14]</sup> or CUDD<sup>[13]</sup> is
+fast enough to use instead of our own decision tree.  This would bring
+with it a great many algebraic advantages.
+
 ## References
 
 [1]  Optimal Binary Search Trees 
@@ -404,3 +413,9 @@ to the "don't care" bits.
 
 [12]  Analysis of Algorithms: Trees
 [12]: http://aofa.cs.princeton.edu/lectures/lectures13/AA06-Trees.pdf
+
+[13]  CUDD: CU Decision Diagram Package
+[13]: http://vlsi.colorado.edu/~fabio/CUDD/
+
+[14]  BuDDy - A Binary Decision Diagram Package
+[14]: http://vlsicad.eecs.umich.edu/BK/Slots/cache/www.itu.dk/research/buddy/
