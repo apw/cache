@@ -376,6 +376,24 @@ We may find that a BDD library such as BuDDy<sup>[14]</sup> or CUDD<sup>[13]</su
 fast enough to use instead of our own decision tree.  This would bring
 with it a great many algebraic advantages.
 
+### 6.4 Count-min Sketches
+
+If it is prohibitively expensive to calculate the marginal probabilities
+for each bit, we can employ a count-min sketch<sup>[15],[16]</sup> to ensure that
+we get the "heavy-hitters".
+
+### 6.5 Logistic Regression
+
+If we have the marginal probabilities, we can use them to integrate over any
+bits we are not conditioning on as we walk the binary decision tree by
+filling in the missing data we need to
+input to a logistic regressor with the mean values.
+
+### 6.6 Hufmann Coding
+
+Putting 6.4 and 6.5 together, it may be the case that we can reduce our problem to
+Hufmann Coding.
+
 ## References
 
 [1]  Optimal Binary Search Trees 
@@ -419,3 +437,9 @@ with it a great many algebraic advantages.
 
 [14]  BuDDy - A Binary Decision Diagram Package
 [14]: http://vlsicad.eecs.umich.edu/BK/Slots/cache/www.itu.dk/research/buddy/
+
+[15]  Approximating Data with the Count-Min Data Structure
+[15]: http://dimacs.rutgers.edu/%7Egraham/pubs/papers/cmsoft.pdf
+
+[15]  Count-Min Sketch
+[16]: http://dimacs.rutgers.edu/~graham/pubs/papers/cmencyc.pdf
