@@ -1,32 +1,29 @@
 CFLAGS = -g -Wall -Werror -I /opt/local/include
 LDFLAGS = -g -L /opt/local/lib -lgsl -lgslcblas -lcrypto -lm
-
 ZCAT = gzcat
-
-OBJECTS = bit.o walk.o tree.o constraint.o solve.o dotty.o fdp.o
-OBJECTS += congruent.o search.o sgn.o help.o main.o
 
 ifdef O
 CFLAGS += -O$(O)
 LDFLAGS += -O$(O)
 endif
 
-oracle: $(OBJECTS)
+oracle: congruent.o search.o help.o main.o
+oracle: sgn.o bit.o walk.o tree.o solve.o dotty.o fdp.o
 	$(CC) $^ $(LDFLAGS) -o $@
 
 %.o: %.c rdtsc.h tunnel.h vertex.h oracle.h
 	$(CC) $< $(CFLAGS) -c -o $@
-
-.PHONY: clean example check
-
-clean:
-	$(RM) $(wildcard oracle *.o *.[ch]~ *.ok *.orig *.dot *.pdf *.svg)
 
 c.dat: c.dat.gz
 	$(ZCAT) c.dat.gz | head -n 128 > c.dat
 
 q.dat: q.dat.gz
 	$(ZCAT) q.dat.gz | head -n 1024 > q.dat
+
+.PHONY: clean check
+
+clean:
+	$(RM) $(wildcard oracle *.o *.[ch]~ *.ok *.orig *.dot *.pdf *.svg)
 
 check: clean c.dat q.dat oracle
 	sha256sum c.dat q.dat > check.ok

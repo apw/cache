@@ -17,7 +17,6 @@ enum {
 
 void help(int argc, char *argv[]);
 int solve(tunnel *t, gsl_rng *r);
-int constraint(tunnel *s, tunnel *t);
 tunnel *walk(uint8_t const *x, vertex *root);
 int sgn(int i);
 int tree(vertex * root, tunnel * cache);
