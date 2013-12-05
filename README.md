@@ -198,7 +198,13 @@ parametrized binary decision tree *T<sup>a</sup>*.
 
 In order to focus on fine-grain details, we will work in this section
 with a tiny data set
-that we generate synthetically.
+that we generate synthetically.  First, build the [oracle code](oracle/)
+with optimization level 3:
+
+```
+$ cd cache/oracle
+$ make O=3
+```
 
 #### 3.1.2 Simple cache
 
@@ -233,7 +239,8 @@ this example the two entries are
 
 ### 3.2 Debugging options
 
-We now show how to work with each step of the `oracle` machinery.
+We now show how to work with each step of the `oracle` machinery
+using the synthetic data set.
 
 #### 3.2.1 Verify cache
 
@@ -324,6 +331,70 @@ command should produce no output:
 ```
 $ diff -u -w <(cat q.dat) <(./oracle -6 -q q.dat)
 ```
+
+### 3.3 Actual data set
+
+We now show how to measure performance of the oracle
+binary decision tree on the `collatz` data set.  First,
+fetch the data set:
+
+```
+$ wget http://silicoinformatics.seas.harvard.edu/kernels/004.collatz/tiny/collatz.901.c.dat.gz -O c.dat.gz
+$ wget http://silicoinformatics.seas.harvard.edu/kernels/004.collatz/tiny/collatz.901.q.dat.gz -O q.dat.gz
+```
+
+#### 3.3.1 Sub-sample
+
+Next, extract a sub-sample of the full data sets:
+
+```
+$ zcat c.dat.gz | head -n 128 > c.dat
+$ zcat q.dat.gz | head -n 1024 > q.dat
+```
+
+#### 3.3.2 Visualize encoding
+
+Next, visualize the binary decision tree that the oracle assigns (this is currently
+just the identity code):
+
+```
+$ ./oracle -5 -c c.dat > c.dot
+$ sfdp -Goverlap_scaling=-9 c.dot -T svg -o c.svg
+```
+
+The binary decision tree that results is:
+
+![oracle](doc/oracle/c.png)
+
+#### 3.3.3 Measure performance
+
+In the following, we first measure the performance
+of the binary decision tree implementation,
+then we add the `-r` option
+to time the same data set against the reference
+linked list implementation:
+
+```
+$ ./oracle -c c.dat -q q.dat > o.dat
+$ ./oracle -r -c c.dat -q q.dat > r.dat
+``` 
+
+Doing the above repeatedly and with different
+cache sizes results in the following performance
+figure:
+
+![scaling](doc/oracle/scaling.png)
+
+In the preceding figure, the two dashed lines are
+least-squares linear regressions.  It is clear
+that the binary decision tree scales much better
+than the linked list.  This is made even more
+evident in the following figure, which shows
+the performance characteristics of the two
+implementations on the full `collatz` data set
+of cache size *|C|* = 1,335,172:
+
+![histograms](doc/oracle/histograms.png)
 
 ## 4 Telemetry
 
