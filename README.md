@@ -198,7 +198,13 @@ parametrized binary decision tree *T<sup>a</sup>*.
 
 In order to focus on fine-grain details, we will work in this section
 with a tiny data set
-that we generate synthetically.
+that we generate synthetically.  First, build the [oracle code](oracle/)
+with optimization level 3:
+
+```
+$ cd cache/oracle
+$ make O=3
+```
 
 #### 3.1.2 Simple cache
 
@@ -233,7 +239,8 @@ this example the two entries are
 
 ### 3.2 Debugging options
 
-We now show how to work with each step of the `oracle` machinery.
+We now show how to work with each step of the `oracle` machinery
+using the synthetic data set.
 
 #### 3.2.1 Verify cache
 
@@ -323,6 +330,32 @@ command should produce no output:
 
 ```
 $ diff -u -w <(cat q.dat) <(./oracle -6 -q q.dat)
+```
+
+### 3.3 Actual data set
+
+We now show how to measure performance of the oracle
+binary decision tree on the `collatz` data set.  First,
+fetch the data set:
+
+```
+$ wget http://silicoinformatics.seas.harvard.edu/kernels/004.collatz/tiny/collatz.901.c.dat.gz -O c.dat.gz
+$ wget http://silicoinformatics.seas.harvard.edu/kernels/004.collatz/tiny/collatz.901.q.dat.gz -O q.dat.gz
+```
+
+Next, extract a sub-sample of the full data sets:
+
+```
+$ zcat c.dat.gz | head -n 128 > c.dat
+$ zcat q.dat.gz | head -n 1024 > q.dat
+```
+
+Next, visualize the binary decision tree that the oracle assigns (this is currently
+just the identity code):
+
+```
+$ ./oracle -5 -c c.dat > c.dot
+$ sfdp -Goverlap_scaling=-9 c.dot -T svg -o c.svg
 ```
 
 ## 4 Telemetry
