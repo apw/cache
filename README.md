@@ -358,6 +358,10 @@ $ ./oracle -5 -c c.dat > c.dot
 $ sfdp -Goverlap_scaling=-9 c.dot -T svg -o c.svg
 ```
 
+The binary decision tree that results is:
+
+![oracle](doc/oracle/c.png)
+
 ## 4 Telemetry
 
 ### 4.1 Intel cycle counting
