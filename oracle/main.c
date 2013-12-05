@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
                 /* Assign the identity code.  */
                 for (j = 0; j < 8; j++) {
                     t->l++;
-                    t->code = realloc(t->code, t->l * sizeof(double));
+                    t->code = realloc(t->code, (t->l + 1) * sizeof(double));
                     c = pow(-1, (cv >> j) & 0x1) * (8 * ci + j);
                     t->code[t->l - 1] = c;
                 }
