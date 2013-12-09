@@ -29,6 +29,9 @@ class rep {
   virtual void prepare_to_query(void) = 0;
   virtual unsigned do_query(uint8_t *bv, unsigned len) = 0;
 
+  unsigned get_num_hits(void);
+  unsigned get_num_misses(void);
+
  protected:
   int current_id_;
   int num_steps_;

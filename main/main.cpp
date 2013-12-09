@@ -193,6 +193,7 @@ int main(int argc, char **argv) {
   int64_t func_call_overhead = warmup_time();
   (void) func_call_overhead;
 
+  unsigned first_hits = 0, first_misses = 0;
   for(int i = 0; i < (int) (sizeof(imps) / sizeof(int)); i++) {
     printf("opening cache file\n");
     cache = fopen(cache_file_name, "r");
@@ -222,6 +223,14 @@ int main(int argc, char **argv) {
     printf("running rep %d\n", i);
     run(r);
 
+    if (i == 0) {
+      first_hits = r->get_num_hits();
+      first_misses = r->get_num_misses();
+    } else {
+      assert(first_hits == r->get_num_hits());
+      assert(first_misses == r->get_num_misses());
+    }
+
     printf("cleaning up rep %d\n", i);
     cleanup(r);
     
@@ -230,6 +239,7 @@ int main(int argc, char **argv) {
 
     printf("closing query file %d\n", i);
     fclose(query);
+    
   }
 
   return 0;

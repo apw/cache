@@ -57,3 +57,11 @@ unsigned rep::query(uint8_t *bv, unsigned len) {
   assert(!outfile_.fail());
   return hit;
 }
+
+unsigned rep::get_num_hits() {
+  return num_hits_;
+}
+
+unsigned rep::get_num_misses() {
+  return num_misses_;
+}
