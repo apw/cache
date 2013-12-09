@@ -17,6 +17,7 @@
 #define TESTNUM (1 << 8)
 #define RESETNUM (1 << 3)
 #define MAXDO (1 << 4)
+#define NUMREMOVE (1 << 6)
 
 void standard_default(void) {
   // get unique collection
@@ -478,8 +479,75 @@ static void uset_uint_one_iterator_simple_walk(int n, int m) {
 }
 
 
+static void uset_uint_iterator_remove_cur(void) {
+  // get a uset_uint and associated iterator to test
+  uset_uint *us = new uset_uint(TESTMAX);
+  assert(us);
+  uset_uint::iterator it = us->get_iterator();
+  int removed[NUMREMOVE];
+  int num_removed = 0;
+  int cur_int;
+  int num_iter = 0;
+
+  srand(time(NULL));
+  while (it.is_cur_valid()) {
+    printf("1: [%d]\r", num_iter);
+    num_iter++;
+
+    us->begin_trans();
+    cur_int = (int) it.get_cur();
+
+    // remove_cur an element with probability 0.5 and remember it if removed
+    if (num_removed < NUMREMOVE && rand() % 2 == 0) {
+      it.remove_cur();
+      removed[num_removed] = cur_int;
+      num_removed++;
+      us->end_trans();
+      continue;
+    }
+
+    us->end_trans();
+    it.next();
+  }
+  
+  for (int i = 0; i <= num_removed; i++) {
+    printf("2: [%d]\r", i);
+    uset_uint::iterator iter = us->get_iterator();
+    int num_valid = 0;
+
+    while (iter.is_cur_valid()) {
+      num_valid++;
+      cur_int = iter.get_cur();
+      
+      // sanity check
+      assert(cur_int < TESTMAX);
+
+      // make sure cur_int is not one of the removed ints
+      for (int j = num_removed-i; j < num_removed; j++) {
+	assert(cur_int != removed[j]);
+      }
+      
+      iter.next();
+    }
+
+    // make sure we see the right number of ints
+    assert(num_valid == i+TESTMAX-num_removed);
+
+    // don't want to undo after the last check
+    if (i != num_removed) {
+      us->undo_trans();
+    }
+  }
+
+  delete us;
+  return;
+}
+
+
 void uset_uint_test_iterator(void) {
   printf("[BEGINNING] uset_uint_test_iterator\n");
+  uset_uint_iterator_remove_cur();
+
   uset_uint_one_iterator_simple_walk(0, 0);
   uset_uint_one_iterator_simple_walk(1, 1);
 
@@ -494,6 +562,7 @@ void uset_uint_test_iterator(void) {
     num_undo = 0;
   }
   uset_uint_one_iterator_simple_walk(num_do, num_undo);
+
   
   printf("[PASSED] uset_uint_test_iterator\n");
   return;
@@ -501,9 +570,9 @@ void uset_uint_test_iterator(void) {
 
 int main(void) {
   //  (*** TODO TEST ITERATOR ***)
-  uset_uint_test_simple();
-  uset_double_remove_diff_trans();
-  uset_double_remove_same_trans();
+  //uset_uint_test_simple();
+  //uset_double_remove_diff_trans();
+  //uset_double_remove_same_trans();
   uset_uint_test_iterator();
   //uset_uint_test_errors();
   //rset_uint_test_simple();
