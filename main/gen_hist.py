@@ -112,7 +112,7 @@ for outer_index in range(0, 2): # do hits and misses separately
     pngname, fileext = os.path.splitext(os.path.basename(sys.argv[FIRST_FILE_INDEX]))
     print pngname[-DATELEN:]
     fig.subplots_adjust(hspace=SUBPLOT_DIST)
-    pylab.savefig('graphs/' + plot_type + pngname[-19:] + h_or_m + '.png')
+    pylab.savefig('graphs/' + plot_type + pngname[-19:] + h_or_m + '.pdf', format='pdf')
     
     # reset axarr so get two different plots
     fig, axarr = plt.subplots(num_imps, sharex=SHAREX, sharey=SHAREY)
