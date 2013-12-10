@@ -111,61 +111,45 @@ void load(rep_ptr rp) {
  * and queries the cache about whether it was present in the cache or not
  */
 void run(rep_ptr rpt) {
-  char *buf = NULL;
-
-  size_t len;
-  ssize_t r = getline(&buf, &len, query);
-  assert(r > 1); // must have read more than "\n"
-  assert(len > 0);
-
-  // get the last bytenum
-  unsigned i = r - 1;
-  while(i >= 0 && buf[i] != ' ') {i--;}
-  while(i >= 0 && buf[i] == ' ') {i--;}
-  while(i >= 0 && buf[i] != ' ') {i--;}
-  while(i >= 0 && buf[i] == ' ') {i--;}
-  while(i >= 0 && buf[i] != ' ') {i--;}
-  
-  char *line = &buf[i + 1];
-  unsigned bytenum, byteval;
-  int pos;
-  int matches = sscanf(line, "%u %u%n", &bytenum, &byteval, &pos);
-  assert(matches == 2);
-
-  unsigned bv_len = bytenum + 1;
-  uint8_t bv[bv_len];
-
-  unsigned expected_bytenum;
+  unsigned bytenum;
+  uint8_t byteval;
+  unsigned bv_len = ((unsigned) -1);
+  uint8_t *bv = NULL;
   unsigned query_count = 0;
-  do {
-    assert(len > 0);
-    assert(r > 1);
 
-    expected_bytenum = 0;
-    line = buf;
-    while ((matches = sscanf(line, "%u %u%n", &bytenum, &byteval, &pos)) == 2) {
-
-      assert(expected_bytenum == bytenum);
-      bv[bytenum] = byteval;
-      //printf("%u %u\n", bytenum, byteval);
-
-      expected_bytenum++;
-      line += pos;
+  for (unsigned j = UINT_MAX; fscanf(query, "%u %hhu", &bytenum, &byteval) != EOF; j = bytenum) {
+    if (bytenum < j && j != UINT_MAX) {
+      bv_len = j + 1;
+      assert(bv_len > 0);
+      
+      bv = (uint8_t *) calloc(bv_len, sizeof(uint8_t));	
+      assert(bv != NULL);
+      
+      break;
     }
+  }
 
-    printf("\r[%u]", query_count);
-    fflush(stdout);
-    query_count++;
-    rpt->query(bv, bv_len);
-    // TODO verify correctess of hits/misses against LL implementation
+  rewind(query);
+  assert(errno == 0);
 
-    // ensure that the datafile contains pairs of numbers (bytenum and byteval)
-    assert(matches == -1);
-  } while ((r = getline(&buf, &len, query)) != -1);
+  for (unsigned j = UINT_MAX; fscanf(query, "%u %hhu", &bytenum, &byteval) != EOF; j = bytenum) {
+    if (bytenum < j) {
+      printf("\r[%u]", query_count);
+      fflush(stdout);
+      query_count++;
+      
+      rpt->query(bv, bv_len);
+    } else {
+      assert(bytenum == j + 1);
+      bv[bytenum] = byteval;
+    }
+  }
+
+  assert(bv != NULL);
+  free(bv);
+  assert(errno == 0);
 
   printf("\n");
-
-  free(buf);
 }
 
 int main(int argc, char **argv) {
