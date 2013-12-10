@@ -84,36 +84,26 @@ void cleanup(rep_ptr r) {
  * Loads the cache-entries from disk into the rp representation
  */
 void load(rep_ptr rp) {
-  char *buf = NULL;
+  unsigned bytenum;
+  uint8_t byteval;
+  int id = -1;
+  
+  // TODO change all add_byte calls to take in uint8_t instead of unsigned
+  for (unsigned j = UINT_MAX; fscanf(cache, "%u %hhu", &bytenum, &byteval) != EOF; j = bytenum) {
+    if (bytenum < j) {
+      if (j != UINT_MAX) {
+	rp->end_sbv(id);
+      }
 
-  int id = 0;
-  size_t len;
-  ssize_t r;
-  while ((r = getline(&buf, &len, cache)) != -1) {
-    assert(!ferror(cache));
-    assert(len > 0);
+      id++;      
 
-    rp->begin_sbv(id);
-
-    char *line = buf;
-    unsigned bytenum, byteval;
-    int matches, pos;
-    while ((matches = sscanf(line, "%u %u%n", &bytenum, &byteval, &pos)) == 2) {
-      assert(!ferror(cache));
-
-      rp->add_byte(id, bytenum, byteval);
-      line += pos;
+      rp->begin_sbv(id);
     }
 
-    // ensure that the datafile contains pairs of numbers (bytenum and byteval)
-    assert(matches == -1);
-
-    rp->end_sbv(id);
-    id++;
+    rp->add_byte(id, bytenum, byteval);
   }
 
-  free(buf);
-  assert(feof(cache));
+  assert(errno == 0);
 }
 
 /*
