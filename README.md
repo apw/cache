@@ -469,6 +469,10 @@ Hufmann Coding.
 
 Our problem bears some relation to that of IP address routing<sup>[17]</sup>.
 
+### Self-indexing
+
+Distribution-aware compressed full-text indexes<sup>[18]</sup> may be relevant.
+
 ## References
 
 [1]  Optimal Binary Search Trees 
@@ -521,3 +525,6 @@ Our problem bears some relation to that of IP address routing<sup>[17]</sup>.
 
 [17]  A Tree-Based Packet Routing Table for Berkeley Unix
 [17]: http://ece.ut.ac.ir/classpages/F83/Advanced%20Computer%20Networks/PAPERS/LOOKUP/routing.pdf
+
+[18]  Distribution-aware compressed full-text indexes
+[18]: https://helda.helsinki.fi/bitstream/handle/10138/27658/WeiCFI.pdf
