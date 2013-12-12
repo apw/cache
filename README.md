@@ -465,6 +465,10 @@ input to a logistic regressor with the mean values.
 Putting 6.4 and 6.5 together, it may be the case that we can reduce our problem to
 Hufmann Coding.
 
+### 6.7 Suffix Trees
+
+Our problem bears some relation to that of IP address routing<sup>[17]</sup>.
+
 ## References
 
 [1]  Optimal Binary Search Trees 
@@ -512,5 +516,8 @@ Hufmann Coding.
 [15]  Approximating Data with the Count-Min Data Structure
 [15]: http://dimacs.rutgers.edu/%7Egraham/pubs/papers/cmsoft.pdf
 
-[15]  Count-Min Sketch
+[16]  Count-Min Sketch
 [16]: http://dimacs.rutgers.edu/~graham/pubs/papers/cmencyc.pdf
+
+[17]  A Tree-Based Packet Routing Table for Berkeley Unix
+[17]: http://ece.ut.ac.ir/classpages/F83/Advanced%20Computer%20Networks/PAPERS/LOOKUP/routing.pdf
