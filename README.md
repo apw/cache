@@ -469,7 +469,12 @@ Hufmann Coding.
 
 Our problem bears some relation to that of IP address routing<sup>[17]</sup>.
 
-### Self-indexing
+### 6.8 Crit-bit Trees
+
+DJB makes strong arguments for crit-bit trees as a fundamental
+data structure, above hash tables<sup>[19]</sup>.
+
+### 6.9 Self-indexing
 
 Distribution-aware compressed full-text indexes<sup>[18]</sup> may be relevant.
 
@@ -528,3 +533,6 @@ Distribution-aware compressed full-text indexes<sup>[18]</sup> may be relevant.
 
 [18]  Distribution-aware compressed full-text indexes
 [18]: https://helda.helsinki.fi/bitstream/handle/10138/27658/WeiCFI.pdf
+
+[19]  "Crit-bit" trees
+[19]: http://cr.yp.to/critbit.html
