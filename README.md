@@ -493,6 +493,12 @@ Distribution-aware compressed full-text indexes<sup>[18]</sup> may be relevant.
 Judy arrays<sup>[20]</sup> appear to have something
 in common with 256-ary trees.
 
+### 5.11 Adaptive radix trees
+
+The authors<sup>[21]</sup> are saying the right words:
+
+> A third class of data structures, known as trie, radix tree, prefix tree, and digital search tree ...
+
 ## 6. References
 
 [1]  Optimal Binary Search Trees 
@@ -554,3 +560,6 @@ in common with 256-ary trees.
 
 [20]  Judy arrays
 [20]: http://www.nothings.org/computer/judy/
+
+[21]  The Adaptive Radix Tree: ARTful Indexing for Main-Memory Databases
+[21]: http://www3.in.tum.de/~leis/papers/ART.pdf
