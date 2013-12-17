@@ -1,5 +1,14 @@
 # Cache research for CS 261
 
+## Table of Contents
+
+* [1. Introduction](#1-introduction)
+* [2. Problem statement](#2-problem-statement)
+* [3. Oracle](#3-oracle)
+* [4. Telemetry](#4-telemetry)
+* [5. Alternatives](#5-alternatives)
+* [6. References](#6-references)
+
 ## 1 Introduction
 
 As part of a new approach
@@ -432,7 +441,7 @@ admits a dynamic programming solution that
 exploits *both* the cache contents *and* the query distribution. However,
 it seems impossible to define a total order on our cache entries.
 
-### 6.2 Symmetrizers
+### 5.2 Symmetrizers
 
 Obviously we want to match state vectors instead of molecules, but the
 work by Piponi<sup>[3]</sup> is key because it puts our problem in the
@@ -441,44 +450,50 @@ operation to its start state that leaves it invariant. In our
 case of reads before writes, the symmetries are *any* operation
 to the "don't care" bits. 
 
-### 6.3 Branching Programs
+### 5.3 Branching Programs
 
 We may find that a BDD library such as BuDDy<sup>[14]</sup> or CUDD<sup>[13]</sup> is
 fast enough to use instead of our own decision tree.  This would bring
 with it a great many algebraic advantages.
 
-### 6.4 Count-min Sketches
+### 5.4 Count-min Sketches
 
 If it is prohibitively expensive to calculate the marginal probabilities
 for each bit, we can employ a count-min sketch<sup>[15],[16]</sup> to ensure that
 we get the "heavy-hitters".
 
-### 6.5 Logistic Regression
+### 5.5 Logistic Regression
 
 If we have the marginal probabilities, we can use them to integrate over any
 bits we are not conditioning on as we walk the binary decision tree by
 filling in the missing data we need to
 input to a logistic regressor with the mean values.
 
-### 6.6 Hufmann Coding
+### 5.6 Hufmann Coding
 
 Putting 6.4 and 6.5 together, it may be the case that we can reduce our problem to
 Hufmann Coding.
 
-### 6.7 Suffix Trees
+### 5.7 Suffix Trees
 
 Our problem bears some relation to that of IP address routing<sup>[17]</sup>.
+See also PATRICIA tries.
 
-### 6.8 Crit-bit Trees
+### 5.8 Crit-bit Trees
 
 DJB makes strong arguments for crit-bit trees as a fundamental
 data structure, above hash tables<sup>[19]</sup>.
 
-### 6.9 Self-indexing
+### 5.9 Self-indexing
 
 Distribution-aware compressed full-text indexes<sup>[18]</sup> may be relevant.
 
-## References
+### 5.10 Judy arrays
+
+Judy arrays<sup>[20]</sup> appear to have something
+in common with 256-ary trees.
+
+## 6. References
 
 [1]  Optimal Binary Search Trees 
 [1]: http://alg12.wikischolars.columbia.edu/file/view/OPTIMALBST.pdf
@@ -536,3 +551,6 @@ Distribution-aware compressed full-text indexes<sup>[18]</sup> may be relevant.
 
 [19]  "Crit-bit" trees
 [19]: http://cr.yp.to/critbit.html
+
+[20]  Judy arrays
+[20]: http://www.nothings.org/computer/judy/
