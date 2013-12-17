@@ -499,6 +499,8 @@ The authors<sup>[21]</sup> are saying the right words:
 
 > A third class of data structures, known as trie, radix tree, prefix tree, and digital search tree ...
 
+Ideally we would be able to implement this as a single mmap-able file<sup>[22]</sup>.
+
 ## 6. References
 
 [1]  Optimal Binary Search Trees 
@@ -563,3 +565,6 @@ The authors<sup>[21]</sup> are saying the right words:
 
 [21]  The Adaptive Radix Tree: ARTful Indexing for Main-Memory Databases
 [21]: http://www3.in.tum.de/~leis/papers/ART.pdf
+
+[22]  Nutrient
+[22]: https://github.com/colmmacc/nutrient
