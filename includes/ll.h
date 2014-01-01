@@ -4,8 +4,6 @@
 #include "rep.h"
 #include <stdint.h>
 
-#pragma once
-
 class ll : public virtual rep {
  public:
   ll(const char *cur_time);

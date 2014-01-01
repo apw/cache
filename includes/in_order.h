@@ -3,17 +3,14 @@
 
 #include "rep.h"
 #include "rset_uint.h"
+
 #include <stdint.h>
 #include <iostream>
-#include <boost/unordered_map.hpp>
-#include <boost/unordered_set.hpp>
-
+#include <tr1/unordered_map>
+#include <tr1/unordered_set>
 #include <vector>
 
 using namespace std;
-using namespace boost;
-
-#pragma once
 
 #define SHORT_CIRCUIT_THRESHOLD 1
 
@@ -55,8 +52,8 @@ class in_order : public virtual rep {
     }
   } bytenum_eq;
 
-  typedef unordered_map<unsigned, unsigned, id_hash, id_eq> bytenum_set;
-  typedef unordered_map<unsigned, bytenum_set, bytenum_hash, bytenum_eq> cache;
+  typedef tr1::unordered_map<unsigned, unsigned, id_hash, id_eq> bytenum_set;
+  typedef tr1::unordered_map<unsigned, bytenum_set, bytenum_hash, bytenum_eq> cache;
   cache c_;
 
   unsigned num_relevant_;

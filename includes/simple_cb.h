@@ -5,14 +5,11 @@
 #include "in_order.h"
 #include <stdint.h>
 #include <iostream>
-#include <boost/unordered_map.hpp>
-#include <boost/unordered_set.hpp>
+#include <tr1/unordered_map>
+#include <tr1/unordered_set>
 #include <vector>
 
 using namespace std;
-using namespace boost;
-
-#pragma once
 
 class simple_cb : public in_order {
  public:
@@ -20,16 +17,14 @@ class simple_cb : public in_order {
 
   void prepare_to_query(void);
 
- private:
-  typedef in_order super;
-
+ protected:
   class bytenum_prio {
   public:
     unsigned bytenum;
     unsigned prio;
   };
 
-  struct {
+  struct prio_compare {
     bool operator() (bytenum_prio a, bytenum_prio b) {
       // STORY 1
       if (a.prio != b.prio) {
@@ -39,6 +34,9 @@ class simple_cb : public in_order {
       return a.bytenum < b.bytenum;
     }
   } prio_compare;
+
+ private:
+  typedef in_order super;
 };
 
 #endif

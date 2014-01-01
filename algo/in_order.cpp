@@ -4,8 +4,6 @@
 
 #include <stdint.h>
 #include <assert.h>
-#include <boost/unordered_map.hpp>
-#include <boost/unordered_set.hpp>
 #include <iostream>
 #include <vector>
 

@@ -3,13 +3,12 @@
 #include "../includes/simple_cb.h"
 #include "../includes/common.h"
 
-#include <stdint.h>
-#include <assert.h>
-#include <boost/unordered_map.hpp>
-#include <boost/unordered_set.hpp>
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
+#include <stdint.h>
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
@@ -25,7 +24,7 @@ void simple_cb::prepare_to_query() {
   vector<bytenum_prio> bp_arr;
   cache::const_iterator c_end = c_.end();
   for(cache::const_iterator c_iter = c_.begin(); c_iter != c_end; c_iter++) {
-    unordered_set<uint8_t> val_set;
+    tr1::unordered_set<uint8_t> val_set;
     bytenum_set::const_iterator b_end = c_[c_iter->first].end();
     for(bytenum_set::const_iterator b_iter = c_[c_iter->first].begin(); 
 	b_iter != b_end; b_iter++) {
@@ -40,7 +39,7 @@ void simple_cb::prepare_to_query() {
     bp_arr.push_back(bp);
   }
 
-  sort(bp_arr.begin(), bp_arr.end(), prio_compare);
+  std::sort(bp_arr.begin(), bp_arr.end(), prio_compare);
 
   num_relevant_ = c_.size();
   relevant_ = (unsigned *) malloc(sizeof(unsigned) * num_relevant_);

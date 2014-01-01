@@ -6,13 +6,15 @@
 #include <assert.h>
 #include <errno.h>
 #include <string.h>
+#include <limits.h>
 
 #include <vector>
-#include <boost/shared_ptr.hpp>
+#include <tr1/memory>
 
 #include "../includes/rep.h"
 #include "../includes/in_order.h"
 #include "../includes/simple_cb.h"
+#include "../includes/trie_cb.h"
 #include "../includes/ll.h"
 #include "../includes/cycle_timing.h"
 #include "../includes/common.h"
@@ -21,10 +23,10 @@ using namespace std;
 
 #define NUM_ARGS 2
 
-typedef enum {LL_IMP, IN_ORDER_IMP, SIMPLE_CB_IMP} imp_t;
+typedef enum {LL_IMP, IN_ORDER_IMP, SIMPLE_CB_IMP, TRIE_CB_IMP} imp_t;
 
 // order in which implementations will be run
-int imps[] = {SIMPLE_CB_IMP, IN_ORDER_IMP, LL_IMP};
+int imps[] = {TRIE_CB_IMP, LL_IMP, SIMPLE_CB_IMP};
 //int imps[] = {LL_IMP};
 
 #define TIMEBUF_SZ 80
@@ -37,7 +39,7 @@ char *query_file_name;
 FILE *cache = NULL;
 FILE *query = NULL;
 
-typedef shared_ptr<rep> rep_ptr;
+typedef tr1::shared_ptr<rep> rep_ptr;
 
 /*
  * We want to only have one representation active in memory
@@ -60,6 +62,11 @@ static rep_ptr initialize_rep(int imp_num) {
   }
   case SIMPLE_CB_IMP: {
     simple_cb *i = new simple_cb(cur_time);
+    r.reset(i);
+    break;
+  }
+  case TRIE_CB_IMP: {
+    trie_cb *i = new trie_cb(cur_time);
     r.reset(i);
     break;
   }

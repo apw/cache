@@ -1,3 +1,4 @@
+/*
 #ifndef _SIMPLE_DTRIE_H
 #define _SIMPLE_DTRIE_H
 
@@ -8,15 +9,11 @@
 
 #include <stdint.h>
 #include <iostream>
-#include <boost/unordered_map.hpp>
-#include <boost/unordered_set.hpp>
-
+#include <tr1/unordered_map>
+#include <tr1/unordered_set>
 #include <vector>
 
 using namespace std;
-using namespace boost;
-
-#pragma once
 
 class simple_dtrie : public virtual rep {
  public:
@@ -55,8 +52,8 @@ class simple_dtrie : public virtual rep {
   } bytenum_eq;
 
   typedef vector<unsigned> id_set;
-  typedef unordered_map<uint8_t, id_set, byteval_hash, byteval_eq> byteval_map;
-  typedef unordered_map<unsigned, byteval_map, bytenum_hash, bytenum_eq> cache;
+  typedef tr1::unordered_map<uint8_t, id_set, byteval_hash, byteval_eq> byteval_map;
+  typedef tr1::unordered_map<unsigned, byteval_map, bytenum_hash, bytenum_eq> cache;
   cache c_;
 
   class c_trie {
@@ -100,13 +97,13 @@ class simple_dtrie : public virtual rep {
     double get_prop(unsigned bytenum, uint8_t byteval);
 
   private:
-    typedef unordered_map<uint8_t, unsigned> prop_map;
+    typedef tr1::unordered_map<uint8_t, unsigned> prop_map;
     typedef struct {
       unsigned denom;
       prop_map pm;
     } bytenum_md;
 
-    typedef unordered_map<unsigned, bytenum_md> query_md;
+    typedef tr1::unordered_map<unsigned, bytenum_md> query_md;
 
     query_md q_;
   };
@@ -139,12 +136,12 @@ class simple_dtrie : public virtual rep {
     
   private:
     typedef struct node {
-      unordered_map<uint8_t, struct node> c;
+      tr1::unordered_map<uint8_t, struct node> c;
       unsigned bytenum;
       unsigned id;
     } node;
     
-    typedef unordered_map<uint8_t, node> children;
+    typedef tr1::unordered_map<uint8_t, node> children;
 
     void load_helper(node *);
     
@@ -160,3 +157,4 @@ class simple_dtrie : public virtual rep {
 };
 
 #endif
+*/

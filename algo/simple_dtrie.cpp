@@ -1,7 +1,9 @@
+/*
 #include "../includes/simple_dtrie.h"
 #include "../includes/common.h"
 #include "../includes/rset_uint.h"
 #include "../includes/uset_uint.h"
+#include "../includes/d_trie.h"
 
 #include <stdint.h>
 #include <assert.h>
@@ -9,8 +11,6 @@
 #include <stdio.h>
 #include <errno.h>
 
-#include <boost/unordered_map.hpp>
-#include <boost/unordered_set.hpp>
 #include <iostream>
 #include <vector>
 
@@ -256,27 +256,26 @@ void simple_dtrie::d_trie::load(cq_trie *cq) {
 void simple_dtrie::d_trie::load_helper(node *n) {
   n->bytenum = cond_data_->get_highest_utility_bytenum();
   n->id = INVALID_ID;
-  /*
+  
   // TODO give cq_trie an iterator that will iterate over
   // a new iterator of c_trie which will iterate over bytevals 
   // for a given bytenum
 
-  byteval_map bm = cache_->operator[](n->bytenum);
+  //byteval_map bm = cache_->operator[](n->bytenum);
 
-  byteval_map::const_iterator b_end = bm.end();
-  for(byteval_map::const_iterator b_iter = bm.begin(); 
+  //byteval_map::const_iterator b_end = bm.end();
+  //for(byteval_map::const_iterator b_iter = bm.begin(); 
       b_iter != b_end; b_iter++) {
     // only iterate over bytevals if they have one id that is still exists
     // use get_prop > 0 of the c_trie
 
-    cond_data_->cond(n->bytenum, b_iter->first);
+    //cond_data_->cond(n->bytenum, b_iter->first);
     // construct subtrie here
     // assign subtrie as child
-    cond_data_->uncond();
-  }
+    //cond_data_->uncond();
+  //}
 
   // what about base case?
-  */
 }
 
 void simple_dtrie::prepare_to_query() {
@@ -288,3 +287,4 @@ unsigned simple_dtrie::do_query(uint8_t *bv, unsigned len) {
   // TODO
   return INVALID_ID;
 }
+*/

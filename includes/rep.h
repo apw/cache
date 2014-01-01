@@ -6,9 +6,6 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include <boost/unordered_map.hpp>
-
-#pragma once
 
 using namespace std;
 
