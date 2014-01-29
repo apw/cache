@@ -1,16 +1,18 @@
 CC = g++-4.7
-CFLAGS = -Wall -Werror
+CFLAGS = -Wall -Werror -std=c++11
 
-OPTIMIZABLE_SOURCES = main/*.cpp algo/*.cpp ds/*.cpp
+GENERAL_SOURCES = algo/*.cpp ds/*.cpp
+OPTIMIZABLE_SOURCES = main/*.cpp $(GENERAL_SOURCES)
 OPTIMIZABLE_OBJECT = bin/opt.o
 VOLATILE_SOURCES = arch/*.c
 VOLATILE_OBJECT = bin/vol.o
 HEADERS = includes/*.h includes/*.hpp
-EXECUTABLE = bin/main
+MAIN = bin/main
+DGEN = bin/dgen
 
 KANGAROO_BODY = $(CC) $(CFLAGS)
-#KANGAROO_TAIL = $(SOURCES) -o $(EXECUTABLE)
-MKDIRS = mkdir -p bin graphs output 
+#KANGAROO_TAIL = $(SOURCES) -o $(MAIN)
+MKDIRS = mkdir -p bin graphs output
 
 OH = -O3
 OH_NO = -O0
@@ -21,7 +23,13 @@ OH_NO = -O0
 main:
 	$(MKDIRS)
 	$(KANGAROO_BODY) $(OH_NO) -c $(VOLATILE_SOURCES) -o $(VOLATILE_OBJECT)
-	$(KANGAROO_BODY) $(VOLATILE_OBJECT) $(OH) $(OPTIMIZABLE_SOURCES) -o $(EXECUTABLE)
+	$(KANGAROO_BODY) $(VOLATILE_OBJECT) $(OH) $(OPTIMIZABLE_SOURCES) -o $(MAIN)
+
+dgen:
+	mkdir -p bin gendat
+	$(KANGAROO_BODY) $(OH_NO) -c $(VOLATILE_SOURCES) -o $(VOLATILE_OBJECT)
+	$(KANGAROO_BODY) $(VOLATILE_OBJECT) $(OH) dgen/*.cpp $(GENERAL_SOURCES) -o $(DGEN)
+	./$(DGEN)
 
 dop:
 	rm -f output/*
@@ -29,25 +37,25 @@ dop:
 sgdb:
 	$(MKDIRS)
 	$(KANGAROO_BODY) $(OH_NO) -g -c $(VOLATILE_SOURCES) -o $(VOLATILE_OBJECT)
-	$(KANGAROO_BODY) -g $(VOLATILE_OBJECT) $(OH_NO) $(OPTIMIZABLE_SOURCES) -o $(EXECUTABLE)
-	sudo gdb $(EXECUTABLES)
+	$(KANGAROO_BODY) -g $(VOLATILE_OBJECT) $(OH_NO) $(OPTIMIZABLE_SOURCES) -o $(MAIN)
+	sudo gdb $(MAINS)
 
 gdb:
 	$(MKDIRS)
 	$(KANGAROO_BODY) $(OH_NO) -g -c $(VOLATILE_SOURCES) -o $(VOLATILE_OBJECT)
-	$(KANGAROO_BODY) -g $(VOLATILE_OBJECT) $(OH_NO) $(OPTIMIZABLE_SOURCES) -o $(EXECUTABLE)
-	gdb $(EXECUTABLE)
+	$(KANGAROO_BODY) -g $(VOLATILE_OBJECT) $(OH_NO) $(OPTIMIZABLE_SOURCES) -o $(MAIN)
+	gdb $(MAIN)
 
 clean:
 	rm -rf bin/*
 
 run:
 	$(MAKE)
-	./$(EXECUTABLE) $(t) $(q)
+	./$(MAIN) $(t) $(q)
 
 hist:
 	$(MAKE)
-	./$(EXECUTABLE) $(t) $(q)
+	./$(MAIN) $(t) $(q)
 	python main/gen_hist.py $(r1) $(r2)
 
-.PHONY: main dbg clean
+.PHONY: main dbg clean dgen
