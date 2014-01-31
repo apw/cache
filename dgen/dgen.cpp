@@ -60,28 +60,41 @@ void gen_cache(struct cache_params *cp, cache *c) {
   vect *s = (vect *) malloc(sizeof(vect) * cp->num_vects);
   assert(s != NULL);
   
-  // create the cache
+  // iterate over vectors that will be generated
   unsigned num_rel;
   for(unsigned i = 0; i < cp->num_vects; i++) {
+    // create distribution for generating the number of relevant bytenums of 
+    // this vector
     default_random_engine rel_g = get_seeded_generator();
     normal_distribution<float> rel_dist(cp->m_num_rel * cp->vect_len,
 						cp->std_num_rel * cp->vect_len);
+    
+    // loop to ensure that number of relevant bytenums is not greater than max
+    // vector length
     do {
       num_rel = rel_dist(rel_g);
     } while (num_rel > cp->vect_len);
     
+    // pick which bytenums will be relevant uniformly
     unsigned *rel_bytenums = (unsigned *) malloc(sizeof(unsigned) * num_rel);
     assert(rel_bytenums != NULL);
     unif_no_rep(0, cp->vect_len, rel_bytenums, num_rel);
     // note: the picked bytenums are not sorted
     
+    // create distribution for generating bytevals
     default_random_engine val_g = get_seeded_generator();
     uniform_int_distribution<uint8_t> val_dist(0, ((uint8_t) -1));
     
+    // iterate over relevant bytenums and pick bytevals for them ~ Unif(0, 255)
     for(unsigned j = 0; j < num_rel; j++) {
       unsigned bytenum = rel_bytenums[j];
       uint8_t byteval = val_dist(val_g);
       
+      // this now puts 'bytenum' and 'byteval' in teravectyl, TODO put this in an array of vectors
+      // that will be passed into this function from main instead of 'cache c'
+      (void) bytenum;
+      (void) byteval;
+      /*
       entry e;
       e.bytenum = bytenum;
       e.byteval = byteval;
@@ -93,6 +106,7 @@ void gen_cache(struct cache_params *cp, cache *c) {
       }
       
       c->operator[](bytenum)[j] = byteval;
+      */
     }
     
     free(rel_bytenums);
