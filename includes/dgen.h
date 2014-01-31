@@ -1,7 +1,7 @@
 #ifndef _DGEN_H
 #define _DGEN_H
 
-#include "d_trie.h"
+#include <stdint.h>
 
 #include <tr1/unordered_map>
 #include <vector>
@@ -54,6 +54,6 @@ struct cache_params {
 };
 
 
-void gen_opt_dtrie(struct cache_params *, d_trie *, cache *);
+void gen_cache(struct cache_params *, cache *);
 
 #endif

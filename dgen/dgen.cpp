@@ -1,6 +1,5 @@
 #include "../includes/dgen.h"
 #include "../includes/rep.h"
-#include "../includes/d_trie.h"
 
 #include <stdlib.h>
 #include <assert.h>
@@ -50,8 +49,7 @@ static void unif_no_rep(unsigned min, unsigned max,
   }
 }
 
-void gen_opt_dtrie(struct cache_params *cp, d_trie *solution, cache *c) {
-  assert(solution == NULL);
+void gen_cache(struct cache_params *cp, cache *c) {
   assert(cp != NULL);
   
   assert(cp->num_vects > 0);
@@ -75,8 +73,7 @@ void gen_opt_dtrie(struct cache_params *cp, d_trie *solution, cache *c) {
     unsigned *rel_bytenums = (unsigned *) malloc(sizeof(unsigned) * num_rel);
     assert(rel_bytenums != NULL);
     unif_no_rep(0, cp->vect_len, rel_bytenums, num_rel);
-    // note: the picked bytenums are not sorted and that is
-    // crucial for the next part, in which the d_trie is generated.
+    // note: the picked bytenums are not sorted
     
     default_random_engine val_g = get_seeded_generator();
     uniform_int_distribution<uint8_t> val_dist(0, ((uint8_t) -1));
@@ -101,37 +98,6 @@ void gen_opt_dtrie(struct cache_params *cp, d_trie *solution, cache *c) {
     free(rel_bytenums);
   }
   
-  // put the cache in the d_trie
-  solution = new d_trie(s[0][0].bytenum, 0);
-  d_trie *iter = solution;
-  for(unsigned j = 0; j < s[0].size() - 1; j++) {
-    iter->extend(s[0][j].byteval, s[0][j + 1].bytenum, 0);
-    iter = iter->decide(s[0][j].byteval);
-  }  
-  iter->extend(s[0][s[0].size() - 1].byteval, INVALID_BYTENUM, 0);
-  
-  for(unsigned i = 1; i < cp->num_vects; i++) {
-    iter = solution;
-    
-    for(unsigned j = 0; j < s[i].size() - 1; j++) {
-      if (iter->is_leaf()) {
-	iter->extend(s[i][j].byteval, s[i][j + 1].bytenum, i);
-      } else {
-	assert(c->find(s[i][j].bytenum) != c->end());
-	if (c->operator[](s[i][j].bytenum).find(i) 
-	    != c->operator[](s[i][j].bytenum).end()) {
-	  iter->extend(s[i][j].byteval, s[i][j + 1].bytenum, i);
-	} else {
-	  // TODO ahhh
-	}
-      }
-      
-      iter = iter->decide(s[i][j].byteval);
-    }
-    
-    iter->extend(s[i][s[i].size() - 1].byteval, INVALID_BYTENUM, i);    
-  }
-
   free(s);
 }
 
@@ -143,17 +109,12 @@ int main(int argc, char **argv) {
   cp.m_num_rel = 0.5;
   cp.std_num_rel = 0.01;
 
-  d_trie *solution = NULL;
   cache c;
-  gen_opt_dtrie(&cp, solution, &c);
-  assert(solution != NULL);
+  gen_cache(&cp, &c);
   
-  // generate cache vectors
-  // assign absorption rates
-  // generate query vectors
-  // dun forget to output vectors to target files
-  
-  delete solution;
+  // TODO output cache 'c' to file
+  // TODO gen query
+  // TODO output queries to file
   
   return 0;
 }
