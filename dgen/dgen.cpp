@@ -23,7 +23,7 @@ static void unif_no_rep(unsigned min, unsigned max,
 			unsigned *nums, unsigned n) {
   assert(n > 0);
   assert(min < max);
-  assert(max - min >= n);
+  assert(max - min >= n); // not correct...are max and min inclusive or exclusive? if inclusive, then should be (max-min >= n-1); if exclusive, then should be (max-min > n); if first inclusive and second exclusive, then is fine but should be documented in comments
   
   unsigned range = max - min;
   unsigned perm[range];
