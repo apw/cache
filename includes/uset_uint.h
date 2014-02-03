@@ -36,6 +36,8 @@ class uset_uint {
   unsigned get_size(void);
   unsigned get_capacity(void);
 
+  void print(void);
+  
  private:
   unsigned capacity_;
   unsigned size_;

@@ -4,6 +4,7 @@
 #include "rep.h"
 #include "simple_cb.h"
 #include "d_trie.h"
+#include "uset_uint.h"
 
 #include <vector>
 
@@ -23,6 +24,9 @@ class trie_cb : public simple_cb {
 
  private:
   typedef simple_cb super;
+  
+  void populate_trie(d_trie *, uset_uint *, unsigned);
+  unsigned do_query_helper(d_trie *, uint8_t *, unsigned);
 };
 
 #endif
