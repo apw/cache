@@ -86,7 +86,7 @@ void d_trie::print_helper(unsigned spaces) {
   }
   
   if (this->is_leaf() && !this->x_exists()) {
-    cout << tab << "Q(" << bytenum_ << ")[]";
+    cout << tab << "ID: " << id_;
     return;
   }
   

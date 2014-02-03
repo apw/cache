@@ -31,58 +31,57 @@ void trie_cb::populate_trie(d_trie *n, uset_uint *candidates, unsigned prev) {
 
   //candidates->print();
   //cout << endl;
-
-  cout << "Q(" << relevant_[prev] << ")" << endl;
+  //cout << "Q(" << relevant_[prev] << ")" << endl;
   
   for(unsigned i = 0; i < s_.size(); i++) {
-    if (candidates->lookup(i)) {      
+    if (candidates->lookup(i)) {    
       if (c_[relevant_[prev]].count(i) > 0) {
 	// this is a relevant bytenum
 	
 	uint8_t byteval = c_[relevant_[prev]][i];
 	
-	// remove candidates with bytenum 'relevant_[prev]' not set to 'byetval'
-	candidates->begin_trans();	
+	// remove candidates with bytenum 'relevant_[prev]' not set to 'byteval'
+	candidates->begin_trans();
 	bytenum_set::const_iterator prev_end = c_[relevant_[prev]].end();
 	for(bytenum_set::const_iterator prev_iter = c_[relevant_[prev]].begin();
 	    prev_iter != prev_end; prev_iter++) {
 	  if (candidates->lookup(prev_iter->first) && prev_iter->second != byteval) {
 	    candidates->remove(prev_iter->first);
-	    cout << "removing " << prev_iter->first << " b/c byteval " << prev_iter->second << " is not " << ((unsigned)byteval) << endl;
+	    //cout << "removing " << prev_iter->first << " b/c byteval " << prev_iter->second << " is not " << ((unsigned)byteval) << endl;
 	  }
 	}
 	candidates->end_trans();
 	
-	if (candidates->get_size() > 0) {
-	  cout << "Cond on " << ((unsigned)byteval) << endl;
-	  
-	  if (cur == num_relevant_) {
-	    n->extend(byteval, INVALID_BYTENUM, i);
-	  } else {
-	    n->extend(byteval, relevant_[cur], i);
-	    d_trie *child = n->decide(byteval);
-	    populate_trie(child, candidates, cur);
-	  }
+	assert(candidates->get_size() >= 1);
+	
+	//cout << "Cond on " << ((unsigned)byteval) << endl;
+	
+	if (cur == num_relevant_) {
+	  n->extend(byteval, INVALID_BYTENUM, i);
 	} else {
-	  // TODO why do we never hit this assert?
-	  assert(0);
+	  n->extend(byteval, relevant_[cur], INVALID_ID);
+	  d_trie *child = n->decide(byteval);
+	  populate_trie(child, candidates, cur);
 	}
 	
 	candidates->undo_trans();
       } else if (c_[relevant_[prev]].count(i) == 0) {
 	// this is an irrelevant bytenum
 	
-	/*
+	// TODO what if rest of bynums for this vector are irrelevant?
 	if (cur == num_relevant_) {
 	  n->extend_x(INVALID_BYTENUM, i);
+	  // TODO am i sure we're getting the id's from extend_x in do_query
 	} else {
 	  n->extend_x(relevant_[cur], i);
 	  d_trie *child = n->decide_x();
 	  populate_trie(child, candidates, cur);
 	}
-	*/
-	
+		
+      } else {
+	assert(0);
       }
+      
     }
   }
   
