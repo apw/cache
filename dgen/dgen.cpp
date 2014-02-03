@@ -18,11 +18,12 @@ default_random_engine get_seeded_generator() {
   return g;  
 }
 
+// numbers in: [min, max)
 static void unif_no_rep(unsigned min, unsigned max,
 			unsigned *nums, unsigned n) {
   assert(n > 0);
   assert(min < max);
-  assert(max - min >= n); // not correct...are max and min inclusive or exclusive? if inclusive, then should be (max-min >= n-1); if exclusive, then should be (max-min > n); if first inclusive and second exclusive, then is fine but should be documented in comments
+  assert(max - min >= n);
   
   unsigned range = max - min;
   unsigned perm[range];
@@ -65,7 +66,7 @@ void gen_cache(struct cache_params *cp, cache *c) {
   for(unsigned i = 0; i < cp->num_vects; i++) {
     default_random_engine rel_g = get_seeded_generator();
     normal_distribution<float> rel_dist(cp->m_num_rel * cp->vect_len,
-						cp->std_num_rel * cp->vect_len);
+					cp->std_num_rel * cp->vect_len);
     do {
       num_rel = rel_dist(rel_g);
     } while (num_rel > cp->vect_len);
