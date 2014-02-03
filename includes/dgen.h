@@ -44,6 +44,7 @@ typedef struct {
 
 typedef vector<entry> tmp_cache_entry;
 typedef vector<tmp_cache_entry> tmp_cache_rep;
+typedef tmp_cache_rep tmp_query_stream_rep;
 
 typedef vector<entry> vect;
 

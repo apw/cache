@@ -12,6 +12,7 @@
 #include <random>
 #include <vector>
 #include <chrono>
+#include <algorithm>
 
 using namespace std;
 
@@ -51,6 +52,10 @@ static void unif_no_rep(unsigned min, unsigned max,
   for(unsigned i = 0; i < n; i++) {
     nums[i] = perm[i];
   }
+}
+
+bool entryCmp(entry a, entry b) {
+  return a.bytenum < b.bytenum;
 }
 
 void gen_cache(struct cache_params *cp, tmp_cache_rep *c) {
@@ -95,13 +100,6 @@ void gen_cache(struct cache_params *cp, tmp_cache_rep *c) {
       unsigned bytenum = rel_bytenums[j];
       uint8_t byteval = val_dist(val_g);
       
-      cout << bytenum << " " << (unsigned) byteval;
-      if (j != num_rel-1) {
-	cout << " ";
-      } else {
-	cout << endl;
-      }
-      
       // this now puts 'bytenum' and 'byteval' in teravectyl, TODO put this in an array of vectors
       // that will be passed into this function from main instead of 'cache c'
       entry e;
@@ -128,9 +126,19 @@ void gen_cache(struct cache_params *cp, tmp_cache_rep *c) {
 
     free(rel_bytenums);
   }
+
+  // sort the entries in each line in the cache in bytenum order
+  unsigned int siz = c->size();
+  for (unsigned int i = 0; i < siz; i++) {
+    std::sort(c->operator[](i).begin(),
+	      c->operator[](i).end(),
+	      entryCmp);
+  }
   
   free(s);
 }
+
+
 
 int main(int argc, char **argv) {
   /*
@@ -162,16 +170,36 @@ int main(int argc, char **argv) {
   cp.m_num_rel = 0.5;
   cp.std_num_rel = 0.1;
 
-  /*  struct query_params qp;
+  struct query_params qp;
   qp.num_vects = 10;
   qp.vect_len = 120;
   qp.hit_ratio = 0.8;
-  */
+
   tmp_cache_rep c;
   gen_cache(&cp, &c);
   
-  cout << endl << (unsigned) c[0][0].byteval << endl;
+  cout << "CACHE CONTENTS" << endl;
+  unsigned int outerIterMax, innerIterMax;
+  unsigned int i, j;
+  outerIterMax = c.size();
+  for (i = 0; i < outerIterMax; i++) {
+    innerIterMax = c[i].size();
+    for (j = 0; j < innerIterMax; j++) {
+      cout << c[i][j].bytenum << " " << (unsigned) c[i][j].byteval;
+      if (j == innerIterMax-1) {
+	cout << endl;
+      } else {
+	cout << " ";
+      }
+    }
+  }
   
+  // TODO NEIL
+  tmp_query_stream_rep q;
+  gen_query(&qp, &c, &q);
+  cout << endl << "QUERY CONTENTS";
+
+
   // TODO output cache 'c' to file
   // TODO gen query
   // TODO output queries to file
