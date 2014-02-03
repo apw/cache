@@ -18,14 +18,13 @@ void trie_cb::do_add_byte(int id, unsigned bytenum, unsigned byteval) {
   super::do_add_byte(id, bytenum, byteval);
 }
 
-void trie_cb::populate_trie(d_trie *n, uset_uint *candidates, unsigned prev) {
+void trie_cb::populate_trie(d_trie *n, uset_uint *candidates,
+			    uset_uint *done, unsigned prev) {
   assert(n != NULL);
   assert(candidates != NULL);
   assert(prev < num_relevant_);
   
   unsigned cur = prev + 1;
-  
-  // base case?
   
   assert(candidates->get_size() > 0);
 
@@ -34,11 +33,13 @@ void trie_cb::populate_trie(d_trie *n, uset_uint *candidates, unsigned prev) {
   //cout << "Q(" << relevant_[prev] << ")" << endl;
   
   for(unsigned i = 0; i < s_.size(); i++) {
-    if (candidates->lookup(i)) {    
+    if (candidates->lookup(i) && done->lookup(i)) {    
       if (c_[relevant_[prev]].count(i) > 0) {
 	// this is a relevant bytenum
 	
 	uint8_t byteval = c_[relevant_[prev]][i];
+	
+	//cout << relevant_[prev] << "->" << (unsigned) byteval << endl;
 	
 	// remove candidates with bytenum 'relevant_[prev]' not set to 'byteval'
 	candidates->begin_trans();
@@ -58,10 +59,17 @@ void trie_cb::populate_trie(d_trie *n, uset_uint *candidates, unsigned prev) {
 	
 	if (cur == num_relevant_) {
 	  n->extend(byteval, INVALID_BYTENUM, i);
+	  
+	  // premenantly remove from the done set
+	  for(unsigned j = 0; j < s_.size(); j++) {
+	    if (candidates->lookup(j)) {
+	      done->remove(j);
+	    }
+	  }
 	} else {
 	  n->extend(byteval, relevant_[cur], INVALID_ID);
 	  d_trie *child = n->decide(byteval);
-	  populate_trie(child, candidates, cur);
+	  populate_trie(child, candidates, done, cur);
 	}
 	
 	candidates->undo_trans();
@@ -72,10 +80,16 @@ void trie_cb::populate_trie(d_trie *n, uset_uint *candidates, unsigned prev) {
 	if (cur == num_relevant_) {
 	  n->extend_x(INVALID_BYTENUM, i);
 	  // TODO am i sure we're getting the id's from extend_x in do_query
+
+	  for(unsigned j = 0; j < s_.size(); j++) {
+	    if (candidates->lookup(j)) {
+	      done->remove(j);
+	    }
+	  }
 	} else {
 	  n->extend_x(relevant_[cur], i);
 	  d_trie *child = n->decide_x();
-	  populate_trie(child, candidates, cur);
+	  populate_trie(child, candidates, done, cur);
 	}
 		
       } else {
@@ -92,11 +106,15 @@ void trie_cb::prepare_to_query() {
   
   d_ = new d_trie(relevant_[0], INVALID_ID);
   uset_uint *candidates = new uset_uint(s_.size());
-  populate_trie(d_, candidates, 0);
+  uset_uint *done = new uset_uint(s_.size());
+  done->begin_trans();
+  populate_trie(d_, candidates, done, 0);
+  done->end_trans();
   
-  d_->print(); // AHHH
+  //d_->print(); // AHHH
   
   delete candidates;  
+  delete done;
 }
 
 unsigned trie_cb::do_query_helper(d_trie *current, uint8_t *bv, unsigned len) {
@@ -141,7 +159,7 @@ unsigned trie_cb::do_query(uint8_t *bv, unsigned len) {
   assert(bv != NULL);
   assert(len > 0);
   
-  assert(0); // AHHH
+  //assert(0); // AHHH
   
   return do_query_helper(d_, bv, len);
 }
