@@ -32,10 +32,10 @@ void trie_cb::populate_trie(d_trie *n, uset_uint *candidates, unsigned prev) {
   //candidates->print();
   //cout << endl;
 
-  //cout << "Q(" << relevant_[prev] << ")" << endl;
-
+  cout << "Q(" << relevant_[prev] << ")" << endl;
+  
   for(unsigned i = 0; i < s_.size(); i++) {
-    if (candidates->lookup(i)) {
+    if (candidates->lookup(i)) {      
       if (c_[relevant_[prev]].count(i) > 0) {
 	// this is a relevant bytenum
 	
@@ -48,13 +48,13 @@ void trie_cb::populate_trie(d_trie *n, uset_uint *candidates, unsigned prev) {
 	    prev_iter != prev_end; prev_iter++) {
 	  if (candidates->lookup(prev_iter->first) && prev_iter->second != byteval) {
 	    candidates->remove(prev_iter->first);
-	    //cout << "removing " << prev_iter->first << " b/c byteval " << prev_iter->second << " is not " << ((unsigned)byteval) << endl;
+	    cout << "removing " << prev_iter->first << " b/c byteval " << prev_iter->second << " is not " << ((unsigned)byteval) << endl;
 	  }
 	}
 	candidates->end_trans();
 	
 	if (candidates->get_size() > 0) {
-	  //cout << "Cond on " << ((unsigned)byteval) << endl;
+	  cout << "Cond on " << ((unsigned)byteval) << endl;
 	  
 	  if (cur == num_relevant_) {
 	    n->extend(byteval, INVALID_BYTENUM, i);
@@ -72,6 +72,7 @@ void trie_cb::populate_trie(d_trie *n, uset_uint *candidates, unsigned prev) {
       } else if (c_[relevant_[prev]].count(i) == 0) {
 	// this is an irrelevant bytenum
 	
+	/*
 	if (cur == num_relevant_) {
 	  n->extend_x(INVALID_BYTENUM, i);
 	} else {
@@ -79,13 +80,11 @@ void trie_cb::populate_trie(d_trie *n, uset_uint *candidates, unsigned prev) {
 	  d_trie *child = n->decide_x();
 	  populate_trie(child, candidates, cur);
 	}
+	*/
 	
-	populate_trie(n, candidates, cur + 1);
-	//assert(0); // TODO
       }
     }
   }
-  
   
 }
 
@@ -96,12 +95,14 @@ void trie_cb::prepare_to_query() {
   uset_uint *candidates = new uset_uint(s_.size());
   populate_trie(d_, candidates, 0);
   
+  d_->print(); // AHHH
+  
   delete candidates;  
 }
 
 unsigned trie_cb::do_query_helper(d_trie *current, uint8_t *bv, unsigned len) {
   num_steps_++;
-  if (current->is_leaf()) {
+  if (current->is_leaf() && !current->x_exists()) {
     assert(current->get_bytenum() == INVALID_BYTENUM);
     return current->get_id();
   }
@@ -141,21 +142,8 @@ unsigned trie_cb::do_query(uint8_t *bv, unsigned len) {
   assert(bv != NULL);
   assert(len > 0);
   
-  /*
-  d_trie *current_ = d_;
+  assert(0); // AHHH
   
-  while(!current_->is_leaf()) {
-    num_steps_++;
-    
-    current_ = current_->decide(bv[current_->get_bytenum()]);
-    if (current_ == NULL) {
-      return INVALID_ID;
-    }
-  }
-
-  assert(current_->get_bytenum() == INVALID_BYTENUM);
-  return current_->get_id();
-  */
   return do_query_helper(d_, bv, len);
 }
 

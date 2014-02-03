@@ -85,17 +85,26 @@ void d_trie::print_helper(unsigned spaces) {
     tab += unit;
   }
   
-  if (this->is_leaf()) {
+  if (this->is_leaf() && !this->x_exists()) {
     cout << tab << "Q(" << bytenum_ << ")[]";
     return;
-  } 
+  }
   
   cout << tab << "Q(" << bytenum_ << ")->[";
-  offspring::const_iterator children_end = children_.end();
-  for(offspring::const_iterator c_iter = children_.begin(); c_iter != children_end; c_iter++) {
+  
+  if (!this->is_leaf()) {
+    offspring::const_iterator children_end = children_.end();
+    for(offspring::const_iterator c_iter = children_.begin(); c_iter != children_end; c_iter++) {
     
-    cout << tab + unit << ((unsigned) c_iter->first) << "->";
-    c_iter->second->print_helper(spaces + 2);
+      cout << tab + unit << ((unsigned) c_iter->first) << "->";
+      c_iter->second->print_helper(spaces + 2);
+      cout << " ";
+    }
+  }
+
+  if (this->x_exists()) {
+    cout << tab + unit << "X->";
+    (this->decide_x())->print_helper(spaces + 2);
     cout << " ";
   }
 
