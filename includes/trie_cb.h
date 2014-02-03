@@ -25,7 +25,7 @@ class trie_cb : public simple_cb {
  private:
   typedef simple_cb super;
   
-  void populate_trie(d_trie *, uset_uint *, unsigned);
+  void populate_trie(d_trie *, uset_uint *, uset_uint *, unsigned);
   unsigned do_query_helper(d_trie *, uint8_t *, unsigned);
 };
 
