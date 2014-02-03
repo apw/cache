@@ -7,9 +7,14 @@
 d_trie::d_trie(unsigned bytenum, unsigned id) {
   bytenum_ = bytenum;
   id_ = id;
+  x_ = NULL;
 }
 
 d_trie::~d_trie(void) {
+  if (x_exists()) {
+    delete x_;
+  }
+  
   offspring::const_iterator children_end = children_.end();
   for(offspring::const_iterator c_iter = children_.begin(); c_iter != children_end; c_iter++) {
     delete c_iter->second;
@@ -33,6 +38,8 @@ void d_trie::extend(uint8_t byteval, unsigned bytenum, unsigned id) {
 }
 
 void d_trie::add_vect(uint8_t *bv, unsigned len, unsigned id) {
+  assert(0); // DEPRECATED
+  
   d_trie *current = this;
   for(unsigned i = 0; i < len; i++) {
     if (current->children_.count(bv[i]) > 0) {
@@ -57,14 +64,53 @@ unsigned d_trie::get_id() {
   return id_;
 }
 
-void d_trie::print(void) {
-  cout << "[ ";
-  offspring::const_iterator children_end = children_.end();
-  for(offspring::const_iterator c_iter = children_.begin(); c_iter != children_end; c_iter++) {
-    cout << ((unsigned) c_iter->first) << "->";
-    c_iter->second->print();
+bool d_trie::x_exists() {
+  return x_ != NULL;
+}
+
+void d_trie::extend_x(unsigned bytenum, unsigned id) {
+  if (!x_exists()) {
+    x_ = new d_trie(bytenum, id);
+  }
+}
+
+d_trie *d_trie::decide_x() {
+  return x_;
+}
+
+void d_trie::print_helper(unsigned spaces) {
+  string tab("\n");
+  string unit("||");
+  for(unsigned i = 0; i < spaces; i++) {
+    tab += unit;
+  }
+  
+  if (this->is_leaf() && !this->x_exists()) {
+    cout << tab << "Q(" << bytenum_ << ")[]";
+    return;
+  }
+  
+  cout << tab << "Q(" << bytenum_ << ")->[";
+  
+  if (!this->is_leaf()) {
+    offspring::const_iterator children_end = children_.end();
+    for(offspring::const_iterator c_iter = children_.begin(); c_iter != children_end; c_iter++) {
+    
+      cout << tab + unit << ((unsigned) c_iter->first) << "->";
+      c_iter->second->print_helper(spaces + 2);
+      cout << " ";
+    }
+  }
+
+  if (this->x_exists()) {
+    cout << tab + unit << "X->";
+    (this->decide_x())->print_helper(spaces + 2);
     cout << " ";
   }
 
-  cout << "]";
+  cout << tab << "]";
+}
+
+void d_trie::print() {
+  print_helper(0);
 }

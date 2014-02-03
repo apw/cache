@@ -1,6 +1,7 @@
 #include "../includes/uset_uint.h"
 
 #include <vector>
+#include <iostream>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -126,4 +127,12 @@ void uset_uint::iterator::remove_cur() {
 uset_uint::iterator uset_uint::get_iterator() {
   iterator it(this);
   return it;
+}
+
+void uset_uint::print() {
+  for(unsigned i = 0; i < capacity_; i++) {
+    if (this->lookup(i)) {
+      cout << i << " ";
+    }
+  }
 }

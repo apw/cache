@@ -16,13 +16,19 @@ class d_trie {
   void extend(uint8_t byteval, unsigned bytenum, unsigned id);
   void add_vect(uint8_t *bv, unsigned len, unsigned id);
   bool is_leaf(void);
-
+  
+  void extend_x(unsigned bytenum, unsigned id);
+  d_trie *decide_x(void);
+  bool x_exists(void);
+  
   unsigned get_bytenum(void);
   unsigned get_id(void);
   
   void print(void);
   
  protected:
+  void print_helper(unsigned);
+  
   typedef struct {
     long operator() (const unsigned &k) const {
       return k; 
@@ -34,9 +40,12 @@ class d_trie {
       return x == y; 
     }
   } byteval_eq;
-
+  
   typedef tr1::unordered_map<uint8_t, d_trie *, byteval_hash, byteval_eq> offspring;
   offspring children_;
+  
+  d_trie *x_;
+  
   unsigned bytenum_;
   unsigned id_;
 };
