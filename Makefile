@@ -26,10 +26,10 @@ main:
 	$(KANGAROO_BODY) $(VOLATILE_OBJECT) $(OH) $(OPTIMIZABLE_SOURCES) -o $(MAIN)
 
 dgen:
-	mkdir -p bin gendat
+	mkdir -p bin
 	$(KANGAROO_BODY) $(OH_NO) -c $(VOLATILE_SOURCES) -o $(VOLATILE_OBJECT)
 	$(KANGAROO_BODY) $(VOLATILE_OBJECT) $(OH) dgen/*.cpp $(GENERAL_SOURCES) -o $(DGEN)
-	./$(DGEN)
+	./$(DGEN) ync.dat ynq.dat
 
 dop:
 	rm -f output/*

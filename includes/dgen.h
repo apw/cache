@@ -37,11 +37,13 @@ typedef tr1::unordered_map<unsigned, unsigned, id_hash, id_eq> bytenum_set;
 // tera
 typedef tr1::unordered_map<unsigned, bytenum_set, bytenum_hash, bytenum_eq> cache;
 
-
 typedef struct {
   unsigned bytenum;
   uint8_t byteval;
 } entry;
+
+typedef vector<entry> tmp_cache_entry;
+typedef vector<tmp_cache_entry> tmp_cache_rep;
 
 typedef vector<entry> vect;
 
@@ -53,7 +55,13 @@ struct cache_params {
   float std_num_rel;
 };
 
+struct query_params {
+  unsigned num_vects;
+  unsigned vect_len;
+  float hit_ratio;
+};
 
-void gen_cache(struct cache_params *, cache *);
+
+void gen_cache(struct cache_params *, tmp_cache_rep *);
 
 #endif
