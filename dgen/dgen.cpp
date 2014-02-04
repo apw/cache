@@ -256,27 +256,31 @@ void gen_query(struct cache_params *cp,
 }
 
 int main(int argc, char **argv) {
-  /*
   struct stat s;
   int err;
-
+  
   if (argc < 3 || argc > 3) {
     printf("USAGE: ./bin/dgen [cache file name] [query file name]\n");
     return 0;
   }
-  */
 
-  /*
   // assert that the cache file and query file don't exist
   err = stat(argv[1], &s);
+  if (err != -1) {
+    cout << "make sure the outfiles don't already " <<
+      "exist in the directory from which this is being run!" << endl;
+  }
   assert(err == -1);
   assert(errno == ENOENT);
   err = stat(argv[2], &s);
   assert(err == -1);
   assert(errno == ENOENT);
-  */
 
   // create the cache and query output files
+  ofstream cache_outfile;
+  ofstream query_stream_outfile;
+  cache_outfile.open(argv[1]);
+  query_stream_outfile.open(argv[2]);
   
   // get arguments n stuff
   struct cache_params cp;
@@ -294,18 +298,18 @@ int main(int argc, char **argv) {
   tmp_cache_rep c;
   gen_cache(&cp, &c);
   
-  cout << "CACHE CONTENTS" << endl;
   unsigned int outerIterMax, innerIterMax;
   unsigned int i, j;
   outerIterMax = c.size();
   for (i = 0; i < outerIterMax; i++) {
     innerIterMax = c[i].size();
     for (j = 0; j < innerIterMax; j++) {
-      cout << c[i][j].bytenum << " " << (unsigned) c[i][j].byteval;
+      cache_outfile << c[i][j].bytenum << " " <<
+	(unsigned) c[i][j].byteval;
       if (j == innerIterMax-1) {
-	cout << endl;
+	cache_outfile << endl;
       } else {
-	cout << " ";
+	cache_outfile << " ";
       }
     }
   }
@@ -314,22 +318,22 @@ int main(int argc, char **argv) {
   tmp_query_stream_rep q;
   gen_query(&cp, &qp, &c, &q);
 
-  cout << endl << "QUERY CONTENTS" << endl;
   outerIterMax = q.size();
   for (i = 0; i < outerIterMax; i++) {
     innerIterMax = q[i].size();
     for (j = 0; j < innerIterMax; j++) {
-      cout << q[i][j].bytenum << " " << (unsigned) q[i][j].byteval;
+      query_stream_outfile << q[i][j].bytenum << " " <<
+	(unsigned) q[i][j].byteval;
       if (j == innerIterMax-1) {
-	cout << endl;
+	query_stream_outfile << endl;
       } else {
-	cout << " ";
+	query_stream_outfile << " ";
       }
     }
   }
 
-
-  // TODO ouput queries to cache and query files instead of cout
+  cache_outfile.close();
+  query_stream_outfile.close();
   
   return 0;
 }
