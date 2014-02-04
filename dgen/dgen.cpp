@@ -138,7 +138,118 @@ void gen_cache(struct cache_params *cp, tmp_cache_rep *c) {
   free(s);
 }
 
+// returns true iff q is a hit in c
+bool is_hit(tmp_query q, tmp_cache_rep c) {
+  unsigned i, j, c_size, l_size, num;
+  uint8_t val;
+  bool hit;
+  // iterate over cache-vectors looking for a hit
+  c_size = c.size();
+  for (i = 0; i < c_size; i++) {
+    // iterate over cache-vector-bytenums
+    l_size = c[0].size();
+    hit = true;
+    for (j = 0; j < l_size; j++) {
+      num = c[i][j].bytenum;
+      val = c[i][j].byteval;
+      if (q[num].byteval != val) {
+	// found a conflicting byte; break out of inner loop with
+	// hit = false so outer loop keeps going if possible
+	hit = false;
+	break;
+      }
+    }
+   
+    if (hit == true) {
+      // found a hit
+      return true;
+    }
+  }
+  
+  // iterated over all contents of c without finding a hit
+  return false;
+}
 
+// cp must be the cp that was passed into gen_cache to get c
+void gen_query(struct cache_params *cp,
+	       struct query_params *qp,
+	       tmp_cache_rep *c,
+	       tmp_query_stream_rep *q) {
+  unsigned i, j;
+  // make sure invariants about input hold
+  assert(qp);
+  assert(c);
+  assert(q);
+  assert(qp->num_vects > 0);
+  assert(qp->vect_len >= cp->vect_len);
+  assert(qp->num_hits <= qp->num_vects);
+  assert(cp->num_vects == c->size());
+
+  // initialize random-stuff
+  default_random_engine val_g = get_seeded_generator();
+  uniform_int_distribution<uint8_t> val_dist(0, (uint8_t) -1);
+  default_random_engine cache_g = get_seeded_generator();
+  uniform_int_distribution<unsigned> cache_dist(0, cp->num_vects-1);
+
+  // generate hit queries
+  // iterate over hit-query vectors to be created
+  entry e;
+  tmp_query tmp;
+  unsigned cache_index;
+  unsigned num;
+  uint8_t val;
+  for (i = 0; i < qp->num_hits; i++) {
+    // make sure tmp has no data in it
+    tmp.clear();
+
+    // iterate over bytenums in the query, assigning random values
+    for (j = 0; j < qp->vect_len; j++) {
+      e.bytenum = j;
+      e.byteval = val_dist(val_g);
+      tmp.push_back(e);
+    }
+
+    // randomly choose which cache-vector this will be a hit on
+    // and put the relevant bytenums from the
+    // hit-cache-vector into the hit-query-vector;
+    // this should give tmp the correct relevant values at bytenums
+    // relevant to this vector and random values at bytenums
+    // irrelevant to this vector
+    cache_index = cache_dist(cache_g);
+    j = c->operator[](cache_index).size();
+    for (i = 0; i < j; i++) {
+      num = c->operator[](cache_index)[i].bytenum;
+      val = c->operator[](cache_index)[i].byteval;
+      tmp[num].bytenum = num;
+      tmp[num].byteval = val;
+    }
+    
+    q->push_back(tmp);
+  }
+  
+  unsigned num_misses = qp->num_vects - qp->num_hits;
+  for (i = 0; i < num_misses; i++) {
+    cout << i << endl;
+    // generate random queries until we get a miss-query
+    unsigned count = 0; // !!!
+    do {
+      cout << count << " "; // !!!
+      // make sure tmp has no data
+      tmp.clear();
+
+      // iterate over bytenums in a query, assigning random values
+      for (j = 0; j < qp->vect_len; j++) {
+	e.bytenum = j;
+	e.byteval = val_dist(val_g);
+	tmp.push_back(e);
+      }
+      
+      count++; // !!!
+    } while (!is_hit(tmp, *c)); // !!!
+
+    q->push_back(tmp);
+  }
+}
 
 int main(int argc, char **argv) {
   /*
@@ -168,13 +279,14 @@ int main(int argc, char **argv) {
   cp.num_vects = 10;
   cp.vect_len = 100;
   cp.m_num_rel = 0.5;
-  cp.std_num_rel = 0.1;
+  cp.std_num_rel = 0.001;
 
   struct query_params qp;
   qp.num_vects = 10;
   qp.vect_len = 120;
-  qp.hit_ratio = 0.8;
+  qp.num_hits = 8;
 
+  // generate cache contents based on cache params
   tmp_cache_rep c;
   gen_cache(&cp, &c);
   
@@ -194,15 +306,26 @@ int main(int argc, char **argv) {
     }
   }
   
-  // TODO NEIL
+  // generate query contents based on query params, cache params/contents
   tmp_query_stream_rep q;
-  gen_query(&qp, &c, &q);
-  cout << endl << "QUERY CONTENTS";
+  gen_query(&cp, &qp, &c, &q);
+
+  cout << endl << "QUERY CONTENTS" << endl;
+  outerIterMax = q.size();
+  for (i = 0; i < outerIterMax; i++) {
+    innerIterMax = q[i].size();
+    for (j = 0; j < innerIterMax; j++) {
+      cout << q[i][j].bytenum << " " << (unsigned) q[i][j].byteval;
+      if (j == innerIterMax-1) {
+	cout << endl;
+      } else {
+	cout << " ";
+      }
+    }
+  }
 
 
-  // TODO output cache 'c' to file
-  // TODO gen query
-  // TODO output queries to file
+  // TODO ouput queries to cache and query files instead of cout
   
   return 0;
 }

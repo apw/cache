@@ -44,7 +44,8 @@ typedef struct {
 
 typedef vector<entry> tmp_cache_entry;
 typedef vector<tmp_cache_entry> tmp_cache_rep;
-typedef tmp_cache_rep tmp_query_stream_rep;
+typedef vector<entry> tmp_query;
+typedef vector<tmp_query> tmp_query_stream_rep;
 
 typedef vector<entry> vect;
 
@@ -59,9 +60,8 @@ struct cache_params {
 struct query_params {
   unsigned num_vects;
   unsigned vect_len;
-  float hit_ratio;
+  unsigned num_hits;
 };
-
 
 void gen_cache(struct cache_params *, tmp_cache_rep *);
 
