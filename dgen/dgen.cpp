@@ -199,6 +199,7 @@ void gen_query(struct cache_params *cp,
   unsigned num;
   uint8_t val;
   for (i = 0; i < qp->num_hits; i++) {
+    cout << "iteration " << i << " of " << qp->num_hits << endl;
     // make sure tmp has no data in it
     tmp.clear();
 
@@ -217,23 +218,24 @@ void gen_query(struct cache_params *cp,
     // irrelevant to this vector
     cache_index = cache_dist(cache_g);
     j = c->operator[](cache_index).size();
-    for (i = 0; i < j; i++) {
-      num = c->operator[](cache_index)[i].bytenum;
-      val = c->operator[](cache_index)[i].byteval;
+    for (unsigned innerI = 0; innerI < j; innerI++) {
+      num = c->operator[](cache_index)[innerI].bytenum;
+      val = c->operator[](cache_index)[innerI].byteval;
       tmp[num].bytenum = num;
       tmp[num].byteval = val;
     }
     
+    cout << "pushing back a hit!" << endl; // !!!
     q->push_back(tmp);
   }
   
+  cout << "num_hits: " << qp->num_hits << endl; // !!!
+  assert(q->size() == qp->num_hits);
+  
   unsigned num_misses = qp->num_vects - qp->num_hits;
   for (i = 0; i < num_misses; i++) {
-    cout << i << endl;
     // generate random queries until we get a miss-query
-    unsigned count = 0; // !!!
     do {
-      cout << count << " "; // !!!
       // make sure tmp has no data
       tmp.clear();
 
@@ -244,11 +246,13 @@ void gen_query(struct cache_params *cp,
 	tmp.push_back(e);
       }
       
-      count++; // !!!
-    } while (!is_hit(tmp, *c)); // !!!
+    } while (is_hit(tmp, *c));
 
+    cout << "pushing back a miss!" << endl; // !!!
     q->push_back(tmp);
   }
+  
+  assert(q->size() == qp->num_vects);
 }
 
 int main(int argc, char **argv) {
