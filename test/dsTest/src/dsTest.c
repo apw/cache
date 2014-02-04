@@ -570,10 +570,10 @@ void uset_uint_test_iterator(void) {
 
 int main(void) {
   //  (*** TODO TEST ITERATOR ***)
-  //uset_uint_test_simple();
-  //uset_double_remove_diff_trans();
-  //uset_double_remove_same_trans();
-  uset_uint_test_iterator();
+  uset_uint_test_simple();
+  uset_double_remove_diff_trans();
+  uset_double_remove_same_trans();
+  //  uset_uint_test_iterator();
   //uset_uint_test_errors();
   //rset_uint_test_simple();
   return 0;
