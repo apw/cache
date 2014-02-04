@@ -78,26 +78,28 @@ for outer_index in range(0, 2): # do hits and misses separately
         new_h = [i for i in h if i <= h_max]
         new_m = [j for j in m if j <= m_max]
         if (outer_index == 0):
-            #n, bins, patches = create_hist(new_h, new_h, new_m,
-            #                               'yellow', 'hits', index, overall_max)
             n, bins, patches = create_hist(new_h, new_h, new_m,
-                                           'yellow', 'hits', index, MAXHITX)
+                                           'yellow', 'hits', index, overall_max)
+            #n, bins, patches = create_hist(new_h, new_h, new_m,
+            #                               'yellow', 'hits', index, MAXHITX)
         else:
-            #n, bins, patches = create_hist(new_m, new_h, new_m,
-            #                               'black', 'misses', index, overall_max)
             n, bins, patches = create_hist(new_m, new_h, new_m,
-                                           'black', 'misses', index, MAXMISSX)
+                                           'black', 'misses', index, overall_max)
+            #n, bins, patches = create_hist(new_m, new_h, new_m,
+            #                               'black', 'misses', index, MAXMISSX)
 
 
         imp_type = ""
         h_or_m = ""
         base_fname = os.path.basename(fname)
-        if "cb" in base_fname:
+        if "simple_cb" in base_fname:
             imp_type = "Contested Byte"
         elif "in_order" in base_fname:
             imp_type = "In Order"
         elif "ll" in base_fname:
             imp_type = "Linked List"
+        if "trie_cb" in base_fname:
+            imp_type = "Trie Contested Byte"
         
         if (outer_index == 0):
             h_or_m = "Hit"
