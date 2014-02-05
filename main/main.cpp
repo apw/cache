@@ -160,6 +160,8 @@ void run(rep_ptr rpt) {
 }
 
 int main(int argc, char **argv) {
+  pterodactyl();
+  
   if (argc != NUM_ARGS + 1) {
     printf("Usage: %s [cache_file] [query_file]\n", argv[0]);
     return 1;

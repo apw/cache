@@ -5,4 +5,6 @@
 
 void get_str_time(char *buffer, size_t sz);
 
+void pterodactyl(void);
+
 #endif
