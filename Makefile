@@ -29,7 +29,7 @@ dgen:
 	mkdir -p bin
 	$(KANGAROO_BODY) $(OH_NO) -c $(VOLATILE_SOURCES) -o $(VOLATILE_OBJECT)
 	$(KANGAROO_BODY) $(VOLATILE_OBJECT) $(OH) dgen/*.cpp $(GENERAL_SOURCES) -o $(DGEN)
-	./$(DGEN) ync.dat ynq.dat
+	./$(DGEN) ../data/ync.dat ../data/ynq.dat
 
 dop:
 	rm -f output/*
