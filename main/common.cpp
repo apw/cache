@@ -19,6 +19,8 @@ void get_str_time(char *buffer, size_t sz) {
 }
 
 void pterodactyl() {
+  // http://ascii.co.uk/art/dinosaur
+  printf("\n");
   printf("                               <\\              _                   \n");
   printf("                                \\\\          _/{                   \n");
   printf("                         _       \\\\       _-   -_                 \n");
@@ -36,4 +38,18 @@ void pterodactyl() {
   printf("                             <+       \\\\                      \n");
   printf("                              \\\\      WWW                     \n");
   printf("                              MMM                             \n");
+}
+
+void bears() {
+  // http://www.retrojunkie.com/asciiart/animals/bears.htm
+  printf("\n");
+  printf("              {\"`-'\"}                \n");
+  printf("  {\"`-'\"}      (o o)      {\"`-'\"}    \n");
+  printf("   (o o)       ,`Y'.       (o o)     \n");
+  printf(" ,--`Y'--.    / ,-. \\    ,--`Y'--.   \n");
+  printf(" ``:   ;''   (_)| |(_)   `-:,-.;-'   \n");
+  printf("   / _ \\       /`_'\\       /`_'\\     \n");
+  printf("  ()' `()     (_) (_)     ()' `()    \n");
+  printf("^'^'^^^'^'`^^`^```^``'^^``^^```'^'^\n");
+
 }

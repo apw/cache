@@ -27,7 +27,6 @@ typedef enum {LL_IMP, IN_ORDER_IMP, SIMPLE_CB_IMP, TRIE_CB_IMP} imp_t;
 
 // order in which implementations will be run
 int imps[] = {TRIE_CB_IMP, LL_IMP, SIMPLE_CB_IMP};
-//int imps[] = {LL_IMP};
 
 #define TIMEBUF_SZ 80
 char cur_time[TIMEBUF_SZ];
@@ -61,11 +60,13 @@ static rep_ptr initialize_rep(int imp_num) {
     break;
   }
   case SIMPLE_CB_IMP: {
+    pterodactyl();
     simple_cb *i = new simple_cb(cur_time);
     r.reset(i);
     break;
   }
   case TRIE_CB_IMP: {
+    bears();
     trie_cb *i = new trie_cb(cur_time);
     r.reset(i);
     break;
@@ -160,8 +161,6 @@ void run(rep_ptr rpt) {
 }
 
 int main(int argc, char **argv) {
-  pterodactyl();
-  
   if (argc != NUM_ARGS + 1) {
     printf("Usage: %s [cache_file] [query_file]\n", argv[0]);
     return 1;

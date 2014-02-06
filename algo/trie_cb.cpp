@@ -1,5 +1,6 @@
 #include "../includes/trie_cb.h"
 #include "../includes/uset_uint.h"
+#include "../includes/common.h"
 
 #include <assert.h>
 

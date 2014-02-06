@@ -15,7 +15,7 @@
 
 simple_cb::simple_cb(const char *cur_time) 
   : rep(cur_time, "simple_cb"), in_order(cur_time) {
-  
+
 }
 
 void simple_cb::prepare_to_query() {
