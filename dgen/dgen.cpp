@@ -290,7 +290,7 @@ int main(int argc, char **argv) {
   cp.std_num_rel = 0.001;
 
   struct query_params qp;
-  qp.num_vects = 10;
+  qp.num_vects = 30;
   qp.vect_len = 10;
   qp.num_hits = 8;
 
