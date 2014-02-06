@@ -77,20 +77,32 @@ void trie_cb::populate_trie(d_trie *n, uset_uint *candidates,
       } else if (c_[relevant_[prev]].count(i) == 0) {
 	// this is an irrelevant bytenum
 	
-	// TODO what if rest of bynums for this vector are irrelevant?
+	// TODO what if rest of bytenums for this vector are irrelevant?
 	if (cur == num_relevant_) {
 	  n->extend_x(INVALID_BYTENUM, i);
-	  // TODO am i sure we're getting the id's from extend_x in do_query
-
+	  
+	  // premenantly remove from the done set
 	  for(unsigned j = 0; j < s_.size(); j++) {
 	    if (candidates->lookup(j)) {
 	      done->remove(j);
 	    }
 	  }
 	} else {
+	  candidates->begin_trans();
+	  for(unsigned j = 0; j < s_.size(); j++) {
+	    if (candidates->lookup(j) && c_[relevant_[prev]].count(j) > 0) {
+	      candidates->remove(j);
+	    }
+	  }
+	  candidates->end_trans();
+	  
+	  assert(candidates->get_size() > 0);
+	  
 	  n->extend_x(relevant_[cur], i);
 	  d_trie *child = n->decide_x();
 	  populate_trie(child, candidates, done, cur);
+	  
+	  candidates->undo_trans();
 	}
 		
       } else {
