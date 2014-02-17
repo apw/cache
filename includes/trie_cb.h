@@ -20,6 +20,8 @@ class trie_cb : public simple_cb {
   void end_sbv(int id);
 
  protected:
+  void order_bytenums(void);
+  
   d_trie *d_;
 
  private:

@@ -284,15 +284,15 @@ int main(int argc, char **argv) {
   
   // get arguments n stuff
   struct cache_params cp;
-  cp.num_vects = 10;
-  cp.vect_len = 10;
-  cp.m_num_rel = 0.5;
+  cp.num_vects = 500;
+  cp.vect_len = 500;
+  cp.m_num_rel = 0.75;
   cp.std_num_rel = 0.001;
 
   struct query_params qp;
-  qp.num_vects = 30;
-  qp.vect_len = 10;
-  qp.num_hits = 8;
+  qp.num_vects = 500;
+  qp.vect_len = 500;
+  qp.num_hits = 250;
 
   // generate cache contents based on cache params
   tmp_cache_rep c;

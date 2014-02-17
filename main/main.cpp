@@ -15,6 +15,7 @@
 #include "../includes/in_order.h"
 #include "../includes/simple_cb.h"
 #include "../includes/trie_cb.h"
+#include "../includes/carebear_dual_trie.h"
 #include "../includes/ll.h"
 #include "../includes/cycle_timing.h"
 #include "../includes/common.h"
@@ -23,10 +24,10 @@ using namespace std;
 
 #define NUM_ARGS 2
 
-typedef enum {LL_IMP, IN_ORDER_IMP, SIMPLE_CB_IMP, TRIE_CB_IMP} imp_t;
+typedef enum {LL_IMP, IN_ORDER_IMP, SIMPLE_CB_IMP, TRIE_CB_IMP, CAREBEAR_DUAL_TRIE_IMP} imp_t;
 
 // order in which implementations will be run
-int imps[] = {TRIE_CB_IMP, LL_IMP, SIMPLE_CB_IMP};
+int imps[] = {CAREBEAR_DUAL_TRIE_IMP, TRIE_CB_IMP, LL_IMP, SIMPLE_CB_IMP};
 
 #define TIMEBUF_SZ 80
 char cur_time[TIMEBUF_SZ];
@@ -66,9 +67,14 @@ static rep_ptr initialize_rep(int imp_num) {
     break;
   }
   case TRIE_CB_IMP: {
-    bears();
     trie_cb *i = new trie_cb(cur_time);
     r.reset(i);
+    break;
+  }
+  case CAREBEAR_DUAL_TRIE_IMP: {
+    bears();
+    carebear_dual_trie *i = new carebear_dual_trie(cur_time);
+    r.reset(i);    
     break;
   }
   default: {

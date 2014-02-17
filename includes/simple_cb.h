@@ -18,6 +18,9 @@ class simple_cb : public in_order {
   void prepare_to_query(void);
 
  protected:
+
+  void order_bytenums(void);
+  
   class bytenum_prio {
   public:
     unsigned bytenum;
