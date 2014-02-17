@@ -1,3 +1,11 @@
+/* Implementation of the dual-trie with question-ordering the same along
+ * all paths, first ordered descending by variance then ascending by bytenum
+ *
+ * 
+ * 
+ *
+ */
+
 #include "../includes/trie_cb.h"
 #include "../includes/uset_uint.h"
 #include "../includes/common.h"
@@ -29,10 +37,6 @@ void trie_cb::populate_trie(d_trie *n, uset_uint *candidates,
   
   assert(candidates->get_size() > 0);
 
-  //candidates->print();
-  //cout << endl;
-  //cout << "Q(" << relevant_[prev] << ")" << endl;
-  
   for(unsigned i = 0; i < s_.size(); i++) {
     if (candidates->lookup(i) && done->lookup(i)) {    
       if (c_[relevant_[prev]].count(i) > 0) {
@@ -40,23 +44,18 @@ void trie_cb::populate_trie(d_trie *n, uset_uint *candidates,
 	
 	uint8_t byteval = c_[relevant_[prev]][i];
 	
-	//cout << relevant_[prev] << "->" << (unsigned) byteval << endl;
-	
 	// remove candidates with bytenum 'relevant_[prev]' not set to 'byteval'
+	// or candidates with bytenum 'relevant_[prev]' as irrelevant
 	candidates->begin_trans();
-	bytenum_set::const_iterator prev_end = c_[relevant_[prev]].end();
-	for(bytenum_set::const_iterator prev_iter = c_[relevant_[prev]].begin();
-	    prev_iter != prev_end; prev_iter++) {
-	  if (candidates->lookup(prev_iter->first) && prev_iter->second != byteval) {
-	    candidates->remove(prev_iter->first);
-	    //cout << "removing " << prev_iter->first << " b/c byteval " << prev_iter->second << " is not " << ((unsigned)byteval) << endl;
+	for(unsigned j = 0; j < s_.size(); j++) {
+	  if (candidates->lookup(j) && (c_[relevant_[prev]].count(j) == 0
+					|| c_[relevant_[prev]][j] != byteval)) {
+	    candidates->remove(j);
 	  }
 	}
 	candidates->end_trans();
 	
 	assert(candidates->get_size() >= 1);
-	
-	//cout << "Cond on " << ((unsigned)byteval) << endl;
 	
 	if (cur == num_relevant_) {
 	  n->extend(byteval, INVALID_BYTENUM, i);
@@ -77,20 +76,33 @@ void trie_cb::populate_trie(d_trie *n, uset_uint *candidates,
       } else if (c_[relevant_[prev]].count(i) == 0) {
 	// this is an irrelevant bytenum
 	
-	// TODO what if rest of bynums for this vector are irrelevant?
+	// TODO what if rest of bytenums for this vector are irrelevant?
 	if (cur == num_relevant_) {
 	  n->extend_x(INVALID_BYTENUM, i);
-	  // TODO am i sure we're getting the id's from extend_x in do_query
-
+	  
+	  // premenantly remove from the done set
 	  for(unsigned j = 0; j < s_.size(); j++) {
 	    if (candidates->lookup(j)) {
 	      done->remove(j);
 	    }
 	  }
 	} else {
+	  // remove candidates that have relevant_[prev] as a relevant bytenum
+	  candidates->begin_trans();
+	  for(unsigned j = 0; j < s_.size(); j++) {
+	    if (candidates->lookup(j) && c_[relevant_[prev]].count(j) > 0) {
+	      candidates->remove(j);
+	    }
+	  }
+	  candidates->end_trans();
+	  
+	  assert(candidates->get_size() > 0);
+	  
 	  n->extend_x(relevant_[cur], i);
 	  d_trie *child = n->decide_x();
 	  populate_trie(child, candidates, done, cur);
+	  
+	  candidates->undo_trans();
 	}
 		
       } else {
