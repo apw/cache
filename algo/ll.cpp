@@ -38,7 +38,7 @@ void ll::do_add_byte(int id, unsigned bytenum, unsigned byteval) {
     tail = t;
   }
   
-  /* Increment number of dependenbytenumes for this tunnel.  */
+  /* Increment number of dependent bytenumes for this tunnel.  */
   t->c++;
   
   /* Store the index.  */

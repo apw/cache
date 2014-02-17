@@ -1,3 +1,7 @@
+/* Interface for linked-list representation of the computation cache (from Amos)
+ * 
+ */
+
 #ifndef _LL_H
 #define _LL_H
 

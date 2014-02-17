@@ -1,3 +1,8 @@
+/* Interface for in_order, which is the root implementation of TeraVectyl.
+ * Other implementations of TeraVectyl (such as simple_cb) extend this root
+ * implementation.
+ */
+
 #ifndef _IN_ORDER_H
 #define _IN_ORDER_H
 

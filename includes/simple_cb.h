@@ -18,6 +18,8 @@ class simple_cb : public in_order {
   void prepare_to_query(void);
 
  protected:
+  
+  // used to sort bytenums in simple_cb, NOT in_order
   class bytenum_prio {
   public:
     unsigned bytenum;
@@ -26,7 +28,7 @@ class simple_cb : public in_order {
 
   struct prio_compare {
     bool operator() (bytenum_prio a, bytenum_prio b) {
-      // STORY 1
+      // sort first by decreasing variance then increasing bytenum order
       if (a.prio != b.prio) {
 	return a.prio > b.prio;
       }

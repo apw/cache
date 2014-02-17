@@ -1,3 +1,8 @@
+/* Interface for dgen data-generation script. Outputs data with specified
+ * parameters in ../data/ync.dat and ../data/ynq.dat (relative to top
+ * of this repo)
+ */
+
 #ifndef _DGEN_H
 #define _DGEN_H
 

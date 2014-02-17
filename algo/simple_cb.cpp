@@ -1,3 +1,10 @@
+/* Implements the TeraVectyl data structure with question-ordering determined
+ * by "variance" (in decreasing order), with ties broken by
+ * bytenum order (in increasing order); variance is defined as the
+ * number of different bytevals a specific bytenum takes on over all vectors
+ * in the cache
+ */
+
 #include "../includes/rep.h"
 #include "../includes/in_order.h"
 #include "../includes/simple_cb.h"
