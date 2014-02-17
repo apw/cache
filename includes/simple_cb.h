@@ -18,6 +18,8 @@ class simple_cb : public in_order {
   void prepare_to_query(void);
 
  protected:
+
+  virtual void order_bytenums(void);
   
   // used to sort bytenums in simple_cb, NOT in_order
   class bytenum_prio {

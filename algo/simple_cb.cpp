@@ -25,9 +25,7 @@ simple_cb::simple_cb(const char *cur_time)
 
 }
 
-void simple_cb::prepare_to_query() {
-  candidates_ = new rset_uint(current_id_ + 1);
-
+void simple_cb::order_bytenums() {
   vector<bytenum_prio> bp_arr;
   cache::const_iterator c_end = c_.end();
   for(cache::const_iterator c_iter = c_.begin(); c_iter != c_end; c_iter++) {
@@ -60,4 +58,10 @@ void simple_cb::prepare_to_query() {
     relevant_[i] = bp_iter->bytenum;
     i++;
   }
+}
+
+void simple_cb::prepare_to_query() {
+  candidates_ = new rset_uint(current_id_ + 1);
+  
+  order_bytenums();
 }
