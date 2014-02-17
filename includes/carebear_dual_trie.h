@@ -29,7 +29,7 @@ class carebear_dual_trie : public trie_cb {
   struct carebear_compare {
     bool operator() (carebear_prio a, carebear_prio b) {
       if (a.num_care != b.num_care) {
-	return a.num_care < b.num_care;
+	return a.num_care > b.num_care;
       } else if (a.variability != b.variability) {
 	return a.variability > b.variability;
       }
