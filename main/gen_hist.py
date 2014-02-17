@@ -98,8 +98,10 @@ for outer_index in range(0, 2): # do hits and misses separately
             imp_type = "In Order"
         elif "ll" in base_fname:
             imp_type = "Linked List"
-        if "trie_cb" in base_fname:
+        elif "trie_cb" in base_fname:
             imp_type = "Trie Contested Byte"
+        elif "carebear_dual_trie" in base_fname:
+            imp_type = "Carebear Dual Trie"
         
         if (outer_index == 0):
             h_or_m = "Hit"

@@ -19,7 +19,7 @@ class simple_cb : public in_order {
 
  protected:
 
-  void order_bytenums(void);
+  virtual void order_bytenums(void);
   
   class bytenum_prio {
   public:
