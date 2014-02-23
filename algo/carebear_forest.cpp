@@ -75,6 +75,8 @@ void carebear_forest::populate_subtrie(d_trie *d, uset_uint *done, uset_uint *u)
     
     d->extend(c_[d->get_bytenum()][last], INVALID_BYTENUM, last);
     u->undo_trans();
+    
+    done->remove(last);
     return;
   }
   
