@@ -23,7 +23,7 @@ class carebear_forest : public in_order {
   unsigned do_query(uint8_t *bv, unsigned len);
 
  protected:
-  unsigned get_max_bytenum(uset_uint *done, uset_uint *u);
+  int get_max_bytenum(uset_uint *done, uset_uint *u);
   void populate_subtrie(d_trie *d, uset_uint *done, uset_uint *u);
   
   vector<d_trie *> forest;
