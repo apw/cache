@@ -25,8 +25,9 @@ class carebear_forest : public in_order {
  protected:
   int get_max_bytenum(uset_uint *done, uset_uint *u, uset_uint *bytenums_left);
   void populate_subtrie(d_trie *d, uset_uint *done, uset_uint *u, uset_uint *bytenums_left);
+  int do_query_helper(d_trie *d, uint8_t *bv, unsigned *steps);
   
-  vector<d_trie *> forest;
+  vector<d_trie *> forest_;
 
   unsigned max_relevant_bytenum_;
   
