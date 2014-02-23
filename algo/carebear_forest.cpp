@@ -24,9 +24,9 @@ carebear_forest::~carebear_forest() {
   }
 }
 
-unsigned carebear_forest::get_max_bytenum(uset_uint *done, uset_uint *u) {
+int carebear_forest::get_max_bytenum(uset_uint *done, uset_uint *u) {
   unsigned max_num_care = 0;
-  unsigned max_bytenum = 0;
+  int max_bytenum = -1;
   cache::const_iterator c_end = c_.end();
   for(cache::const_iterator c_iter = c_.begin(); c_iter != c_end; c_iter++) {
     unsigned cur_num_care = 0;
@@ -38,15 +38,11 @@ unsigned carebear_forest::get_max_bytenum(uset_uint *done, uset_uint *u) {
       }
     }
     
-    assert(cur_num_care > 0);
-    
     if (cur_num_care > max_num_care) {
       max_num_care = cur_num_care;
       max_bytenum = c_iter->first;
     }
   }
-  
-  assert(max_num_care > 0);  
   
   return max_bytenum;
 }
@@ -80,7 +76,7 @@ void carebear_forest::populate_subtrie(d_trie *d, uset_uint *done, uset_uint *u)
     return;
   }
   
-  // Beginning of stupid O(n^2)
+  // Beginning of stupid Theta(n^2)
   // of all remaining candidate vectors, find all unique vals at d->get_bytenum()
   tr1::unordered_set<uint8_t> val_set;
   bytenum_set::const_iterator b_end = c_[d->get_bytenum()].end();
@@ -107,7 +103,10 @@ void carebear_forest::populate_subtrie(d_trie *d, uset_uint *done, uset_uint *u)
     u->end_trans();
     
     // find next bytenum with highest utility
-    unsigned max_bytenum = get_max_bytenum(done, u);
+    int max_bytenum = get_max_bytenum(done, u);
+    if (max_bytenum == -1) {
+      assert(0);
+    }
     
     // extend the trie!
     d->extend(*v_iter, max_bytenum, INVALID_BYTENUM);
@@ -120,7 +119,7 @@ void carebear_forest::populate_subtrie(d_trie *d, uset_uint *done, uset_uint *u)
     u->undo_trans();
   }
   
-  // End of stupid O(n^2)
+  // End of stupid Theta(n^2)
 
   // undo removal
   u->undo_trans();
@@ -133,7 +132,10 @@ void carebear_forest::prepare_to_query() {
   while(done->get_size() > 0) {
     // find the bytenum with the largest number of don't care
     assert(u->get_size() == u->get_capacity());
-    unsigned max_bytenum = get_max_bytenum(done, u);
+    int max_bytenum = get_max_bytenum(done, u);
+    if (max_bytenum == -1) {
+      assert(0);
+    }
     
     // make the max_bytenum the question at the top of the subtrie
     d_trie *d = new d_trie(max_bytenum, INVALID_ID);
