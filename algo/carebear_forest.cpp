@@ -43,7 +43,8 @@ int carebear_forest::get_max_bytenum(uset_uint *done, uset_uint *u) {
       max_bytenum = c_iter->first;
     }
   }
-  
+
+  cout << "max bytenum: " << max_bytenum << endl; // !!!
   return max_bytenum;
 }
 
@@ -52,10 +53,13 @@ void carebear_forest::populate_subtrie(d_trie *d, uset_uint *done, uset_uint *u)
   unsigned num_left = 0;
   unsigned last;
   
+  cout << d->get_bytenum() << endl;; // !!!
+
   u->begin_trans();
   for(unsigned i = 0, n = done->get_capacity(); i < n; i++) {
     if (done->lookup(i) && u->lookup(i) 
 	&& c_[d->get_bytenum()].count(i) == 0) {
+      cout << "removing " << i << " from u" << endl;
       u->remove(i);
     } else if (done->lookup(i) && u->lookup(i) 
 	       && c_[d->get_bytenum()].count(i) > 0) {
@@ -66,12 +70,14 @@ void carebear_forest::populate_subtrie(d_trie *d, uset_uint *done, uset_uint *u)
   u->end_trans();
 
   // base case if only one vector is left here!!
+  //  cout << "num_left: " << num_left << endl; // !!!
   if (num_left == 1) {
     assert(c_[d->get_bytenum()].count(last) > 0);
     
     d->extend(c_[d->get_bytenum()][last], INVALID_BYTENUM, last);
     u->undo_trans();
     
+    cout << "removing " << last << " from done" << endl;
     done->remove(last);
     return;
   }
@@ -89,15 +95,19 @@ void carebear_forest::populate_subtrie(d_trie *d, uset_uint *done, uset_uint *u)
     }
   }
 
+  cout << "VAL SAAAAAAAIZE: " << val_set.size() << endl;
   for (tr1::unordered_set<uint8_t>::const_iterator v_iter = val_set.begin();
        v_iter != val_set.end(); v_iter++) {
     // remove all vectors that don't have the current byteval at the bytenum
     u->begin_trans();
+    cout << "val: " << (unsigned) *v_iter << endl;
+    cout << "YAAAAAAAAAAAAAAAAAAAAAAANI" << endl;
     bytenum_set::const_iterator b_end = c_[d->get_bytenum()].end();
     for(bytenum_set::const_iterator b_iter = c_[d->get_bytenum()].begin(); 
 	b_iter != b_end; b_iter++) {
       if (done->lookup(b_iter->first) && u->lookup(b_iter->first)
 	  && b_iter->second != *v_iter) {
+	cout << "removing " << b_iter->first << " from u" << endl;
 	u->remove(b_iter->first);
       }
     }
