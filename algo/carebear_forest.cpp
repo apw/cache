@@ -109,9 +109,10 @@ void carebear_forest::populate_subtrie(d_trie *d, uset_uint *done, uset_uint *u)
     
     // extend the trie!
     d->extend(*v_iter, max_bytenum, INVALID_BYTENUM);
+    d_trie *child = d->decide(*v_iter);
     
     // ...and now recurse down!
-    populate_subtrie(d, done, u);
+    populate_subtrie(child, done, u);
     
     // undo trans    
     u->undo_trans();
