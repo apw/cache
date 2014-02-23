@@ -19,8 +19,8 @@ carebear_forest::carebear_forest(const char *cur_time)
 }
 
 carebear_forest::~carebear_forest() {
-  for(unsigned i = 0; i < forest.size(); i++) {
-    delete forest[i];
+  for(unsigned i = 0; i < forest_.size(); i++) {
+    delete forest_[i];
   }
 }
 
@@ -160,9 +160,12 @@ void carebear_forest::prepare_to_query() {
     
     // make the max_bytenum the question at the top of the subtrie
     d_trie *d = new d_trie(max_bytenum, INVALID_ID);
-    forest.push_back(d);
+    forest_.push_back(d);
   
     populate_subtrie(d, done, u, bytenums_left);
+  
+    // undo trans made by get_max_bytenum
+    bytenums_left->undo_trans();
     
     cout << "HERE COMES A TRIE AHHHHHH" << endl;
     d->print(); // !!!
@@ -174,9 +177,34 @@ void carebear_forest::prepare_to_query() {
   delete bytenums_left;
 }
 
-unsigned carebear_forest::do_query(uint8_t *bv, unsigned len) {
-  // QUERY!
+int carebear_forest::do_query_helper(d_trie *d, uint8_t *bv, unsigned *steps) {  
+  while(d != NULL) {
+    (*steps)++;
+    
+    if (d->get_bytenum() == INVALID_BYTENUM && d->get_id() != INVALID_ID) {
+      assert(d->is_leaf());
+      return d->get_id();
+    }
+    
+    uint8_t byteval = bv[d->get_bytenum()];
+    d = d->decide(byteval);
+  }
   
-  assert(0);
-  return INVALID_ID;  
+  return INVALID_ID;
+}
+
+unsigned carebear_forest::do_query(uint8_t *bv, unsigned len) {
+  // serial query:
+  unsigned res = INVALID_ID;
+  unsigned steps = 0;
+  for(unsigned i = 0, n = forest_.size(); i < n; i++) {
+    steps = 0;
+    res = do_query_helper(forest_[i], bv, &steps);
+    num_steps_ = steps;
+    if (res != INVALID_ID) {
+      break;
+    }
+  }
+  
+  return res;
 }
