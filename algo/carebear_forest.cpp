@@ -168,7 +168,6 @@ void carebear_forest::prepare_to_query() {
     bytenums_left->undo_trans();
     
     cout << "HERE COMES A TRIE AHHHHHH" << endl;
-    d->print(); // !!!
   }
   done->end_trans();
   
