@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include <errno.h>
 
-
 carebear_forest::carebear_forest(const char *cur_time) 
   : rep(cur_time, "carebear_forest"), in_order(cur_time) {
   
@@ -125,8 +124,8 @@ void carebear_forest::populate_subtrie(d_trie *d, uset_uint *done, uset_uint *u)
 }
 
 void carebear_forest::prepare_to_query() {
-  uset_uint *done = new uset_uint(current_id_);
-  uset_uint *u = new uset_uint(current_id_);
+  uset_uint *done = new uset_uint(current_id_ + 1);
+  uset_uint *u = new uset_uint(current_id_ + 1);
   
   while(done->get_size() > 0) {
     // find the bytenum with the largest number of don't care
