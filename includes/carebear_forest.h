@@ -23,10 +23,12 @@ class carebear_forest : public in_order {
   unsigned do_query(uint8_t *bv, unsigned len);
 
  protected:
-  int get_max_bytenum(uset_uint *done, uset_uint *u);
-  void populate_subtrie(d_trie *d, uset_uint *done, uset_uint *u);
+  int get_max_bytenum(uset_uint *done, uset_uint *u, uset_uint *bytenums_left);
+  void populate_subtrie(d_trie *d, uset_uint *done, uset_uint *u, uset_uint *bytenums_left);
   
   vector<d_trie *> forest;
+
+  unsigned max_relevant_bytenum_;
   
  private:
   typedef in_order super;

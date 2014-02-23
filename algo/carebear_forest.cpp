@@ -24,58 +24,50 @@ carebear_forest::~carebear_forest() {
   }
 }
 
-int carebear_forest::get_max_bytenum(uset_uint *done, uset_uint *u) {
+int carebear_forest::get_max_bytenum(uset_uint *done, uset_uint *u, uset_uint *bytenums_left) {
   unsigned max_num_care = 0;
   int max_bytenum = -1;
   cache::const_iterator c_end = c_.end();
   for(cache::const_iterator c_iter = c_.begin(); c_iter != c_end; c_iter++) {
-    unsigned cur_num_care = 0;
-    bytenum_set::const_iterator b_end = c_[c_iter->first].end();
-    for(bytenum_set::const_iterator b_iter = c_[c_iter->first].begin(); 
-	b_iter != b_end; b_iter++) {
-      if (done->lookup(b_iter->first) && u->lookup(b_iter->first)) {
-	cur_num_care++;
+    
+    if (bytenums_left->lookup(c_iter->first)) {
+      unsigned cur_num_care = 0;
+      bytenum_set::const_iterator b_end = c_[c_iter->first].end();
+      for(bytenum_set::const_iterator b_iter = c_[c_iter->first].begin(); 
+	  b_iter != b_end; b_iter++) {
+	if (done->lookup(b_iter->first) && u->lookup(b_iter->first)) {
+	  cur_num_care++;
+	}
+      }
+      
+      if (cur_num_care > max_num_care) {
+	max_num_care = cur_num_care;
+	max_bytenum = c_iter->first;
       }
     }
-    
-    if (cur_num_care > max_num_care) {
-      max_num_care = cur_num_care;
-      max_bytenum = c_iter->first;
-    }
+  }
+  
+  if (max_bytenum != -1) {
+    bytenums_left->begin_trans();
+    bytenums_left->remove(max_bytenum);
+    bytenums_left->end_trans();
   }
   
   return max_bytenum;
 }
 
-void carebear_forest::populate_subtrie(d_trie *d, uset_uint *done, uset_uint *u) {
+void carebear_forest::populate_subtrie(d_trie *d, uset_uint *done,
+				       uset_uint *u, uset_uint *bytenums_left) {
   // remove all vectors that have a don't-care at d->get_bytenum() from u
-  unsigned num_left = 0;
-  unsigned last;
-  
   u->begin_trans();
   for(unsigned i = 0, n = done->get_capacity(); i < n; i++) {
     if (done->lookup(i) && u->lookup(i) 
 	&& c_[d->get_bytenum()].count(i) == 0) {
       u->remove(i);
-    } else if (done->lookup(i) && u->lookup(i) 
-	       && c_[d->get_bytenum()].count(i) > 0) {
-      num_left++;
-      last = i;
     }
   }
   u->end_trans();
 
-  // base case if only one vector is left here!!
-  if (num_left == 1) {
-    assert(c_[d->get_bytenum()].count(last) > 0);
-    
-    d->extend(c_[d->get_bytenum()][last], INVALID_BYTENUM, last);
-    u->undo_trans();
-    
-    done->remove(last);
-    return;
-  }
-  
   // Beginning of stupid Theta(n^2)
   // of all remaining candidate vectors, find all unique vals at d->get_bytenum()
   tr1::unordered_set<uint8_t> val_set;
@@ -103,20 +95,31 @@ void carebear_forest::populate_subtrie(d_trie *d, uset_uint *done, uset_uint *u)
     u->end_trans();
     
     // find next bytenum with highest utility
-    int max_bytenum = get_max_bytenum(done, u);
+    int max_bytenum = get_max_bytenum(done, u, bytenums_left);
     if (max_bytenum == -1) {
-      assert(0);
+      // HIHI
+      for(unsigned i = 0, n = done->get_capacity(); i < n; i++) {
+	if (done->lookup(i) && u->lookup(i)) {
+	  // 'i' is the id of the vector that we are about to finish inserting
+	  d->extend(c_[d->get_bytenum()][i], INVALID_BYTENUM, i);
+	  done->remove(i);
+	  break;
+	}
+      }
+    } else {    
+      // extend the trie!
+      d->extend(*v_iter, max_bytenum, INVALID_BYTENUM);
+      d_trie *child = d->decide(*v_iter);
+      
+      // ...and now recurse down!
+      populate_subtrie(child, done, u, bytenums_left);
+      
+      // undo trans performed in get_max_bytenum
+      bytenums_left->undo_trans();
     }
     
-    // extend the trie!
-    d->extend(*v_iter, max_bytenum, INVALID_BYTENUM);
-    d_trie *child = d->decide(*v_iter);
-    
-    // ...and now recurse down!
-    populate_subtrie(child, done, u);
-    
-    // undo trans    
-    u->undo_trans();
+    // undo trans
+    u->undo_trans();    
   }
   
   // End of stupid Theta(n^2)
@@ -126,13 +129,24 @@ void carebear_forest::populate_subtrie(d_trie *d, uset_uint *done, uset_uint *u)
 }
 
 void carebear_forest::prepare_to_query() {
+  // find max relevant bytenum in tera
+  max_relevant_bytenum_ = 0;
+  cache::const_iterator c_end = c_.end();
+  for(cache::const_iterator c_iter = c_.begin(); c_iter != c_end; c_iter++) {
+    if (c_iter->first > max_relevant_bytenum_) {
+      max_relevant_bytenum_ = c_iter->first;
+    }
+  }
+
   uset_uint *done = new uset_uint(current_id_ + 1);
   uset_uint *u = new uset_uint(current_id_ + 1);
+  uset_uint *bytenums_left = new uset_uint(max_relevant_bytenum_ + 1);
   
+  done->begin_trans();
   while(done->get_size() > 0) {
     // find the bytenum with the largest number of don't care
     assert(u->get_size() == u->get_capacity());
-    int max_bytenum = get_max_bytenum(done, u);
+    int max_bytenum = get_max_bytenum(done, u, bytenums_left);
     if (max_bytenum == -1) {
       assert(0);
     }
@@ -141,11 +155,15 @@ void carebear_forest::prepare_to_query() {
     d_trie *d = new d_trie(max_bytenum, INVALID_ID);
     forest.push_back(d);
   
-    populate_subtrie(d, done, u);
+    populate_subtrie(d, done, u, bytenums_left);
+    
+    cout << "HERE COMES A TRIE AHHHHHH" << endl;
   }
+  done->end_trans();
   
   delete u;
   delete done;
+  delete bytenums_left;
 }
 
 unsigned carebear_forest::do_query(uint8_t *bv, unsigned len) {
