@@ -5,15 +5,17 @@ import numpy as np
 import pylab
 
 PERCENTILE = 99.7
-BINS = 40
+BINS = 100
 SHAREX = True
-SHAREY = True
+SHAREY = False
 SUBPLOT_DIST = 0.5
 DATELEN = 19
 PLOT_TYPE_INDEX = 1
 FIRST_FILE_INDEX = 2
-MAXHITX = 10000
-MAXMISSX = 2500
+
+MAXHITX = 60000
+MAXMISSX = 60000
+USE_PRESET_MAX = False
 
 num_imps = len(sys.argv) - FIRST_FILE_INDEX
 
@@ -69,24 +71,29 @@ for outer_index in range(0, 2): # do hits and misses separately
             else:
                 assert(0)
             
-        #    h_max = np.percentile(h, PERCENTILE)
-        #    m_max = np.percentile(m, PERCENTILE)
-        h_max = np.max(h)
-        m_max = np.max(m)
+        h_max = np.percentile(h, PERCENTILE)
+        m_max = np.percentile(m, PERCENTILE)
+        #h_max = np.max(h)
+        #m_max = np.max(m)
         overall_max = max([h_max, m_max])
 
         new_h = [i for i in h if i <= h_max]
         new_m = [j for j in m if j <= m_max]
         if (outer_index == 0):
-            n, bins, patches = create_hist(new_h, new_h, new_m,
-                                           'yellow', 'hits', index, overall_max)
-            #n, bins, patches = create_hist(new_h, new_h, new_m,
-            #                               'yellow', 'hits', index, MAXHITX)
+            if USE_PRESET_MAX:
+                n, bins, patches = create_hist(new_h, new_h, new_m,
+                                               'yellow', 'hits', index, MAXHITX)
+            else:
+                n, bins, patches = create_hist(new_h, new_h, new_m,
+                                               'yellow', 'hits', index, overall_max)
         else:
-            n, bins, patches = create_hist(new_m, new_h, new_m,
-                                           'black', 'misses', index, overall_max)
-            #n, bins, patches = create_hist(new_m, new_h, new_m,
-            #                               'black', 'misses', index, MAXMISSX)
+            if USE_PRESET_MAX:
+                n, bins, patches = create_hist(new_m, new_h, new_m,
+                                               'black', 'misses', index, MAXMISSX)
+            else:
+                n, bins, patches = create_hist(new_m, new_h, new_m,
+                                               'black', 'misses', index, overall_max)
+
 
 
         imp_type = ""
@@ -109,7 +116,7 @@ for outer_index in range(0, 2): # do hits and misses separately
             h_or_m = "Miss"
 
         assert(imp_type != "")
-        axarr[index].legend()
+        #axarr[index].legend()
         axarr[index].set_title(h_or_m + ' Distribution for \n'
                                + imp_type)
 
