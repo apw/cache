@@ -84,6 +84,7 @@ void carebear_forest::populate_subtrie(d_trie *d, uset_uint *done, uset_uint *u)
   bytenum_set::const_iterator b_end = c_[d->get_bytenum()].end();
   for(bytenum_set::const_iterator b_iter = c_[d->get_bytenum()].begin(); 
       b_iter != b_end; b_iter++) {
+    // first is id; second is byteval
     if (done->lookup(b_iter->first) && u->lookup(b_iter->first) 
 	&& val_set.count(b_iter->second) == 0) {
       val_set.insert(b_iter->second);      
