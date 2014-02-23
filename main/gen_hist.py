@@ -109,6 +109,8 @@ for outer_index in range(0, 2): # do hits and misses separately
             imp_type = "Trie Contested Byte"
         elif "carebear_dual_trie" in base_fname:
             imp_type = "Carebear Dual Trie"
+        elif "carebear_forest" in base_fname:
+            imp_type = "Carebear Forest"
         
         if (outer_index == 0):
             h_or_m = "Hit"

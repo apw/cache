@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
+#include <pthread.h>
 
 carebear_forest::carebear_forest(const char *cur_time) 
   : rep(cur_time, "carebear_forest"), in_order(cur_time) {
@@ -64,7 +65,6 @@ void carebear_forest::populate_subtrie(d_trie *d, uset_uint *done,
   for(unsigned i = 0, n = done->get_capacity(); i < n; i++) {
     if (done->lookup(i) && u->lookup(i) 
 	&& c_[d->get_bytenum()].count(i) == 0) {
-      cout << "removing " << i << " from u" << endl;
       u->remove(i);
     }
   }
@@ -83,19 +83,15 @@ void carebear_forest::populate_subtrie(d_trie *d, uset_uint *done,
     }
   }
 
-  cout << "VAL SAAAAAAAIZE: " << val_set.size() << endl;
   for (tr1::unordered_set<uint8_t>::const_iterator v_iter = val_set.begin();
        v_iter != val_set.end(); v_iter++) {
     // remove all vectors that don't have the current byteval at the bytenum
     u->begin_trans();
-    cout << "val: " << (unsigned) *v_iter << endl;
-    cout << "YAAAAAAAAAAAAAAAAAAAAAAANI" << endl;
     bytenum_set::const_iterator b_end = c_[d->get_bytenum()].end();
     for(bytenum_set::const_iterator b_iter = c_[d->get_bytenum()].begin(); 
 	b_iter != b_end; b_iter++) {
       if (done->lookup(b_iter->first) && u->lookup(b_iter->first)
 	  && b_iter->second != *v_iter) {
-	cout << "removing " << b_iter->first << " from u" << endl;
 	u->remove(b_iter->first);
       }
     }
@@ -149,8 +145,13 @@ void carebear_forest::prepare_to_query() {
   uset_uint *u = new uset_uint(current_id_ + 1);
   uset_uint *bytenums_left = new uset_uint(max_relevant_bytenum_ + 1);
   
+  unsigned num_trie = 0;
+  unsigned vects_left;
+  
   done->begin_trans();
   while(done->get_size() > 0) {
+    vects_left = done->get_size();
+    
     // find the bytenum with the largest number of don't care
     assert(u->get_size() == u->get_capacity());
     int max_bytenum = get_max_bytenum(done, u, bytenums_left);
@@ -167,7 +168,9 @@ void carebear_forest::prepare_to_query() {
     // undo trans made by get_max_bytenum
     bytenums_left->undo_trans();
     
-    cout << "HERE COMES A TRIE AHHHHHH" << endl;
+    cout << "Trie " << num_trie << " constructed with " << (vects_left - done->get_size()) << " vectors." << endl;
+    
+    num_trie++;
   }
   done->end_trans();
   
@@ -176,34 +179,95 @@ void carebear_forest::prepare_to_query() {
   delete bytenums_left;
 }
 
-int carebear_forest::do_query_helper(d_trie *d, uint8_t *bv, unsigned *steps) {  
+void *do_query_helper(void *arg) {
+  struct helper_args *ret = (struct helper_args *) arg;
+  d_trie *d = ret->d;
+  uint8_t *bv = ret->bv;
+  carebear_forest *cur = ret->cur;
+  
   while(d != NULL) {
-    (*steps)++;
-    
+    ret->steps++;
+
     if (d->get_bytenum() == INVALID_BYTENUM && d->get_id() != INVALID_ID) {
       assert(d->is_leaf());
-      return d->get_id();
+      ret->res = d->get_id();
+      
+      pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
+      pthread_mutex_lock(&cur->done_lock);
+      cur->set_result(ret);
+      pthread_cond_signal(&cur->done_cv);
+      pthread_mutex_unlock(&cur->done_lock);
+      pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+      return NULL;
     }
     
     uint8_t byteval = bv[d->get_bytenum()];
     d = d->decide(byteval);
   }
-  
-  return INVALID_ID;
+
+  pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
+  pthread_mutex_lock(&cur->done_lock);
+  cur->set_result(ret);
+  pthread_cond_signal(&cur->done_cv);
+  pthread_mutex_unlock(&cur->done_lock);
+  pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+  return NULL;
+}
+
+void carebear_forest::set_result(struct helper_args *r) {
+  result_ = r;
 }
 
 unsigned carebear_forest::do_query(uint8_t *bv, unsigned len) {
-  // serial query:
-  unsigned res = INVALID_ID;
-  unsigned steps = 0;
-  for(unsigned i = 0, n = forest_.size(); i < n; i++) {
-    steps = 0;
-    res = do_query_helper(forest_[i], bv, &steps);
-    num_steps_ = steps;
-    if (res != INVALID_ID) {
-      break;
-    }
+  int err;
+  
+  unsigned num_tries = forest_.size();
+  
+  pthread_t threads[num_tries];
+  struct helper_args args[num_tries];
+  
+  pthread_mutex_lock(&done_lock);
+  
+  for(unsigned i = 0; i < num_tries; i++) {
+    args[i].cur = this;
+    args[i].d = forest_[i];
+    args[i].bv = bv;
+    args[i].steps = 0;
+    args[i].res = INVALID_ID;
+    
+    err = pthread_create(&threads[i], NULL,
+			 do_query_helper,
+			 (void *) &args[i]);
+
+    assert(err == 0);
   }
   
-  return res;
+  unsigned num_done = 0;
+  while(num_done < num_tries) {
+    err = pthread_cond_wait(&done_cv, &done_lock);
+    assert(err == 0);
+
+    num_steps_ = result_->steps;
+    unsigned id = result_->res;
+    
+    // a thread signaled to us that it finished
+    if (id != INVALID_ID) {
+      pthread_mutex_unlock(&done_lock);
+      
+      // kill all threads
+      for(unsigned i = 0; i < num_tries; i++) {
+	pthread_cancel(threads[i]);
+      }
+      
+      // return hit
+      return id;
+    }
+    
+    num_done++;
+  }
+  
+  pthread_mutex_unlock(&done_lock);
+  
+  // return miss
+  return INVALID_ID;
 }
