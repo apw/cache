@@ -8,6 +8,7 @@
 #include <string.h>
 #include <limits.h>
 
+#include <cstring>
 #include <vector>
 #include <tr1/memory>
 
@@ -19,10 +20,12 @@
 #include "../includes/ll.h"
 #include "../includes/cycle_timing.h"
 #include "../includes/common.h"
+#include "../includes/verify_results.h"
 
 using namespace std;
 
 #define NUM_ARGS 2
+#define MAX_FNAME_LEN 256
 
 typedef enum {LL_IMP, IN_ORDER_IMP, SIMPLE_CB_IMP, TRIE_CB_IMP, CAREBEAR_DUAL_TRIE_IMP} imp_t;
 
@@ -181,8 +184,15 @@ int main(int argc, char **argv) {
   int64_t func_call_overhead = warmup_time();
   (void) func_call_overhead;
 
+  // array to remember outfile names
+  int num_reps = sizeof(imps)/sizeof(*imps);
+  char *outfile_names[num_reps];
+  for (int i = 0; i < num_reps; i++) {
+    outfile_names[i] = (char *) calloc(MAX_FNAME_LEN, sizeof(char));
+  }
+
   unsigned first_hits = 0, first_misses = 0;
-  for(int i = 0; i < (int) (sizeof(imps) / sizeof(int)); i++) {
+  for(int i = 0; i < num_reps; i++) {
     printf("opening cache file\n");
     cache = fopen(cache_file_name, "r");
     if (!cache) {
@@ -210,6 +220,8 @@ int main(int argc, char **argv) {
     
     printf("running rep %d\n", i);
     run(r);
+    
+    strcpy(outfile_names[i], r->get_outfile_name());
 
     if (i == 0) {
       first_hits = r->get_num_hits();
@@ -230,5 +242,11 @@ int main(int argc, char **argv) {
     
   }
 
+  verify_results(num_reps, outfile_names);
+  
+  for (int i = 0; i < num_reps; i++) {
+    free(outfile_names[i]);
+  }
+  
   return 0;
 }

@@ -7,6 +7,8 @@
 #include <assert.h>
 #include <stdint.h>
 
+#define BUFLEN 256
+
 using namespace std;
 
 rep::rep(const char *cur_time, const char *outfile_basename) {
@@ -15,16 +17,18 @@ rep::rep(const char *cur_time, const char *outfile_basename) {
   num_misses_ = 0;
   num_steps_ = 0;
   
-  char buf[256];
-  snprintf(buf, sizeof(buf), "output/%s_%s.raw", outfile_basename, cur_time);
+  outfile_name_ = (char *) calloc(BUFLEN, sizeof(char));
+  assert(outfile_name_);
+  snprintf(outfile_name_, sizeof(char) * BUFLEN, "output/%s_%s.raw", outfile_basename, cur_time);
 
-  outfile_.open(buf);
+  outfile_.open(outfile_name_);
   assert(outfile_.is_open());
 }
 
 rep::~rep() {
   assert(outfile_.is_open());
   outfile_.close();
+  free(outfile_name_);
 }
 
 void rep::begin_sbv(int id) {
@@ -64,4 +68,8 @@ unsigned rep::get_num_hits() {
 
 unsigned rep::get_num_misses() {
   return num_misses_;
+}
+
+char *rep::get_outfile_name() {
+  return outfile_name_;
 }

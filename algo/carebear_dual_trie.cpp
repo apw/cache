@@ -41,7 +41,7 @@ void carebear_dual_trie::order_bytenums() {
   vector<carebear_prio>::iterator bp_end = bp_arr.end();
   for (vector<carebear_prio>::iterator bp_iter = bp_arr.begin();
        bp_iter != bp_end; bp_iter++) {    
-    //std::cout << "num_care: " << bp_iter->num_care << " variability: " << bp_iter->variability << " bytenum: " << bp_iter->bytenum << std::endl; // !!!
+    //    std::cout << "num_care: " << bp_iter->num_care << " variability: " << bp_iter->variability << " bytenum: " << bp_iter->bytenum << std::endl; // !!!
     
     relevant_[i] = bp_iter->bytenum;
     i++;

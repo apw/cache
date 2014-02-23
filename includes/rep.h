@@ -29,6 +29,8 @@ class rep {
   unsigned get_num_hits(void);
   unsigned get_num_misses(void);
 
+  char *get_outfile_name(void);
+
  protected:
   int current_id_;
   int num_steps_;
@@ -37,6 +39,8 @@ class rep {
   ofstream outfile_;
   unsigned num_hits_;
   unsigned num_misses_;
+  
+  char *outfile_name_;
 };
 
 
