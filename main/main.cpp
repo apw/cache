@@ -85,6 +85,7 @@ static rep_ptr initialize_rep(int imp_num) {
     break;
   }
   case CAREBEAR_FOREST_IMP: {
+    forest();
     carebear_forest *i = new carebear_forest(cur_time);
     r.reset(i);    
     break;

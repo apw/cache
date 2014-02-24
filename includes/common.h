@@ -15,4 +15,7 @@ void pterodactyl(void);
 // prints out bears
 void bears(void);
 
+// prints out a forest
+void forest(void);
+
 #endif
