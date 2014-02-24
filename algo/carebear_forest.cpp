@@ -208,7 +208,7 @@ void *do_query_helper(void *arg) {
       
       pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
       pthread_mutex_lock(&cur->done_lock);
-      if (cur->result_->res == INVALID_ID) {
+      if (cur->result_ == NULL || cur->result_->res == INVALID_ID) {
 	cur->result_ = ret;
       }
       cur->num_finished_++;
@@ -224,8 +224,9 @@ void *do_query_helper(void *arg) {
 
   pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
   pthread_mutex_lock(&cur->done_lock);
-  if (cur->result_->res == INVALID_ID && cur->result_->steps > ret->steps) {
-    cur->result_ = ret;      
+  if (cur->result_ == NULL
+      || (cur->result_->res == INVALID_ID && cur->result_->steps > ret->steps)) {
+    cur->result_ = ret;
   }
   cur->num_finished_++;
   pthread_cond_signal(&cur->done_cv);
@@ -238,7 +239,7 @@ unsigned carebear_forest::do_query(uint8_t *bv, unsigned len) {
   int err;
   
   num_finished_ = 0;
-  result_->res = INVALID_ID;
+  result_ = NULL;
   
   unsigned num_tries = forest_.size();
   
