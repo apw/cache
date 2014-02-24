@@ -55,6 +55,7 @@ void bears() {
 }
 
 void forest() {
+  // http://www.retrojunkie.com/asciiart/nature/forests.htm
   printf("                         /\\     |\\             /  \n");
   printf("            /   /|      / \\    / \\  \\   \\     /|  \n");
   printf("           / \\ / \\  /    |     / \\ / \\ / \\    / \\ \n");

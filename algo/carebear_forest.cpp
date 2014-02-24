@@ -248,11 +248,20 @@ unsigned carebear_forest::do_query(uint8_t *bv, unsigned len) {
     args[i].bv = bv;
     args[i].steps = 0;
     args[i].res = INVALID_ID;
+
+    pthread_attr_t attr;
+    err = pthread_attr_init(&attr);
+    assert(err == 0);
     
-    err = pthread_create(&threads[i], NULL,
+    err = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+    assert(err == 0);
+    
+    err = pthread_create(&threads[i], &attr,
 			 do_query_helper,
 			 (void *) &args[i]);
-
+    assert(err == 0);
+    
+    err = pthread_attr_destroy(&attr);
     assert(err == 0);
   }
   
