@@ -22,12 +22,12 @@ class carebear_forest : public in_order {
   void prepare_to_query(void);
   unsigned do_query(uint8_t *bv, unsigned len);
 
-  void set_result(struct helper_args *r);
-
   // clearly worst design choice evar. 
   pthread_mutex_t done_lock;
   pthread_cond_t done_cv;
-  
+  unsigned num_finished_;
+  struct helper_args *result_;
+
  protected:
   int get_max_bytenum(uset_uint *done, uset_uint *u, uset_uint *bytenums_left);
   void populate_subtrie(d_trie *d, uset_uint *done, uset_uint *u, uset_uint *bytenums_left);
@@ -35,9 +35,7 @@ class carebear_forest : public in_order {
   vector<d_trie *> forest_;
 
   unsigned max_relevant_bytenum_;
-  
-  struct helper_args *result_;
-  
+    
  private:
   typedef in_order super;
 };

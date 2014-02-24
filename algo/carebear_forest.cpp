@@ -208,7 +208,10 @@ void *do_query_helper(void *arg) {
       
       pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
       pthread_mutex_lock(&cur->done_lock);
-      cur->set_result(ret);
+      if (cur->result_->res == INVALID_ID) {
+	cur->result_ = ret;
+      }
+      cur->num_finished_++;
       pthread_cond_signal(&cur->done_cv);
       pthread_mutex_unlock(&cur->done_lock);
       pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
@@ -221,19 +224,21 @@ void *do_query_helper(void *arg) {
 
   pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
   pthread_mutex_lock(&cur->done_lock);
-  cur->set_result(ret);
+  if (cur->result_->res == INVALID_ID && cur->result_->steps > ret->steps) {
+    cur->result_ = ret;      
+  }
+  cur->num_finished_++;
   pthread_cond_signal(&cur->done_cv);
   pthread_mutex_unlock(&cur->done_lock);
   pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
   return NULL;
 }
 
-void carebear_forest::set_result(struct helper_args *r) {
-  result_ = r;
-}
-
 unsigned carebear_forest::do_query(uint8_t *bv, unsigned len) {
   int err;
+  
+  num_finished_ = 0;
+  result_->res = INVALID_ID;
   
   unsigned num_tries = forest_.size();
   
@@ -266,8 +271,7 @@ unsigned carebear_forest::do_query(uint8_t *bv, unsigned len) {
   }
   
   unsigned miss_max_steps = 0;
-  unsigned num_done = 0;
-  while(num_done < num_tries) {
+  while(num_finished_ < num_tries) {
     err = pthread_cond_wait(&done_cv, &done_lock);
     assert(err == 0);
     
@@ -292,8 +296,6 @@ unsigned carebear_forest::do_query(uint8_t *bv, unsigned len) {
 	miss_max_steps = result_->steps;
       }
     }
-    
-    num_done++;
   }
   
   pthread_mutex_unlock(&done_lock);
