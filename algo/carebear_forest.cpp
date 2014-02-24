@@ -16,10 +16,24 @@
 
 carebear_forest::carebear_forest(const char *cur_time) 
   : rep(cur_time, "carebear_forest"), in_order(cur_time) {
+  int err;
   
+  err = pthread_mutex_init(&done_lock, NULL);
+  assert(err == 0);
+  
+  err = pthread_cond_init(&done_cv, NULL);
+  assert(err == 0);
 }
 
 carebear_forest::~carebear_forest() {
+  int err;
+  
+  err = pthread_mutex_destroy(&done_lock);
+  assert(err == 0);
+  
+  err = pthread_cond_destroy(&done_cv);
+  assert(err == 0);
+  
   for(unsigned i = 0; i < forest_.size(); i++) {
     delete forest_[i];
   }
@@ -168,7 +182,7 @@ void carebear_forest::prepare_to_query() {
     // undo trans made by get_max_bytenum
     bytenums_left->undo_trans();
     
-    cout << "Trie " << num_trie << " constructed with " << (vects_left - done->get_size()) << " vectors." << endl;
+    cout << "Trie " << num_trie << " has been constructed with " << (vects_left - done->get_size()) << " vectors." << endl;
     
     num_trie++;
   }
@@ -242,16 +256,18 @@ unsigned carebear_forest::do_query(uint8_t *bv, unsigned len) {
     assert(err == 0);
   }
   
+  unsigned miss_max_steps = 0;
   unsigned num_done = 0;
   while(num_done < num_tries) {
     err = pthread_cond_wait(&done_cv, &done_lock);
     assert(err == 0);
-
-    num_steps_ = result_->steps;
+    
     unsigned id = result_->res;
     
-    // a thread signaled to us that it finished
+    // if hit
     if (id != INVALID_ID) {
+      num_steps_ = result_->steps;
+      
       pthread_mutex_unlock(&done_lock);
       
       // kill all threads
@@ -259,14 +275,22 @@ unsigned carebear_forest::do_query(uint8_t *bv, unsigned len) {
 	pthread_cancel(threads[i]);
       }
       
-      // return hit
       return id;
+    } else {
+      // if miss number of steps should be maximum of number of steps across
+      // all tries
+      if (result_->steps > miss_max_steps) {
+	miss_max_steps = result_->steps;
+      }
     }
     
     num_done++;
   }
   
   pthread_mutex_unlock(&done_lock);
+  
+  assert(miss_max_steps > 0);
+  num_steps_ = miss_max_steps;
   
   // return miss
   return INVALID_ID;
