@@ -23,6 +23,11 @@ carebear_forest::carebear_forest(const char *cur_time)
   
   err = pthread_cond_init(&done_cv, NULL);
   assert(err == 0);
+  
+  result_ = (struct helper_args *) malloc(sizeof(struct helper_args));
+  assert(result_ != NULL);
+  
+  cancel_version_ = 1;
 }
 
 carebear_forest::~carebear_forest() {
@@ -33,6 +38,8 @@ carebear_forest::~carebear_forest() {
   
   err = pthread_cond_destroy(&done_cv);
   assert(err == 0);
+  
+  free(result_);
   
   for(unsigned i = 0; i < forest_.size(); i++) {
     delete forest_[i];
@@ -199,22 +206,32 @@ void *do_query_helper(void *arg) {
   uint8_t *bv = ret->bv;
   carebear_forest *cur = ret->cur;
   
+  assert(d != NULL);
+  
   while(d != NULL) {
+    // record number of steps
     ret->steps++;
 
+    // if hit...
     if (d->get_bytenum() == INVALID_BYTENUM && d->get_id() != INVALID_ID) {
       assert(d->is_leaf());
       ret->res = d->get_id();
       
       pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
       pthread_mutex_lock(&cur->done_lock);
-      if (cur->result_ == NULL || cur->result_->res == INVALID_ID) {
-	cur->result_ = ret;
+      // write changes to cur->result_ only if cancel_versions match
+      if (cur->cancel_version_ == ret->cancel_version
+	  && cur->result_->res == INVALID_ID) {
+	*(cur->result_) = *ret;
       }
+
+      // report another thread finished
       cur->num_finished_++;
       pthread_cond_signal(&cur->done_cv);
       pthread_mutex_unlock(&cur->done_lock);
       pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+      
+      free(arg);
       return NULL;
     }
     
@@ -224,14 +241,19 @@ void *do_query_helper(void *arg) {
 
   pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
   pthread_mutex_lock(&cur->done_lock);
-  if (cur->result_ == NULL
-      || (cur->result_->res == INVALID_ID && cur->result_->steps > ret->steps)) {
-    cur->result_ = ret;
+  // write changes to cur->result_ only if cancel_versions match
+  if (cur->cancel_version_ == ret->cancel_version &&
+      cur->result_->res == INVALID_ID && cur->result_->steps < ret->steps) {
+    *(cur->result_) = *(ret);
   }
+  
+  // report another thread finished
   cur->num_finished_++;
   pthread_cond_signal(&cur->done_cv);
   pthread_mutex_unlock(&cur->done_lock);
   pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+  
+  free(arg);
   return NULL;
 }
 
@@ -239,22 +261,30 @@ unsigned carebear_forest::do_query(uint8_t *bv, unsigned len) {
   int err;
   
   num_finished_ = 0;
-  result_ = NULL;
+  result_->res = INVALID_ID;
+  result_->steps = 0;
   
   unsigned num_tries = forest_.size();
   
   pthread_t threads[num_tries];
-  struct helper_args args[num_tries];
+  struct helper_args *args[num_tries];
   
+  // lock to ensure no signals go off before we go to sleep
   pthread_mutex_lock(&done_lock);
   
+  // initialize query threads
   for(unsigned i = 0; i < num_tries; i++) {
-    args[i].cur = this;
-    args[i].d = forest_[i];
-    args[i].bv = bv;
-    args[i].steps = 0;
-    args[i].res = INVALID_ID;
-
+    // args[i] shoudl be freed by its corresponding worker query thread
+    args[i] = (struct helper_args *) malloc(sizeof(struct helper_args));
+    assert(args[i] != NULL);
+    
+    args[i]->cur = this;
+    args[i]->d = forest_[i];
+    args[i]->bv = bv;
+    args[i]->steps = 0;
+    args[i]->res = INVALID_ID;
+    args[i]->cancel_version = cancel_version_;
+    
     pthread_attr_t attr;
     err = pthread_attr_init(&attr);
     assert(err == 0);
@@ -264,7 +294,7 @@ unsigned carebear_forest::do_query(uint8_t *bv, unsigned len) {
     
     err = pthread_create(&threads[i], &attr,
 			 do_query_helper,
-			 (void *) &args[i]);
+			 (void *) args[i]);
     assert(err == 0);
     
     err = pthread_attr_destroy(&attr);
@@ -275,15 +305,21 @@ unsigned carebear_forest::do_query(uint8_t *bv, unsigned len) {
   while(num_finished_ < num_tries) {
     err = pthread_cond_wait(&done_cv, &done_lock);
     assert(err == 0);
-    
+        
     unsigned id = result_->res;
     
     // if hit
     if (id != INVALID_ID) {
+      // report number of steps to super::rep
       num_steps_ = result_->steps;
       
-      pthread_mutex_unlock(&done_lock);
+      // ensure no worker query thread writes to result_
+      cancel_version_++;
       
+      // ensure no integer overflow
+      assert(cancel_version_ > 0);
+      pthread_mutex_unlock(&done_lock);
+
       // kill all threads
       for(unsigned i = 0; i < num_tries; i++) {
 	pthread_cancel(threads[i]);
@@ -298,10 +334,17 @@ unsigned carebear_forest::do_query(uint8_t *bv, unsigned len) {
       }
     }
   }
+
+  // ensure no worker query thread writes to result_
+  cancel_version_++;  
   
+  // ensure no integer overflow
+  assert(cancel_version_ > 0);
   pthread_mutex_unlock(&done_lock);
   
   assert(miss_max_steps > 0);
+
+  // report number of steps to super::rep
   num_steps_ = miss_max_steps;
   
   // return miss
