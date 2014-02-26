@@ -47,6 +47,10 @@ gdb:
 	$(KANGAROO_BODY) -g $(VOLATILE_OBJECT) $(OH_NO) $(OPTIMIZABLE_SOURCES) -o $(MAIN) $(LIBS)
 	gdb $(MAIN)
 
+val:
+	$(MAKE)
+	valgrind --leak-check=full ./$(MAIN) $(t) $(q)
+
 clean:
 	rm -rf bin/*
 
