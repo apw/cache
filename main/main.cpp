@@ -33,11 +33,14 @@ typedef enum {LL_IMP, IN_ORDER_IMP, SIMPLE_CB_IMP,
 	      CAREBEAR_FOREST_IMP} imp_t;
 
 // order in which implementations will be run
+/*
 int imps[] = {CAREBEAR_FOREST_IMP, CAREBEAR_DUAL_TRIE_IMP, TRIE_CB_IMP,
 	      LL_IMP, SIMPLE_CB_IMP};
+*/
+int imps[] = {LL_IMP};
 
 #define TIMEBUF_SZ 80
-char cur_time[TIMEBUF_SZ];
+char *cur_time;
 
 // passed in at runtime
 char *cache_file_name;
@@ -188,8 +191,9 @@ int main(int argc, char **argv) {
   cache_file_name = argv[1];
   query_file_name = argv[2];
 
+  cur_time = (char *) malloc(sizeof(char) * TIMEBUF_SZ);
   get_str_time(cur_time, TIMEBUF_SZ);
-
+  
   // TODO do we need to call this right before we time?
   int64_t func_call_overhead = warmup_time();
   (void) func_call_overhead;
@@ -257,6 +261,8 @@ int main(int argc, char **argv) {
   for (int i = 0; i < num_reps; i++) {
     free(outfile_names[i]);
   }
+
+  free(cur_time);
   
   return 0;
 }

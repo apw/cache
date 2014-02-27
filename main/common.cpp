@@ -1,11 +1,16 @@
 #include "../includes/common.h"
-#include <ctime>
+
 #include "stdio.h"
+
+#include <ctime>
+#include <iostream>
+
+#include <assert.h>
 
 using namespace std;
 
 void get_str_time(char *buffer, size_t sz) {
-  /*
+/*
    * Code taken from:
    * http://stackoverflow.com/questions/5438482/getting-the-current-time-as-a-yyyy-mm-dd-hh-mm-ss-string
    */
@@ -13,7 +18,9 @@ void get_str_time(char *buffer, size_t sz) {
   tm* timeinfo;
   
   time(&rawtime);
+  // the following call leaks memory but we are not allowed to free it
   timeinfo = localtime(&rawtime);
+  assert(timeinfo != NULL);
   
   strftime(buffer, sz, "%Y-%m-%d-%H-%M-%S", timeinfo);
 }

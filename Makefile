@@ -49,7 +49,7 @@ gdb:
 
 val:
 	$(MAKE)
-	valgrind --leak-check=full ./$(MAIN) $(t) $(q)
+	valgrind --leak-check=full --show-leak-kinds=all ./$(MAIN) $(t) $(q)
 
 clean:
 	rm -rf bin/*
