@@ -2,7 +2,6 @@
 #define _LAZY_TRIE_H
 
 #include "rep.h"
-#include "common_types.h"
 #include <tr1/unordered_map>
 #include <vector>
 #include <stdint.h>
@@ -11,19 +10,31 @@ using namespace std;
 
 class lazy_trie {
  public:
-  //lazy_trie(unsigned bytenum, unsigned id);
   lazy_trie(unsigned bytenum, unsigned id,
 	    unsigned cur_index, unsigned num_relevant, unsigned *relevant);
   ~lazy_trie(void);
-    
+  
   lazy_trie *decide(uint8_t byteval);
-  void add_vect(vect bv, unsigned id);
   bool is_leaf(void);
   
   unsigned get_bytenum(void);
   unsigned get_id(void);
   
   void print(void);
+
+  typedef struct {
+    unsigned bytenum;
+    uint8_t byteval;
+  } bytenumval;
+
+  typedef vector<bytenumval> v_entries;
+  
+  typedef struct {
+    v_entries ve;
+    unsigned id;
+  } c_entry;
+  
+  void add_vect(c_entry ce);
   
  protected:
   bool is_lazy(void);
@@ -47,11 +58,12 @@ class lazy_trie {
   typedef tr1::unordered_map<uint8_t, lazy_trie *, byteval_hash, byteval_eq> offspring;
   offspring *children_;
 
-  store *s_;
+  typedef vector<c_entry> lazy_store;
+  lazy_store *s_;
   
-  unsigned num_relevant_; // TODO set this
-  unsigned cur_index_; // TODO set this
-  unsigned *relevant_; // TODO set this
+  unsigned num_relevant_;
+  unsigned cur_index_;
+  unsigned *relevant_; // TODO who frees this?
     
   unsigned bytenum_;
   unsigned id_;

@@ -6,7 +6,6 @@
 
 lazy_trie::lazy_trie(unsigned bytenum, unsigned id, unsigned cur_index,
 		     unsigned num_relevant, unsigned *relevant) {
-
   bytenum_ = bytenum;
   id_ = id;
   
@@ -45,16 +44,18 @@ void lazy_trie::burst() {
   children_ = new offspring();
   for(unsigned i = 0; i < s_->size(); i++) {
     unsigned j = 0;
-    for(; j < s_->operator[](i).size(); j++) {
-      if (s_->operator[](i)[j].bytenum == relevant_[cur_index_ + 1]) {
-	if (children_->count(s_->operator[](i)[j].byteval) == 0) {
-	  lazy_trie *child = new lazy_trie(s_->operator[](i)[j].bytenum,
-					   i, cur_index_ + 1,
+    for(; j < s_->operator[](i).ve.size(); j++) {
+      if (s_->operator[](i).ve[j].bytenum == relevant_[cur_index_ + 1]) {
+	uint8_t byteval = s_->operator[](i).ve[j].byteval;
+	unsigned bytenum = s_->operator[](i).ve[j].bytenum;
+	unsigned id = s_->operator[](i).id;
+	if (children_->count(byteval) == 0) {
+	  lazy_trie *child = new lazy_trie(bytenum, id, cur_index_ + 1,
 					   num_relevant_, relevant_);
-	  children_->operator[](s_->operator[](i)[j].byteval) = child;
+	  children_->operator[](byteval) = child;
 	}
 	
-	children_->operator[](s_->operator[](i)[j].byteval)->add_vect(s_->operator[](i), i);
+	children_->operator[](byteval)->add_vect(s_->operator[](i));
       }
     }    
   }
@@ -75,12 +76,14 @@ lazy_trie *lazy_trie::decide(uint8_t byteval) {
   return children_->operator[](byteval);
 }
 
-void lazy_trie::add_vect(vect bv, unsigned id) {
+void lazy_trie::add_vect(c_entry ce) {
   if (this->is_lazy()) {
-    
-  } else {
-    
+    s_->push_back(ce);
+    return;
   }
+
+  // Operation not yet supported: adding vect to burst-node
+  assert(0);
   
   /*
   lazy_trie *current = this;
@@ -94,8 +97,6 @@ void lazy_trie::add_vect(vect bv, unsigned id) {
     }
   }
   */
-  
-  // TODO
 }
 
 bool lazy_trie::is_leaf() {
@@ -122,21 +123,32 @@ void lazy_trie::print_helper(unsigned spaces) {
     return;
   }
   
-  cout << tab << "Q(" << bytenum_ << ")->[";
-  
-  if (!this->is_leaf()) {
-    offspring::const_iterator children_end = children_->end();
-    for(offspring::const_iterator c_iter = children_->begin(); c_iter != children_end; c_iter++) {
+  if (this->is_lazy()) {
+    cout << tab << "Z(" << bytenum_ << ")->[";
     
-      cout << tab + unit << ((unsigned) c_iter->first) << "->";
-      c_iter->second->print_helper(spaces + 2);
-      cout << " ";
+    for(unsigned i = 0; i < s_->size(); i++) {
+      cout << s_->operator[](i).id;
+      if (i < s_->size() - 1) {
+	cout << ", ";
+      }
     }
+    
+    cout << "]";
+  } else {
+    cout << tab << "Q(" << bytenum_ << ")->[";
+    
+    if (!this->is_leaf()) {
+      offspring::const_iterator children_end = children_->end();
+      for(offspring::const_iterator c_iter = children_->begin(); c_iter != children_end; c_iter++) {
+	
+	cout << tab + unit << ((unsigned) c_iter->first) << "->";
+	c_iter->second->print_helper(spaces + 2);
+	cout << " ";
+      }
+    }
+
+    cout << tab << "]";
   }
-
-  cout << tab << "]";
-
-  // TODO
 }
 
 void lazy_trie::print() {
