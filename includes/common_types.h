@@ -45,5 +45,10 @@ class numval {
 typedef vector<numval> vect;
 typedef vector<vect> store;
 
+typedef struct {
+  vect ve;
+  unsigned id;
+} c_entry;
+
 
 #endif
