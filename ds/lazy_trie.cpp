@@ -173,7 +173,7 @@ bool lazy_trie::is_leaf() {
     return cur_index_ == num_relevant_;
   }
   
-  return children_->empty();
+  return !ee_exists() && children_->empty();
 }
 
 unsigned lazy_trie::get_bytenum() {
@@ -220,6 +220,12 @@ void lazy_trie::print_helper(unsigned spaces) {
       }
     }
 
+    if (this->ee_exists()) {
+	cout << tab + unit << "EE->";
+	ee_->print_helper(spaces + 2);
+	cout << " ";      
+    }
+    
     cout << tab << "]";
   }
 }
