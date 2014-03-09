@@ -22,21 +22,21 @@ lazy_trie::lazy_trie(unsigned id, unsigned cur_index,
   ee_ = NULL;
   
   // node starts its life cycle lazy
-  ls_ = NULL;
+  ls_ = new lazy_store();
   children_ = NULL;
 }
 
 lazy_trie::~lazy_trie(void) {
-  offspring::const_iterator children_end = children_->end();
-  for(offspring::const_iterator c_iter = children_->begin(); c_iter != children_end; c_iter++) {
-    delete c_iter->second;
-  }
-  
   if (ls_ != NULL) {
     delete ls_;
   }
   
   if (children_ != NULL) {
+    offspring::const_iterator children_end = children_->end();
+    for(offspring::const_iterator c_iter = children_->begin(); c_iter != children_end; c_iter++) {
+      delete c_iter->second;
+    }
+    
     delete children_;
   }
   
