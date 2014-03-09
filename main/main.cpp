@@ -46,8 +46,8 @@ char *cur_time;
 char *cache_file_name;
 char *query_file_name;
 
-FILE *cache = NULL;
-FILE *query = NULL;
+FILE *cache_file = NULL;
+FILE *query_file = NULL;
 
 typedef tr1::shared_ptr<rep> rep_ptr;
 
@@ -119,7 +119,7 @@ void load(rep_ptr rp) {
   int id = -1;
   
   // TODO change all add_byte calls to take in uint8_t instead of unsigned
-  for (unsigned j = UINT_MAX; fscanf(cache, "%u %hhu", &bytenum, &byteval) != EOF; j = bytenum) {
+  for (unsigned j = UINT_MAX; fscanf(cache_file, "%u %hhu", &bytenum, &byteval) != EOF; j = bytenum) {
     if (bytenum < j) {
       if (j != UINT_MAX) {
 	rp->end_sbv(id);
@@ -147,7 +147,7 @@ void run(rep_ptr rpt) {
   uint8_t *bv = NULL;
   unsigned query_count = 0;
 
-  for (unsigned j = UINT_MAX; fscanf(query, "%u %hhu", &bytenum, &byteval) != EOF; j = bytenum) {
+  for (unsigned j = UINT_MAX; fscanf(query_file, "%u %hhu", &bytenum, &byteval) != EOF; j = bytenum) {
     if (bytenum < j && j != UINT_MAX) {
       bv_len = j + 1;
       assert(bv_len > 0);
@@ -159,10 +159,10 @@ void run(rep_ptr rpt) {
     }
   }
 
-  rewind(query);
+  rewind(query_file);
   assert(errno == 0);
 
-  for (unsigned j = UINT_MAX; fscanf(query, "%u %hhu", &bytenum, &byteval) != EOF; j = bytenum) {
+  for (unsigned j = UINT_MAX; fscanf(query_file, "%u %hhu", &bytenum, &byteval) != EOF; j = bytenum) {
     if (bytenum < j) {
       printf("\r[%u]", query_count);
       fflush(stdout);
@@ -208,16 +208,16 @@ int main(int argc, char **argv) {
   unsigned first_hits = 0, first_misses = 0;
   for(int i = 0; i < num_reps; i++) {
     printf("opening cache file\n");
-    cache = fopen(cache_file_name, "r");
-    if (!cache) {
+    cache_file = fopen(cache_file_name, "r");
+    if (!cache_file) {
       printf("Could not open cache_file \"%s\".\n", cache_file_name);
       return 3;
     }
     
     printf("opening query file\n");
-    query = fopen(query_file_name, "r");
-    if (!query) {
-      fclose(cache);
+    query_file = fopen(query_file_name, "r");
+    if (!query_file) {
+      fclose(cache_file);
       printf("Could not open query_file \"%s\": %s\n", query_file_name, strerror(errno));
       return 4;
     }
@@ -249,10 +249,10 @@ int main(int argc, char **argv) {
     cleanup(r);
     
     printf("closing cache file %d\n", i);
-    fclose(cache);
+    fclose(cache_file);
 
     printf("closing query file %d\n", i);
-    fclose(query);
+    fclose(query_file);
     
   }
 
