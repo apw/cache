@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-
 /* Teravectyl */
 typedef struct {
   long operator() (const unsigned &k) const {

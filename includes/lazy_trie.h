@@ -11,12 +11,13 @@ using namespace std;
 
 class lazy_trie {
  public:
-  lazy_trie(unsigned bytenum, unsigned id);
+  //lazy_trie(unsigned bytenum, unsigned id);
+  lazy_trie(unsigned bytenum, unsigned id,
+	    unsigned cur_index, unsigned num_relevant, unsigned *relevant);
   ~lazy_trie(void);
     
   lazy_trie *decide(uint8_t byteval);
-  void extend(uint8_t byteval, unsigned bytenum, unsigned id);
-  void add_vect(vect *bv, unsigned id);
+  void add_vect(vect bv, unsigned id);
   bool is_leaf(void);
   
   unsigned get_bytenum(void);
@@ -25,6 +26,10 @@ class lazy_trie {
   void print(void);
   
  protected:
+  bool is_lazy(void);
+  
+  void burst(void);
+  
   void print_helper(unsigned);
   
   typedef struct {
@@ -44,8 +49,9 @@ class lazy_trie {
 
   store *s_;
   
-  unsigned num_relevant_;
-  unsigned *relevant_;
+  unsigned num_relevant_; // TODO set this
+  unsigned cur_index_; // TODO set this
+  unsigned *relevant_; // TODO set this
     
   unsigned bytenum_;
   unsigned id_;
