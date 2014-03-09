@@ -39,7 +39,7 @@ sgdb:
 	$(MKDIRS)
 	$(KANGAROO_BODY) $(OH_NO) -g -c $(VOLATILE_SOURCES) -o $(VOLATILE_OBJECT) $(LIBS)
 	$(KANGAROO_BODY) -g $(VOLATILE_OBJECT) $(OH_NO) $(OPTIMIZABLE_SOURCES) -o $(MAIN) $(LIBS)
-	sudo gdb $(MAINS)
+	sudo gdb ./$(MAINS)
 
 gdb:
 	$(MKDIRS)

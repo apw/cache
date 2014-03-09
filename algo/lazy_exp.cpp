@@ -26,6 +26,7 @@ void lazy_exp::prepare_to_query() {
     c_entry ce;
     ce.ve = s_[i];
     ce.id = i;
+    
     z_->add_vect(ce);
   }
 }

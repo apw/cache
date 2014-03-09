@@ -6,18 +6,24 @@
 
 lazy_trie::lazy_trie(unsigned id, unsigned cur_index,
 		     unsigned num_relevant, unsigned *relevant) {
-  bytenum_ = relevant_[cur_index];
-  id_ = id;
+  assert(cur_index <= num_relevant);
   
+  id_ = id;  
   cur_index_ = cur_index;
   num_relevant_ = num_relevant;
   relevant_ = relevant;
-
+  
+  if (cur_index_ == num_relevant) {
+    bytenum_ = INVALID_BYTENUM;
+  } else {
+    bytenum_ = relevant[cur_index];
+  }
+  
   ee_ = NULL;
   
   // node starts its life cycle lazy
   ls_ = NULL;
-  children_ = new offspring();
+  children_ = NULL;
 }
 
 lazy_trie::~lazy_trie(void) {
@@ -51,14 +57,7 @@ bool lazy_trie::ee_exists() {
 void lazy_trie::burst() {
   assert(is_lazy());
   
-  if (cur_index_ == num_relevant_) {
-    // TODO what do do here?
-    assert(0);
-    
-    delete ls_;
-    ls_ = NULL;
-    return;
-  }
+  assert(cur_index_ + 1 <= num_relevant_);
   
   tr1::unordered_set<unsigned> x_set;
   children_ = new offspring();
@@ -70,14 +69,25 @@ void lazy_trie::burst() {
       if (ls_->operator[](i).ve[j].bytenum == relevant_[cur_index_]) {
 	uint8_t byteval = ls_->operator[](i).ve[j].byteval;
 	unsigned id = ls_->operator[](i).id;
-	if (children_->count(byteval) == 0) {
-	  lazy_trie *child = new lazy_trie(id, cur_index_ + 1,
-					   num_relevant_, relevant_);
-	  children_->operator[](byteval) = child;
+	
+	if (cur_index_ + 1 == num_relevant_) {
+	  if (children_->count(byteval) == 0) {
+	    lazy_trie *child = new lazy_trie(id, cur_index_ + 1,
+					     num_relevant_, relevant_);
+	    children_->operator[](byteval) = child;
+	  }
+	  
+	  children_->operator[](byteval)->add_vect(ls_->operator[](i));	  
+	} else {
+	  if (children_->count(byteval) == 0) {
+	    lazy_trie *child = new lazy_trie(INVALID_ID, cur_index_ + 1,
+					     num_relevant_, relevant_);
+	    children_->operator[](byteval) = child;
+	  }
+	  
+	  children_->operator[](byteval)->add_vect(ls_->operator[](i));
 	}
 	
-	children_->operator[](byteval)->add_vect(ls_->operator[](i));
-
 	x_needed = false;
 	break;
       }
@@ -90,21 +100,28 @@ void lazy_trie::burst() {
     }
   }
   
-  // create new ee path
-  assert(!ee_exists());
-  ee_ = new lazy_trie(INVALID_ID, cur_index_ + 1, num_relevant_, relevant_);
-  
-  // iterate over vectors that have current bytenum as don't care
-  tr1::unordered_set<unsigned>::const_iterator iter_end = x_set.end();
-  for (tr1::unordered_set<unsigned>::const_iterator iter = x_set.begin();
-       iter != iter_end; iter++) {
-    // insert vector into ee path
-    ee_->add_vect(ls_->operator[](*iter));
+  if (x_set.size() > 0) {
+    // create new ee path
+    assert(!ee_exists());
+    if (cur_index_ + 1 == num_relevant_) {
+      ee_ = new lazy_trie(ls_->operator[](0).id, cur_index_ + 1,
+			  num_relevant_, relevant_);
+    } else {
+      ee_ = new lazy_trie(INVALID_ID, cur_index_ + 1, num_relevant_, relevant_);
+    }
     
-    // insert vector into all existing child paths
-    offspring::const_iterator children_end = children_->end();
-    for(offspring::const_iterator c_iter = children_->begin(); c_iter != children_end; c_iter++) {
-      c_iter->second->add_vect(ls_->operator[](*iter));
+    // iterate over vectors that have current bytenum as don't care
+    tr1::unordered_set<unsigned>::const_iterator iter_end = x_set.end();
+    for (tr1::unordered_set<unsigned>::const_iterator iter = x_set.begin();
+	 iter != iter_end; iter++) {
+      // insert vector into ee path
+      ee_->add_vect(ls_->operator[](*iter));
+    
+      // insert vector into all existing child paths
+      offspring::const_iterator children_end = children_->end();
+      for(offspring::const_iterator c_iter = children_->begin(); c_iter != children_end; c_iter++) {
+	c_iter->second->add_vect(ls_->operator[](*iter));
+      }
     }
   }
   
