@@ -114,3 +114,46 @@ void d_trie::print_helper(unsigned spaces) {
 void d_trie::print() {
   print_helper(0);
 }
+
+void d_trie::gen_graph_helper(ofstream& outfile, unsigned int cur_id, unsigned int *nid) {
+  if (this->is_leaf() && !this->x_exists()) {
+    outfile << cur_id << " [label=\"" << get_id() << "\",shape=box]" << endl;
+    return;
+  }
+
+  outfile << cur_id << " [label=\"" << get_bytenum() << "\"]" << endl;
+  unsigned int next_id;
+  if (!this->is_leaf()) {
+    offspring::const_iterator children_end = children_.end();
+    for(offspring::const_iterator c_iter = children_.begin(); c_iter != children_end; c_iter++) {
+
+      next_id = (*nid)++;
+      outfile << cur_id << " -> " << next_id << " [label=\"" << ((unsigned) c_iter->first) << "\"]" << endl;
+      c_iter->second->gen_graph_helper(outfile, next_id, nid);
+    }
+  }
+  
+  if (this->x_exists()) {
+    // assert(!this->is_leaf()); // !!! this assert fails; how can a leaf have an x_path?!?!
+    next_id = (*nid)++;
+      outfile << cur_id << " -> " << next_id << " [label=\"X\"]" << endl;
+    (this->decide_x())->gen_graph_helper(outfile, next_id, nid);
+  }
+}
+
+void d_trie::gen_graph(char *out_file_path) {
+  unsigned int node_id = 1;
+
+  ofstream outfile;
+  assert(out_file_path);
+  outfile.open(out_file_path);
+  assert(outfile);
+
+  outfile << "digraph {" << endl;
+
+  gen_graph_helper(outfile, 0, &node_id);
+  
+  outfile << "}";
+
+  outfile.close();
+}

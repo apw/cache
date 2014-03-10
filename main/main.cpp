@@ -37,7 +37,7 @@ typedef enum {LL_IMP, IN_ORDER_IMP, SIMPLE_CB_IMP,
 int imps[] = {CAREBEAR_FOREST_IMP, CAREBEAR_DUAL_TRIE_IMP, TRIE_CB_IMP,
 	      LL_IMP, SIMPLE_CB_IMP};
 */
-int imps[] = {LL_IMP};
+int imps[] = {TRIE_CB_IMP};
 
 #define TIMEBUF_SZ 80
 char *cur_time;

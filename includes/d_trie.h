@@ -25,9 +25,11 @@ class d_trie {
   unsigned get_id(void);
   
   void print(void);
+  void gen_graph(char *out_file_path);
   
  protected:
   void print_helper(unsigned);
+  void gen_graph_helper(ofstream& outfile, unsigned int cur_id, unsigned int *nid);
   
   typedef struct {
     long operator() (const unsigned &k) const {

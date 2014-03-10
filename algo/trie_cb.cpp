@@ -124,7 +124,8 @@ void trie_cb::prepare_to_query() {
   populate_trie(d_, candidates, done, 0);
   done->end_trans();
   
-  //d_->print(); // AHHH
+  //  d_->print(); // AHHH !!!
+  d_->gen_graph((char *) "graph.dot"); // AHHH !!!!
   
   delete candidates;  
   delete done;
