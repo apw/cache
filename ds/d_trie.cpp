@@ -115,7 +115,8 @@ void d_trie::print() {
   print_helper(0);
 }
 
-void d_trie::gen_graph_helper(ofstream& outfile, unsigned int cur_id, unsigned int *nid) {
+void d_trie::gen_graph_helper(ofstream& outfile, unsigned int cur_id,
+			      unsigned int *nid) {
   if (this->is_leaf() && !this->x_exists()) {
     outfile << cur_id << " [label=\"" << get_id() << "\",shape=box]" << endl;
     return;

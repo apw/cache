@@ -58,9 +58,12 @@ run:
 	$(MAKE)
 	./$(MAIN) $(t) $(q)
 
+viz:
+	dot $(v).raw -Tpdf -o $(v).pdf
+
 hist:
 	$(MAKE)
 	./$(MAIN) $(t) $(q)
 	python main/gen_hist.py $(r1) $(r2)
 
-.PHONY: main dbg clean dgen
+.PHONY: main dbg clean dgen viz

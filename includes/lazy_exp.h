@@ -18,6 +18,8 @@ class lazy_exp : public simple_cb {
   void begin_sbv(int id);
   void end_sbv(int id);
 
+  void viz(void);
+  
  protected:
   lazy_trie *z_;
   

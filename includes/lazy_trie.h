@@ -23,14 +23,16 @@ class lazy_trie {
   unsigned get_id(void);
   
   void print(void);
-
+  void gen_graph(char *out_file_path);
+  
   void add_vect(c_entry ce);
   
  protected:
   bool is_lazy(void);
   unsigned burst(void);
   bool ee_exists(void);
-  
+
+  void gen_graph_helper(ofstream& outfile, unsigned int cur_id, unsigned int *nid);  
   void print_helper(unsigned);
   
   typedef struct {
