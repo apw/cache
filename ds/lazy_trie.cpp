@@ -54,23 +54,31 @@ bool lazy_trie::ee_exists() {
   return ee_ != NULL;
 }
 
-void lazy_trie::burst() {
+unsigned lazy_trie::burst() {
   assert(is_lazy());
   
   assert(cur_index_ + 1 <= num_relevant_);
   
+  unsigned steps = 0;
+  
   tr1::unordered_set<unsigned> x_set;
   children_ = new offspring();
+  // iterate over things to insert
   for(unsigned i = 0; i < ls_->size(); i++) {
     bool x_needed = true;
     
+    steps++;
+    
+    // stupidly find appropriate placement in each vector
     for(unsigned j = 0; j < ls_->operator[](i).ve.size(); j++) {
       // insert rest of vector into children
       if (ls_->operator[](i).ve[j].bytenum == relevant_[cur_index_]) {
 	uint8_t byteval = ls_->operator[](i).ve[j].byteval;
 	unsigned id = ls_->operator[](i).id;
-	
+
 	if (cur_index_ + 1 == num_relevant_) {
+	  // this node is a leaf and thus the next one should just have an ID
+	  
 	  if (children_->count(byteval) == 0) {
 	    lazy_trie *child = new lazy_trie(id, cur_index_ + 1,
 					     num_relevant_, relevant_);
@@ -79,6 +87,8 @@ void lazy_trie::burst() {
 	  
 	  children_->operator[](byteval)->add_vect(ls_->operator[](i));	  
 	} else {
+	  // this node is not a leaf
+	  
 	  if (children_->count(byteval) == 0) {
 	    lazy_trie *child = new lazy_trie(INVALID_ID, cur_index_ + 1,
 					     num_relevant_, relevant_);
@@ -114,6 +124,8 @@ void lazy_trie::burst() {
     tr1::unordered_set<unsigned>::const_iterator iter_end = x_set.end();
     for (tr1::unordered_set<unsigned>::const_iterator iter = x_set.begin();
 	 iter != iter_end; iter++) {
+      steps++;
+      
       // insert vector into ee path
       ee_->add_vect(ls_->operator[](*iter));
     
@@ -127,12 +139,18 @@ void lazy_trie::burst() {
   
   delete ls_;
   ls_ = NULL;
+
+  return steps;
 }
 
-lazy_trie *lazy_trie::decide(uint8_t byteval) {
+lazy_trie *lazy_trie::decide(uint8_t byteval, unsigned *steps) {
+  assert(*steps == 0);
+  
   if (this->is_lazy()) {
-    this->burst();
+    *steps += this->burst();
   }
+  
+  *steps += 1;
   
   if (children_->count(byteval) == 0) {
     if (ee_exists()) {
@@ -231,5 +249,6 @@ void lazy_trie::print_helper(unsigned spaces) {
 }
 
 void lazy_trie::print() {
+  assert(0); // TODO DOES NOT YET WORK
   print_helper(0);
 }

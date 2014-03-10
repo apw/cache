@@ -32,8 +32,7 @@ void lazy_exp::prepare_to_query() {
 }
 
 unsigned lazy_exp::do_query(uint8_t *bv, unsigned len) {
-  // TODO COUNT QUESTIONS!!!!!!
-  // TODO use carebear comparison function first maybe?
+  //TODO use carebear comparison function first maybe?
   lazy_trie *cur = z_;
   
   do {
@@ -43,7 +42,9 @@ unsigned lazy_exp::do_query(uint8_t *bv, unsigned len) {
     }
     
     uint8_t byteval = bv[cur->get_bytenum()];
-    cur = cur->decide(byteval);
+    unsigned steps = 0;
+    cur = cur->decide(byteval, &steps);
+    num_steps_ += steps;
   } while (cur != NULL);
   
   return INVALID_ID;

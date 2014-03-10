@@ -16,7 +16,7 @@ class lazy_trie {
 	    unsigned num_relevant, unsigned *relevant);
   ~lazy_trie(void);
   
-  lazy_trie *decide(uint8_t byteval);
+  lazy_trie *decide(uint8_t byteval, unsigned *steps);
   bool is_leaf(void);
   
   unsigned get_bytenum(void);
@@ -28,7 +28,7 @@ class lazy_trie {
   
  protected:
   bool is_lazy(void);
-  void burst(void);
+  unsigned burst(void);
   bool ee_exists(void);
   
   void print_helper(unsigned);
