@@ -22,7 +22,9 @@ class carebear_forest : public in_order {
   void prepare_to_query(void);
   unsigned do_query(uint8_t *bv, unsigned len);
 
+  // PARALLEL QUERY
   /* TODO clearly worst design choice evar. where is my abstraction.. */
+  /*
   // lock to protect num_finished_, result_, and cancel_version_
   pthread_mutex_t done_lock;
   
@@ -34,7 +36,8 @@ class carebear_forest : public in_order {
   unsigned num_finished_;
   struct helper_args *result_;
   unsigned cancel_version_;
-
+  */
+  
  protected:
   int get_max_bytenum(uset_uint *done, uset_uint *u, uset_uint *bytenums_left);
   void populate_subtrie(d_trie *d, uset_uint *done, uset_uint *u, uset_uint *bytenums_left);
@@ -47,6 +50,7 @@ class carebear_forest : public in_order {
   typedef in_order super;
 };
 
+/*
 // argument struct for the worker query thread
 struct helper_args {
   // reference to rep
@@ -70,5 +74,6 @@ struct helper_args {
 };
 
 void *do_query_helper(void *args);
+*/
 
 #endif

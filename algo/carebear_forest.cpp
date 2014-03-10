@@ -16,6 +16,9 @@
 
 carebear_forest::carebear_forest(const char *cur_time) 
   : rep(cur_time, "carebear_forest"), in_order(cur_time) {
+  
+  // PARALLEL QUERY
+  /*
   int err;
   
   err = pthread_mutex_init(&done_lock, NULL);
@@ -28,9 +31,12 @@ carebear_forest::carebear_forest(const char *cur_time)
   assert(result_ != NULL);
   
   cancel_version_ = 1;
+  */
 }
 
 carebear_forest::~carebear_forest() {
+  // PARALLEL QUERY
+  /*
   int err;
   
   err = pthread_mutex_destroy(&done_lock);
@@ -40,6 +46,7 @@ carebear_forest::~carebear_forest() {
   assert(err == 0);
   
   free(result_);
+  */
   
   for(unsigned i = 0; i < forest_.size(); i++) {
     delete forest_[i];
@@ -200,6 +207,8 @@ void carebear_forest::prepare_to_query() {
   delete bytenums_left;
 }
 
+// PARALLEL QUERY
+/*
 void *do_query_helper(void *arg) {
   struct helper_args *ret = (struct helper_args *) arg;
   d_trie *d = ret->d;
@@ -256,8 +265,41 @@ void *do_query_helper(void *arg) {
   free(arg);
   return NULL;
 }
+*/
 
 unsigned carebear_forest::do_query(uint8_t *bv, unsigned len) {
+  // SERIAL QUERY
+  unsigned num_tries = forest_.size();
+  unsigned steps;
+  unsigned max_steps = 0;
+  for(unsigned i = 0; i < num_tries; i++) {
+    d_trie *cur = forest_[i];
+    steps = 0;
+    do {
+      steps++;
+      
+      if (cur->is_leaf()) {
+	assert(cur->get_bytenum() == INVALID_BYTENUM);
+	num_steps_ = steps;
+	return cur->get_id();
+      }
+      
+      uint8_t byteval = bv[cur->get_bytenum()];
+      cur = cur->decide(byteval);
+    } while (cur != NULL);
+    
+    if (steps > max_steps) {
+      max_steps = steps;
+    }
+  }
+  
+  num_steps_ = max_steps;
+  return INVALID_ID;
+}
+
+/*
+unsigned carebear_forest::do_query(uint8_t *bv, unsigned len) {
+  // PARALLEL QUERY
   int err;
   
   num_finished_ = 0;
@@ -350,3 +392,4 @@ unsigned carebear_forest::do_query(uint8_t *bv, unsigned len) {
   // return miss
   return INVALID_ID;
 }
+*/
