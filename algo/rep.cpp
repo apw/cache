@@ -7,8 +7,6 @@
 #include <assert.h>
 #include <stdint.h>
 
-#define BUFLEN 256
-
 using namespace std;
 
 rep::rep(const char *cur_time, const char *outfile_basename) {
@@ -16,6 +14,8 @@ rep::rep(const char *cur_time, const char *outfile_basename) {
   num_hits_ = 0;
   num_misses_ = 0;
   num_steps_ = 0;
+
+  outfile_basename_ = outfile_basename;
   
   outfile_name_ = (char *) calloc(BUFLEN, sizeof(char));
   assert(outfile_name_);
@@ -72,4 +72,8 @@ unsigned rep::get_num_misses() {
 
 char *rep::get_outfile_name() {
   return outfile_name_;
+}
+
+void rep::viz() {
+  // override in subclasses to vizualize
 }

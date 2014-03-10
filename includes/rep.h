@@ -12,6 +12,8 @@ using namespace std;
 #define INVALID_ID ((unsigned) -1)
 #define INVALID_BYTENUM ((unsigned) -1)
 
+#define BUFLEN 256
+
 class rep {
  public:
   rep(const char *cur_time, const char *outfile_basename);
@@ -26,6 +28,8 @@ class rep {
   virtual void prepare_to_query(void) = 0;
   virtual unsigned do_query(uint8_t *bv, unsigned len) = 0;
 
+  virtual void viz(void);
+
   unsigned get_num_hits(void);
   unsigned get_num_misses(void);
 
@@ -34,6 +38,7 @@ class rep {
  protected:
   int current_id_;
   int num_steps_;
+  const char *outfile_basename_;
 
  private:
   ofstream outfile_;
@@ -42,7 +47,5 @@ class rep {
   
   char *outfile_name_;
 };
-
-
 
 #endif

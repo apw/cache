@@ -13,7 +13,7 @@ DGEN = bin/dgen
 
 KANGAROO_BODY = $(CC) $(CFLAGS)
 #KANGAROO_TAIL = $(SOURCES) -o $(MAIN)
-MKDIRS = mkdir -p bin graphs output
+MKDIRS = mkdir -p bin graphs output viz
 
 OH = -O3
 OH_NO = -O0
@@ -39,7 +39,7 @@ sgdb:
 	$(MKDIRS)
 	$(KANGAROO_BODY) $(OH_NO) -g -c $(VOLATILE_SOURCES) -o $(VOLATILE_OBJECT) $(LIBS)
 	$(KANGAROO_BODY) -g $(VOLATILE_OBJECT) $(OH_NO) $(OPTIMIZABLE_SOURCES) -o $(MAIN) $(LIBS)
-	sudo gdb $(MAINS)
+	sudo gdb ./$(MAIN)
 
 gdb:
 	$(MKDIRS)

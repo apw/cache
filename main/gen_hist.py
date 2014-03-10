@@ -13,7 +13,7 @@ DATELEN = 19
 PLOT_TYPE_INDEX = 1
 FIRST_FILE_INDEX = 2
 
-USE_PRESET_MAX = True
+USE_PRESET_MAX = False
 MAXHITX = 1000
 MAXMISSX = 1000
 
@@ -111,6 +111,8 @@ for outer_index in range(0, 2): # do hits and misses separately
             imp_type = "Carebear Dual Trie"
         elif "carebear_forest" in base_fname:
             imp_type = "Carebear Forest"
+        elif "lazy_exp" in base_fname:
+            imp_type = "Lazy Exp Trie"
         
         if (outer_index == 0):
             h_or_m = "Hit"

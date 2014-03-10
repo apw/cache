@@ -18,6 +18,7 @@ class trie_cb : public simple_cb {
   unsigned do_query(uint8_t *bv, unsigned len);
   void begin_sbv(int id);
   void end_sbv(int id);
+  void viz(void);
 
  protected:
   d_trie *d_;

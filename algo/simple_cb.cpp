@@ -45,7 +45,7 @@ void simple_cb::order_bytenums() {
   }
 
   std::sort(bp_arr.begin(), bp_arr.end(), prio_compare);
-
+  
   num_relevant_ = c_.size();
   relevant_ = (unsigned *) malloc(sizeof(unsigned) * num_relevant_);
   assert(relevant_ != NULL);

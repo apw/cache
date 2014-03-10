@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-
 /* Teravectyl */
 typedef struct {
   long operator() (const unsigned &k) const {
@@ -45,6 +44,11 @@ class numval {
 
 typedef vector<numval> vect;
 typedef vector<vect> store;
+
+typedef struct {
+  vect ve;
+  unsigned id;
+} c_entry;
 
 
 #endif

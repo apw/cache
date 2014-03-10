@@ -10,3 +10,4 @@ output/*
 .DS_Store
 run_500.sh
 *.o
+viz/*

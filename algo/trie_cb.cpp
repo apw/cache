@@ -9,8 +9,11 @@
 #include "../includes/trie_cb.h"
 #include "../includes/uset_uint.h"
 #include "../includes/common.h"
+#include "../includes/rep.h"
 
 #include <assert.h>
+
+
 
 trie_cb::trie_cb(const char *cur_time)
   : rep(cur_time, "trie_cb"), simple_cb(cur_time) {
@@ -125,7 +128,7 @@ void trie_cb::prepare_to_query() {
   done->end_trans();
   
   //  d_->print(); // AHHH !!!
-  d_->gen_graph((char *) "graph.dot"); // AHHH !!!!
+  //d_->gen_graph((char *) "graph.dot"); // AHHH !!!!
   
   delete candidates;  
   delete done;
@@ -186,3 +189,12 @@ void trie_cb::end_sbv(int id) {
   super::end_sbv(id);
 }
 
+void trie_cb::viz() {
+  char *dot_filename = (char *) calloc(BUFLEN, sizeof(char));
+  assert(dot_filename);
+  
+  snprintf(dot_filename, sizeof(char) * BUFLEN, "viz/%s.raw", outfile_basename_);
+  d_->gen_graph(dot_filename);
+  
+  free(dot_filename);
+}

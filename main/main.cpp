@@ -18,6 +18,7 @@
 #include "../includes/trie_cb.h"
 #include "../includes/carebear_dual_trie.h"
 #include "../includes/carebear_forest.h"
+#include "../includes/lazy_exp.h"
 #include "../includes/ll.h"
 #include "../includes/cycle_timing.h"
 #include "../includes/common.h"
@@ -30,14 +31,12 @@ using namespace std;
 
 typedef enum {LL_IMP, IN_ORDER_IMP, SIMPLE_CB_IMP,
 	      TRIE_CB_IMP, CAREBEAR_DUAL_TRIE_IMP,
-	      CAREBEAR_FOREST_IMP} imp_t;
+	      CAREBEAR_FOREST_IMP, LAZY_EXP_IMP} imp_t;
 
 // order in which implementations will be run
-/*
-int imps[] = {CAREBEAR_FOREST_IMP, CAREBEAR_DUAL_TRIE_IMP, TRIE_CB_IMP,
+int imps[] = {LAZY_EXP_IMP, CAREBEAR_FOREST_IMP,
+	      CAREBEAR_DUAL_TRIE_IMP, TRIE_CB_IMP,
 	      LL_IMP, SIMPLE_CB_IMP};
-*/
-int imps[] = {TRIE_CB_IMP};
 
 #define TIMEBUF_SZ 80
 char *cur_time;
@@ -91,6 +90,12 @@ static rep_ptr initialize_rep(int imp_num) {
     forest();
     carebear_forest *i = new carebear_forest(cur_time);
     r.reset(i);    
+    break;
+  }
+  case LAZY_EXP_IMP: {
+    snorlax();
+    lazy_exp *i = new lazy_exp(cur_time);
+    r.reset(i);
     break;
   }
   default: {
@@ -169,7 +174,6 @@ void run(rep_ptr rpt) {
       query_count++;
       
       rpt->query(bv, bv_len);
-
     }
 
     bv[bytenum] = byteval;
@@ -234,6 +238,8 @@ int main(int argc, char **argv) {
     
     printf("running rep %d\n", i);
     run(r);
+
+    r->viz();
     
     strcpy(outfile_names[i], r->get_outfile_name());
 

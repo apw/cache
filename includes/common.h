@@ -18,4 +18,7 @@ void bears(void);
 // prints out a forest
 void forest(void);
 
+// prints out a snorlax
+void snorlax(void);
+
 #endif

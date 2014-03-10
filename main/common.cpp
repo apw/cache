@@ -75,3 +75,11 @@ void forest() {
   printf("                     / \\  / \\                   | \n");
   printf("                      |    |       \n");
 }
+
+void snorlax() {
+  // http://kodojoe.deviantart.com/art/Snorlax-text-art-307671909
+  printf("        ^ ^  \n");
+  printf("    (\"\\(-_-)/\")  \n");
+  printf("       (( ))  \n");
+  printf("     ((.) (.))  \n");
+}
