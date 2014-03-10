@@ -73,3 +73,7 @@ unsigned rep::get_num_misses() {
 char *rep::get_outfile_name() {
   return outfile_name_;
 }
+
+void rep::viz() {
+  // override in subclasses to vizualize
+}

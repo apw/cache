@@ -174,7 +174,6 @@ void run(rep_ptr rpt) {
       query_count++;
       
       rpt->query(bv, bv_len);
-
     }
 
     bv[bytenum] = byteval;
@@ -239,6 +238,8 @@ int main(int argc, char **argv) {
     
     printf("running rep %d\n", i);
     run(r);
+
+    r->viz();
     
     strcpy(outfile_names[i], r->get_outfile_name());
 
