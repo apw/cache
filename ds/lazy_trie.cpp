@@ -253,7 +253,7 @@ void lazy_trie::print() {
   print_helper(0);
 }
 
-void lazy_trie::gen_graph_helper(ofstream& outfile, unsigned int cur_id,
+void lazy_trie::graph_to_ofstream(ofstream& outfile, unsigned int cur_id,
 			      unsigned int *nid) {
   if (this->is_leaf() && !this->is_lazy()) {
     outfile << cur_id << " [label=\"" << get_id() << "\",shape=box]" << endl;
@@ -282,7 +282,7 @@ void lazy_trie::gen_graph_helper(ofstream& outfile, unsigned int cur_id,
 
       next_id = (*nid)++;
       outfile << cur_id << " -> " << next_id << " [label=\"" << ((unsigned) c_iter->first) << "\"]" << endl;
-      c_iter->second->gen_graph_helper(outfile, next_id, nid);
+      c_iter->second->graph_to_ofstream(outfile, next_id, nid);
     }
   }
   
@@ -290,21 +290,21 @@ void lazy_trie::gen_graph_helper(ofstream& outfile, unsigned int cur_id,
     // assert(!this->is_leaf()); // !!! this assert fails; how can a leaf have an x_path?!?!
     next_id = (*nid)++;
     outfile << cur_id << " -> " << next_id << " [label=\"X\"]" << endl;
-    ee_->gen_graph_helper(outfile, next_id, nid);
+    ee_->graph_to_ofstream(outfile, next_id, nid);
   }
 }
 
 void lazy_trie::gen_graph(char *out_file_path) {
+  assert(out_file_path);
+  
   unsigned int node_id = 1;
 
   ofstream outfile;
-  assert(out_file_path);
   outfile.open(out_file_path);
-  assert(outfile);
-
+  
   outfile << "digraph {" << endl;
 
-  gen_graph_helper(outfile, 0, &node_id);
+  graph_to_ofstream(outfile, 0, &node_id);
   
   outfile << "}";
 

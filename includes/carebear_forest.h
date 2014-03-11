@@ -22,6 +22,8 @@ class carebear_forest : public in_order {
   void prepare_to_query(void);
   unsigned do_query(uint8_t *bv, unsigned len);
 
+  void viz(void);
+  
   // PARALLEL QUERY
   /* TODO clearly worst design choice evar. where is my abstraction.. */
   /*

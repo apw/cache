@@ -59,7 +59,7 @@ run:
 	./$(MAIN) $(t) $(q)
 
 viz:
-	dot $(v).raw -Tpdf -o $(v).pdf
+	dot $(v).dot -Tpdf -o $(v).pdf
 
 hist:
 	$(MAKE)

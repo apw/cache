@@ -393,3 +393,28 @@ unsigned carebear_forest::do_query(uint8_t *bv, unsigned len) {
   return INVALID_ID;
 }
 */
+
+void carebear_forest::viz() {
+  char *dot_filename = (char *) calloc(BUFLEN, sizeof(char));
+  assert(dot_filename);
+  
+  snprintf(dot_filename, sizeof(char) * BUFLEN, "viz/%s.dot", outfile_basename_);
+
+  ofstream outfile;
+  outfile.open(dot_filename);
+  
+  outfile << "digraph {" << endl;
+  
+  unsigned cur_id = 0;
+  unsigned next_id = 1;
+  for(unsigned i = 0; i < forest_.size(); i++) {
+    forest_[i]->graph_to_ofstream(outfile, cur_id, &next_id);
+    cur_id = next_id;
+    next_id++;
+  }
+  
+  outfile << "}";
+  outfile.close();
+  
+  free(dot_filename);
+}

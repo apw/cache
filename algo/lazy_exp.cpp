@@ -62,7 +62,7 @@ void lazy_exp::viz() {
   char *dot_filename = (char *) calloc(BUFLEN, sizeof(char));
   assert(dot_filename);
   
-  snprintf(dot_filename, sizeof(char) * BUFLEN, "viz/%s.raw", outfile_basename_);
+  snprintf(dot_filename, sizeof(char) * BUFLEN, "viz/%s.dot", outfile_basename_);
   z_->gen_graph(dot_filename);
   
   free(dot_filename);
