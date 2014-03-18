@@ -19,6 +19,7 @@
 #include "../includes/greedy_trie.h"
 #include "../includes/carebear_dual_trie.h"
 #include "../includes/carebear_forest.h"
+#include "../includes/greedy_forest.h"
 #include "../includes/lazy_exp.h"
 #include "../includes/ll.h"
 #include "../includes/cycle_timing.h"
@@ -33,12 +34,13 @@ using namespace std;
 typedef enum {LL_IMP, IN_ORDER_IMP, SIMPLE_CB_IMP,
 	      TRIE_CB_IMP, CAREBEAR_DUAL_TRIE_IMP,
 	      CAREBEAR_FOREST_IMP, LAZY_EXP_IMP,
-	      GREEDY_TRIE_IMP} imp_t;
+	      GREEDY_TRIE_IMP, GREEDY_FOREST_IMP} imp_t;
 
 // order in which implementations will be run
-int imps[] = {GREEDY_TRIE_IMP, LAZY_EXP_IMP, CAREBEAR_FOREST_IMP,
+int imps[] = {LL_IMP, GREEDY_FOREST_IMP,
+	      GREEDY_TRIE_IMP, LAZY_EXP_IMP, CAREBEAR_FOREST_IMP,
 	      CAREBEAR_DUAL_TRIE_IMP, TRIE_CB_IMP,
-	      LL_IMP, SIMPLE_CB_IMP};
+	      SIMPLE_CB_IMP};
 
 #define TIMEBUF_SZ 80
 char *cur_time;
@@ -96,6 +98,11 @@ static rep_ptr initialize_rep(int imp_num) {
   case CAREBEAR_FOREST_IMP: {
     forest();
     carebear_forest *i = new carebear_forest(cur_time);
+    r.reset(i);    
+    break;
+  }
+  case GREEDY_FOREST_IMP: {
+    greedy_forest *i = new greedy_forest(cur_time);
     r.reset(i);    
     break;
   }
