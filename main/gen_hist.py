@@ -117,6 +117,8 @@ for outer_index in range(0, 2): # do hits and misses separately
             imp_type = "Greedy Trie"
         elif "greedy_forest" in base_fname:
             imp_type = "Greedy Forest"
+        elif "batch_forest" in base_fname:
+            imp_type = "Batch Forest"
         
         if (outer_index == 0):
             h_or_m = "Hit"
