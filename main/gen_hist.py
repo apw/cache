@@ -113,6 +113,8 @@ for outer_index in range(0, 2): # do hits and misses separately
             imp_type = "Carebear Forest"
         elif "lazy_exp" in base_fname:
             imp_type = "Lazy Exp Trie"
+        elif "greedy_trie" in base_fname:
+            imp_type = "Greedy Trie"
         
         if (outer_index == 0):
             h_or_m = "Hit"
