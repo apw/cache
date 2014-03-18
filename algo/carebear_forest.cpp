@@ -139,7 +139,7 @@ void carebear_forest::populate_subtrie(d_trie *d, uset_uint *done,
       }
     } else {    
       // extend the trie!
-      d->extend(*v_iter, max_bytenum, INVALID_BYTENUM);
+      d->extend(*v_iter, max_bytenum, INVALID_ID);
       d_trie *child = d->decide(*v_iter);
       
       // ...and now recurse down!

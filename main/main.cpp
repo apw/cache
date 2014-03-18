@@ -16,6 +16,7 @@
 #include "../includes/in_order.h"
 #include "../includes/simple_cb.h"
 #include "../includes/trie_cb.h"
+#include "../includes/greedy_trie.h"
 #include "../includes/carebear_dual_trie.h"
 #include "../includes/carebear_forest.h"
 #include "../includes/lazy_exp.h"
@@ -31,10 +32,11 @@ using namespace std;
 
 typedef enum {LL_IMP, IN_ORDER_IMP, SIMPLE_CB_IMP,
 	      TRIE_CB_IMP, CAREBEAR_DUAL_TRIE_IMP,
-	      CAREBEAR_FOREST_IMP, LAZY_EXP_IMP} imp_t;
+	      CAREBEAR_FOREST_IMP, LAZY_EXP_IMP,
+	      GREEDY_TRIE_IMP} imp_t;
 
 // order in which implementations will be run
-int imps[] = {LAZY_EXP_IMP, CAREBEAR_FOREST_IMP,
+int imps[] = {GREEDY_TRIE_IMP, LAZY_EXP_IMP, CAREBEAR_FOREST_IMP,
 	      CAREBEAR_DUAL_TRIE_IMP, TRIE_CB_IMP,
 	      LL_IMP, SIMPLE_CB_IMP};
 
@@ -84,6 +86,11 @@ static rep_ptr initialize_rep(int imp_num) {
     bears();
     carebear_dual_trie *i = new carebear_dual_trie(cur_time);
     r.reset(i);    
+    break;
+  }
+  case GREEDY_TRIE_IMP: {
+    greedy_trie *i = new greedy_trie(cur_time);
+    r.reset(i);
     break;
   }
   case CAREBEAR_FOREST_IMP: {
