@@ -57,8 +57,6 @@ for outer_index in range(0, 2): # do hits and misses separately
         h = []
         m = []
 
-        num_outliers = 0
-    
         # read in each line, separating hits and misses
         for line in lines:
             split_line = line.split(" ")
