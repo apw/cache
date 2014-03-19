@@ -42,14 +42,14 @@ class carebear_forest : public in_order {
   
  protected:
   virtual int get_max_bytenum(uset_uint *done, uset_uint *u, uset_uint *bytenums_left);
-  void populate_subtrie(d_trie *d, uset_uint *done, uset_uint *u, uset_uint *bytenums_left);
   
   vector<d_trie *> forest_;
-
   unsigned max_relevant_bytenum_;
     
  private:
   typedef in_order super;
+
+  void populate_subtrie(d_trie *d, uset_uint *done, uset_uint *u, uset_uint *bytenums_left);
 };
 
 /*

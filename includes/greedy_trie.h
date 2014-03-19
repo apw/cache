@@ -22,11 +22,9 @@ class greedy_trie : public in_order {
   unsigned do_query(uint8_t *bv, unsigned len);
 
   void viz(void);
-
+  
  protected:
-  int get_max_bytenum(uset_uint *done, uset_uint *u, uset_uint *bytenums_left);
-  void populate_subtrie(d_trie *d, uset_uint *done,
-			uset_uint *u, uset_uint *bytenums_left);
+  virtual int get_max_bytenum(uset_uint *done, uset_uint *u, uset_uint *bytenums_left);
   
   unsigned do_query_helper(d_trie *current, uint8_t *bv, unsigned len);
 
@@ -36,6 +34,10 @@ class greedy_trie : public in_order {
 
  private:
   typedef in_order super;
+
+  void populate_subtrie(d_trie *d, uset_uint *done,
+			uset_uint *u, uset_uint *bytenums_left);
+
 };
 
 #endif

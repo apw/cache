@@ -26,13 +26,12 @@ class batch_forest : public carebear_forest {
   void construct_forest(batches *b);
   int get_max_bytenum(uset_uint *done, uset_uint *u,
 		      uset_uint *bytenums_left, uset_uint *batch_vectors);
-
-  void populate_forest_trie(d_trie *d, uset_uint *done, uset_uint *u,
-			    uset_uint *bytenums_left, uset_uint *batch_vectors);
   
  private:
   typedef carebear_forest super;
-  
+
+  void populate_forest_trie(d_trie *d, uset_uint *done, uset_uint *u,
+			    uset_uint *bytenums_left, uset_uint *batch_vectors);  
 };
 
 #endif
