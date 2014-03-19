@@ -17,8 +17,9 @@ SUBPLOT_DIST = 0.5
 IN_HIST_X = 10
 IN_PER_HIST_Y = 3
 
-OUTPUT_DIR = '../output/'
-GRAPHS_DIR = '../graphs/'
+# make sure there's a trailing backslash
+OUTPUT_DIR = 'output/'
+GRAPHS_DIR = 'graphs/'
 
 def print_parser_err(parser, msg, err):
     print "Error: " + msg + "."
@@ -110,6 +111,8 @@ def get_imp(base_fname):
         imp_type = "Greedy Forest"
     elif "batch_forest" in base_fname:
         imp_type = "Batch Forest"
+    else:
+        print_err("No existing implementation type by this name", 5)
     return imp_type
 
 
@@ -131,9 +134,9 @@ def create_fig(output_files, h_or_m):
 
         
     if PLOT_TYPE == "questions":
-        line_index = 1
-    elif PLOT_TYPE == "cpu":
         line_index = 2
+    elif PLOT_TYPE == "cpu":
+        line_index = 1
     else:
         assert(0)
     
@@ -157,7 +160,9 @@ def create_fig(output_files, h_or_m):
     assert(len(all_data) == len(output_files))
     
     # finds PERCENTILE in sum(all_data, []), which is all of the data concatenated
-    maximum = np.percentile(sum(all_data, []), PERCENTILE)
+    
+    percentiles = map(lambda x: np.percentile(x, PERCENTILE), all_data)
+    maximum = max(percentiles)
     
     if h_or_m == "H":
         col = "yellow"

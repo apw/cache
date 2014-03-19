@@ -75,7 +75,7 @@ unsigned lazy_trie::burst() {
       if (ls_->operator[](i).ve[j].bytenum == relevant_[cur_index_]) {
 	uint8_t byteval = ls_->operator[](i).ve[j].byteval;
 	unsigned id = ls_->operator[](i).id;
-
+	
 	if (cur_index_ + 1 == num_relevant_) {
 	  // this node is a leaf and thus the next one should just have an ID
 	  
