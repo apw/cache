@@ -19,17 +19,20 @@ class batch_forest : public carebear_forest {
   batch_forest(const char *cur_time);
   
   void prepare_to_query(void);
+  
  protected:
   typedef vector<vector<c_entry>> batches;
-  
+
   void construct_forest(batches *b);
   int get_max_bytenum(uset_uint *done, uset_uint *u,
 		      uset_uint *bytenums_left, uset_uint *batch_vectors);
 
+  void populate_forest_trie(d_trie *d, uset_uint *done, uset_uint *u,
+			    uset_uint *bytenums_left, uset_uint *batch_vectors);
   
  private:
   typedef carebear_forest super;
-
+  
 };
 
 #endif

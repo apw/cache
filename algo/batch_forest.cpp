@@ -78,8 +78,8 @@ void batch_forest::prepare_to_query() {
 }
 
 int batch_forest::get_max_bytenum(uset_uint *done, uset_uint *u,
-				uset_uint *bytenums_left,
-				uset_uint *batch_vectors) {
+				  uset_uint *bytenums_left,
+				  uset_uint *batch_vectors) {
   unsigned max_variability = 0;
   unsigned max_num_care = 0;
   int max_bytenum = -1;
@@ -121,6 +121,79 @@ int batch_forest::get_max_bytenum(uset_uint *done, uset_uint *u,
   }
   
   return max_bytenum;
+}
+
+void batch_forest::populate_forest_trie(d_trie *d, uset_uint *done,
+				       uset_uint *u, uset_uint *bytenums_left,
+				       uset_uint *batch_vectors) {
+  // remove all vectors that have a don't-care at d->get_bytenum() from u
+  u->begin_trans();
+  for(unsigned i = 0, n = done->get_capacity(); i < n; i++) {
+    if (done->lookup(i) && u->lookup(i) && batch_vectors->lookup(i)
+	&& c_[d->get_bytenum()].count(i) == 0) {
+      u->remove(i);
+    }
+  }
+  u->end_trans();
+
+  // Beginning of stupid Theta(n^2)
+  // of all remaining candidate vectors, find all unique vals at d->get_bytenum()
+  tr1::unordered_set<uint8_t> val_set;
+  bytenum_set::const_iterator b_end = c_[d->get_bytenum()].end();
+  for(bytenum_set::const_iterator b_iter = c_[d->get_bytenum()].begin(); 
+      b_iter != b_end; b_iter++) {
+    // first is id; second is byteval
+    if (done->lookup(b_iter->first) && u->lookup(b_iter->first)
+	&& batch_vectors->lookup(b_iter->first) && val_set.count(b_iter->second) == 0) {
+      val_set.insert(b_iter->second);      
+    }
+  }
+
+  for (tr1::unordered_set<uint8_t>::const_iterator v_iter = val_set.begin();
+       v_iter != val_set.end(); v_iter++) {
+    // remove all vectors that don't have the current byteval at the bytenum
+    u->begin_trans();
+    bytenum_set::const_iterator b_end = c_[d->get_bytenum()].end();
+    for(bytenum_set::const_iterator b_iter = c_[d->get_bytenum()].begin(); 
+	b_iter != b_end; b_iter++) {
+      if (done->lookup(b_iter->first) && u->lookup(b_iter->first)
+	  && batch_vectors->lookup(b_iter->first) && b_iter->second != *v_iter) {
+	u->remove(b_iter->first);
+      }
+    }
+    u->end_trans();
+    
+    // find next bytenum with highest utility
+    int max_bytenum = get_max_bytenum(done, u, bytenums_left, batch_vectors);
+    if (max_bytenum == -1) {
+      for(unsigned i = 0, n = done->get_capacity(); i < n; i++) {
+	if (done->lookup(i) && u->lookup(i) && batch_vectors->lookup(i)) {
+	  // 'i' is the id of the vector that we are about to finish inserting
+	  d->extend(c_[d->get_bytenum()][i], INVALID_BYTENUM, i);
+	  done->remove(i);
+	  break;
+	}
+      }
+    } else {    
+      // extend the trie!
+      d->extend(*v_iter, max_bytenum, INVALID_ID);
+      d_trie *child = d->decide(*v_iter);
+      
+      // ...and now recurse down!
+      populate_forest_trie(child, done, u, bytenums_left, batch_vectors);
+      
+      // undo trans performed in get_max_bytenum
+      bytenums_left->undo_trans();
+    }
+    
+    // undo trans
+    u->undo_trans();    
+  }
+  
+  // End of stupid Theta(n^2)
+
+  // undo removal
+  u->undo_trans();
 }
 
 void batch_forest::construct_forest(batches *b) {
@@ -171,11 +244,11 @@ void batch_forest::construct_forest(batches *b) {
       assert(0);
     }
     
-    // make the max_bytenum the question at the top of the subtrie
+    // make the max_bytenum the question at the top of the forest_trie
     d_trie *d = new d_trie(max_bytenum, INVALID_ID);
     forest_.push_back(d);
   
-    populate_subtrie(d, done, u, bytenums_left);
+    populate_forest_trie(d, done, u, bytenums_left, batch_vectors);
   
     // undo trans made by get_max_bytenum
     bytenums_left->undo_trans();
