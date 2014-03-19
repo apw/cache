@@ -88,7 +88,6 @@ int carebear_forest::get_max_bytenum(uset_uint *done, uset_uint *u, uset_uint *b
 void carebear_forest::populate_subtrie(d_trie *d, uset_uint *done,
 				       uset_uint *u, uset_uint *bytenums_left) {
   // remove all vectors that have a don't-care at d->get_bytenum() from u
-
   u->begin_trans();
   for(unsigned i = 0, n = done->get_capacity(); i < n; i++) {
     if (done->lookup(i) && u->lookup(i) 
