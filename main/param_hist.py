@@ -6,8 +6,6 @@ import numpy as np
 import pylab
 
 # TODO: units (1e7) don't transfer from bottom to to other axis
-# TODO: for single graph, x-axis doesn't start at 0
-# TODO: needs more thorough testing
 
 PERCENTILE = 99.7
 BINS = 100
@@ -113,16 +111,16 @@ def get_imp(base_fname):
         imp_type = "Batch Forest"
     else:
         print_err("No existing implementation type by this name", 5)
+    
     return imp_type
-
 
 def create_hist(ax, data, w, col, lab, maximum):
     return ax.hist(data, bins=BINS, histtype='bar',
-                    weights=w,
-                    color=[col],
-                    label=[lab],
-                    alpha=0.5,
-                    range=(0, maximum))
+                   weights=w,
+                   color=[col],
+                   label=[lab],
+                   alpha=0.5,
+                   range=(0, maximum))
 
 def create_fig(output_files, h_or_m):
     # function returns a single object if len(output_files) is 1 instead of list aghh
@@ -131,14 +129,15 @@ def create_fig(output_files, h_or_m):
         axarr = [tmp]
     else:
         fig, axarr = plt.subplots(len(output_files), sharex=SHAREX, sharey=SHAREY)
-
         
     if PLOT_TYPE == "questions":
+        xlab = "Number of Questions per Query"
         line_index = 2
     elif PLOT_TYPE == "cpu":
+        xlab = "Number of CPU Cycles per Query"
         line_index = 1
     else:
-        assert(0)
+        print_err("invalid plot type - must be cpu/questions", 6)
     
     # collect all data from all files
     all_data = []
@@ -159,8 +158,6 @@ def create_fig(output_files, h_or_m):
         
     assert(len(all_data) == len(output_files))
     
-    # finds PERCENTILE in sum(all_data, []), which is all of the data concatenated
-    
     percentiles = map(lambda x: np.percentile(x, PERCENTILE), all_data)
     maximum = max(percentiles)
     
@@ -172,14 +169,7 @@ def create_fig(output_files, h_or_m):
         col = "black"
         lab = "misses"
         hit_or_miss = "Miss"
-    
-    if PLOT_TYPE == "questions":
-        xlab = "Number of Questions per Query"
-    elif PLOT_TYPE == "cpu":
-        xlab = "Number of CPU Cycles per Query"
-    else:
-        assert(0)
-    
+        
     for i in xrange(0, len(output_files)):
         w = np.ones_like(all_data[i])/(float(len(all_data[i]))),
         create_hist(axarr[i], all_data[i], w, col, lab, maximum)
@@ -189,10 +179,10 @@ def create_fig(output_files, h_or_m):
         axarr[i].set_ylabel('Prop of Queries')
         plt.setp(axarr[i].get_xticklabels(), visible=True)
     
-    #fig.set_size_inches(10.5, 18.5)
+    pylab.xlim([0, maximum])
     fig.set_size_inches(IN_HIST_X, IN_PER_HIST_Y * len(output_files) )
     fig.subplots_adjust(hspace=SUBPLOT_DIST)
-    pylab.savefig(GRAPHS_DIR + DATE + "_" + PLOT_TYPE + "_" + hit_or_miss + '.pdf',
+    pylab.savefig(GRAPHS_DIR + DATE + "_" + PLOT_TYPE + "_" + lab + '.pdf',
                   format='pdf')
     
 def main():
