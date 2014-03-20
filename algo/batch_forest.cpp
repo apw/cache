@@ -37,6 +37,11 @@ void batch_forest::prepare_to_query() {
 	
 	// compare the vector's cares against the cares of the first vector in the set
 	for(unsigned k = 0; k < l1 && k < l2; k++) {
+	  // verify bytenums are always in increasing order
+	  if (k > 0) {
+	    assert(s_[i][k].bytenum > s_[i][k - 1].bytenum);
+	  }
+	  
 	  // no match
 	  if (batch_vect.ve[k].bytenum != s_[i][k].bytenum) {
 	    match = false;
@@ -172,7 +177,6 @@ void batch_forest::populate_forest_trie(d_trie *d, uset_uint *done,
 	  // 'i' is the id of the vector that we are about to finish inserting
 	  d->extend(c_[d->get_bytenum()][i], INVALID_BYTENUM, i);
 	  done->remove(i);
-	  break;
 	}
       }
     } else {    
@@ -256,7 +260,6 @@ void batch_forest::construct_forest(batches *b) {
     // clean slate for next batch
     batch_vectors->undo_trans();
     
-    // HIHI
     unsigned batch_size = b->operator[](num_trie).size();
     assert(batch_size == vects_left - done->get_size());
   }

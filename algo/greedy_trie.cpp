@@ -85,7 +85,6 @@ void greedy_trie::populate_subtrie(d_trie *d, uset_uint *done, uset_uint *u,
 	// 'i' is the id of the vector that we are about to finish inserting
 	d->extend_x(INVALID_BYTENUM, i);
 	done->remove(i);
-	break;
       }
     }
   } else {    
@@ -150,7 +149,6 @@ void greedy_trie::populate_subtrie(d_trie *d, uset_uint *done, uset_uint *u,
 	  // 'i' is the id of the vector that we are about to finish inserting
 	  d->extend(c_[d->get_bytenum()][i], INVALID_BYTENUM, i);
 	  done->remove(i);
-	  break;
 	}
       }
     } else {    

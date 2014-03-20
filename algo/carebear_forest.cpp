@@ -127,13 +127,11 @@ void carebear_forest::populate_subtrie(d_trie *d, uset_uint *done,
     // find next bytenum with highest utility
     int max_bytenum = get_max_bytenum(done, u, bytenums_left);
     if (max_bytenum == -1) {
-      // HIHI
       for(unsigned i = 0, n = done->get_capacity(); i < n; i++) {
 	if (done->lookup(i) && u->lookup(i)) {
 	  // 'i' is the id of the vector that we are about to finish inserting
 	  d->extend(c_[d->get_bytenum()][i], INVALID_BYTENUM, i);
 	  done->remove(i);
-	  break;
 	}
       }
     } else {    

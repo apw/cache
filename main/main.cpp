@@ -39,7 +39,7 @@ typedef enum {LL_IMP, IN_ORDER_IMP, SIMPLE_CB_IMP,
 	      BATCH_FOREST_IMP} imp_t;
 
 // order in which implementations will be run
-int imps[] = {LL_IMP, GREEDY_FOREST_IMP, BATCH_FOREST_IMP,
+int imps[] = {LL_IMP, BATCH_FOREST_IMP, GREEDY_FOREST_IMP,
 	      GREEDY_TRIE_IMP, LAZY_EXP_IMP, CAREBEAR_FOREST_IMP,
 	      CAREBEAR_DUAL_TRIE_IMP, TRIE_CB_IMP,
 	      SIMPLE_CB_IMP};
