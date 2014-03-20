@@ -90,13 +90,13 @@ def parse_arguments():
 def get_imp(base_fname):
     imp_type = ""
     if "simple_cb" in base_fname:
-        imp_type = "Contested Byte"
+        imp_type = "Contested Bytes"
     elif "in_order" in base_fname:
         imp_type = "In Order"
     elif "ll" in base_fname:
         imp_type = "Linked List"
     elif "trie_cb" in base_fname:
-        imp_type = "Trie Contested Byte"
+        imp_type = "Trie Contested Bytes"
     elif "carebear_dual_trie" in base_fname:
         imp_type = "Carebear Dual Trie"
     elif "carebear_forest" in base_fname:
@@ -177,8 +177,9 @@ def create_fig(output_files, h_or_m):
         axarr[i].set_title(hit_or_miss + ' Distribution for ' + get_imp(output_files[i]))
         axarr[i].set_xlabel(xlab)
         axarr[i].set_ylabel('Prop of Queries')
+        #axarr[i].ticklabel_format(style='sci', axis='x')
         plt.setp(axarr[i].get_xticklabels(), visible=True)
-    
+
     pylab.xlim([0, maximum])
     fig.set_size_inches(IN_HIST_X, IN_PER_HIST_Y * len(output_files) )
     fig.subplots_adjust(hspace=SUBPLOT_DIST)

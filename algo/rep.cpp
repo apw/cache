@@ -74,6 +74,10 @@ char *rep::get_outfile_name() {
   return outfile_name_;
 }
 
+char *rep::get_outfile_basename() {
+  return outfile_name_;
+}
+
 void rep::viz() {
   // override in subclasses to vizualize
 }

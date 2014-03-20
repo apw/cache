@@ -257,7 +257,7 @@ int main(int argc, char **argv) {
     printf("preparing to query rep %d\n", i);
     r->prepare_to_query();
     
-    printf("running rep %d\n", i);
+    printf("running rep %d: %s\n", i, r->get_outfile_basename());
     run(r);
 
     r->viz();

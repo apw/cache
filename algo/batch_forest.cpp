@@ -38,8 +38,7 @@ void batch_forest::prepare_to_query() {
 	// compare the vector's cares against the cares of the first vector in the set
 	for(unsigned k = 0; k < l1 && k < l2; k++) {
 	  // no match
-	  if (batch_vect.ve[k].bytenum != s_[i][k].bytenum
-	      || batch_vect.ve[k].byteval != s_[i][k].byteval) {
+	  if (batch_vect.ve[k].bytenum != s_[i][k].bytenum) {
 	    match = false;
 	    break;
 	  }
@@ -73,6 +72,8 @@ void batch_forest::prepare_to_query() {
     }
   }
 
+  cout << b.size() << " batches constructed."<< endl;
+  
   // create a forest for each batch
   construct_forest(&b);
 }
@@ -103,7 +104,7 @@ int batch_forest::get_max_bytenum(uset_uint *done, uset_uint *u,
 	  }
 	}
       }
-
+      
       unsigned cur_variability = val_set.size();
       if (cur_variability > max_variability 
 	  || (cur_variability == max_variability && cur_num_care > max_num_care)) {
@@ -211,29 +212,28 @@ void batch_forest::construct_forest(batches *b) {
   uset_uint *bytenums_left = new uset_uint(max_relevant_bytenum_ + 1);
   uset_uint *batch_vectors = new uset_uint(current_id_ + 1);
   
-  unsigned num_trie = 0;
   unsigned vects_left;
   
   done->begin_trans();
-  while(done->get_size() > 0) {
+  for(unsigned num_trie = 0; num_trie < b->size(); num_trie++) {
+    cout << "Constructing Trie for Batch " << num_trie << " with " << b->operator[](num_trie).size() << " vectors." << endl;
+    
+    assert(done->get_size() > 0);
     vects_left = done->get_size();
     
-    // remove all bytenums that are not in current batch from batch_vectors
+    // remove all vectors that are not in current batch from batch_vectors
     batch_vectors->begin_trans();
-    vect v = b->operator[](num_trie)[0].ve;
-    unsigned last = 0;
-    // iterate through bytenums of first vector in the batch
-    for(unsigned i = 0, n = v.size(); i < n; i++) {
-      assert(last <= i);
-      
-      // remove all vectors between 'last' and 'i - 1'
-      if (last < v[i].bytenum) {
-	for(unsigned j = last; j < i; j++) {
-	  batch_vectors->remove(i);
-	}
+    for(unsigned i = 0; i < b->size(); i++) {
+      // if 'i' refers to current batch, skip it
+      if (i == num_trie) {
+	continue;
       }
       
-      last = i + 1;
+      // otherwise, remove everything in the batch from the done set
+      vector<c_entry> cur_batch = b->operator[](i);
+      for(unsigned j = 0; j < cur_batch.size(); j++) {
+	batch_vectors->remove(cur_batch[j].id);
+      }
     }
     batch_vectors->end_trans();
     
@@ -247,7 +247,7 @@ void batch_forest::construct_forest(batches *b) {
     // make the max_bytenum the question at the top of the forest_trie
     d_trie *d = new d_trie(max_bytenum, INVALID_ID);
     forest_.push_back(d);
-  
+    
     populate_forest_trie(d, done, u, bytenums_left, batch_vectors);
   
     // undo trans made by get_max_bytenum
@@ -256,10 +256,11 @@ void batch_forest::construct_forest(batches *b) {
     // clean slate for next batch
     batch_vectors->undo_trans();
     
-    cout << "Trie " << num_trie << " has been constructed with " << (vects_left - done->get_size()) << " vectors." << endl;
-    
-    num_trie++;
+    // HIHI
+    unsigned batch_size = b->operator[](num_trie).size();
+    assert(batch_size == vects_left - done->get_size());
   }
+  assert(done->get_size() == 0);
   done->end_trans();
   
   delete u;

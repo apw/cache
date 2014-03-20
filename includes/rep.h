@@ -34,6 +34,7 @@ class rep {
   unsigned get_num_misses(void);
 
   char *get_outfile_name(void);
+  char *get_outfile_basename(void);
 
  protected:
   int current_id_;
