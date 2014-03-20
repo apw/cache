@@ -39,7 +39,7 @@ typedef enum {LL_IMP, IN_ORDER_IMP, SIMPLE_CB_IMP,
 	      BATCH_FOREST_IMP} imp_t;
 
 // order in which implementations will be run
-int imps[] = {LL_IMP, BATCH_FOREST_IMP, GREEDY_FOREST_IMP,
+int imps[] = {LL_IMP, GREEDY_FOREST_IMP, BATCH_FOREST_IMP,
 	      GREEDY_TRIE_IMP, LAZY_EXP_IMP, CAREBEAR_FOREST_IMP,
 	      CAREBEAR_DUAL_TRIE_IMP, TRIE_CB_IMP,
 	      SIMPLE_CB_IMP};
@@ -251,13 +251,13 @@ int main(int argc, char **argv) {
     rep_ptr r = initialize_rep(imps[i]);
     assert(r);
 
-    printf("loading rep %d\n", i);
+    printf("loading rep %d: %s\n", i, r->get_outfile_basename());
     load(r);
 
     printf("preparing to query rep %d\n", i);
     r->prepare_to_query();
     
-    printf("running rep %d: %s\n", i, r->get_outfile_basename());
+    printf("running rep %d\n", i);
     run(r);
 
     r->viz();
