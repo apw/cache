@@ -31,6 +31,7 @@ using namespace std;
 
 #define NUM_ARGS 2
 #define MAX_FNAME_LEN 256
+#define PRINT_INTERVAL 10000
 
 typedef enum {LL_IMP, IN_ORDER_IMP, SIMPLE_CB_IMP,
 	      TRIE_CB_IMP, CAREBEAR_DUAL_TRIE_IMP,
@@ -39,10 +40,8 @@ typedef enum {LL_IMP, IN_ORDER_IMP, SIMPLE_CB_IMP,
 	      BATCH_FOREST_IMP} imp_t;
 
 // order in which implementations will be run
-int imps[] = {LL_IMP, BATCH_FOREST_IMP, GREEDY_FOREST_IMP,
-	      GREEDY_TRIE_IMP, LAZY_EXP_IMP, CAREBEAR_FOREST_IMP,
-	      CAREBEAR_DUAL_TRIE_IMP, TRIE_CB_IMP,
-	      SIMPLE_CB_IMP};
+int imps[] = {GREEDY_TRIE_IMP, GREEDY_FOREST_IMP, CAREBEAR_FOREST_IMP, CAREBEAR_DUAL_TRIE_IMP, LL_IMP, SIMPLE_CB_IMP, TRIE_CB_IMP,
+	      LAZY_EXP_IMP};
 
 #define TIMEBUF_SZ 80
 char *cur_time;
@@ -190,7 +189,10 @@ void run(rep_ptr rpt) {
 
   for (unsigned j = UINT_MAX; fscanf(query_file, "%u %hhu", &bytenum, &byteval) != EOF; j = bytenum) {
     if (bytenum < j) {
-      printf("\r[%u]", query_count);
+      if (query_count % PRINT_INTERVAL == 0) {
+	printf("\r[%u]", query_count);
+      }
+
       fflush(stdout);
       query_count++;
       
@@ -255,9 +257,11 @@ int main(int argc, char **argv) {
     load(r);
 
     printf("preparing to query rep %d\n", i);
+    fflush(stdout);
     r->prepare_to_query();
     
     printf("running rep %d\n", i);
+    fflush(stdout);
     run(r);
 
     r->viz();

@@ -284,14 +284,14 @@ int main(int argc, char **argv) {
   
   // get arguments n stuff
   struct cache_params cp;
-  cp.num_vects = 50;
-  cp.vect_len = 50;
+  cp.num_vects = 3200;
+  cp.vect_len = 200;
   cp.m_num_rel = 0.75;
   cp.std_num_rel = 0.001;
 
   struct query_params qp;
   qp.num_vects = 50;
-  qp.vect_len = 50;
+  qp.vect_len = 200;
   qp.num_hits = 25;
 
   /*
