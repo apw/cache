@@ -28,25 +28,43 @@ int greedy_trie::get_max_bytenum(uset_uint *done, uset_uint *u, uset_uint *byten
   unsigned max_variability = 0;
   unsigned max_num_care = 0;
   int max_bytenum = -1;
+  
+  // iterate over tera
   cache::const_iterator c_end = c_.end();
   for(cache::const_iterator c_iter = c_.begin(); c_iter != c_end; c_iter++) {
     if (bytenums_left->lookup(c_iter->first)) {
       unsigned cur_num_care = 0;
       tr1::unordered_set<uint8_t> val_set;
+      
+      // iterate over the vectyls
       bytenum_set::const_iterator b_end = c_[c_iter->first].end();
       for(bytenum_set::const_iterator b_iter = c_[c_iter->first].begin(); 
 	  b_iter != b_end; b_iter++) {
 
+	// for each vectyl, if the 'id' of the vector is still in 'done',
+	// that vector has not been inserted in some other path already,
+	// and if it is in 'u' then it is a candidate despite having 
+	// conditioned on bytenums->bytevals down the tree it is still a candidate
 	if (done->lookup(b_iter->first) && u->lookup(b_iter->first)) {
+	  // long story short: if we got into this 'if', the vector is a candidate
+	  
+	  // remember that another vector regards this bytenum (b_iter->first) as
+	  // a care bytenum
 	  cur_num_care++;
 	  
+	  // insert its corresponding byteval (b_iter->second) into the val_set if
+	  // it is not already there
 	  if (val_set.count(b_iter->second) == 0) {
 	    val_set.insert(b_iter->second);
 	  }
 	}
       }
 
+      // size of the val_set = variability b/c we only put bytevals in if they are
+      // not already in the set
       unsigned cur_variability = val_set.size();
+      
+      // prioritize variability first, then num_care
       if (cur_variability > max_variability 
 	  || (cur_variability == max_variability && cur_num_care > max_num_care)) {
 	max_variability = cur_variability;
