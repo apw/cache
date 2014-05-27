@@ -5,11 +5,11 @@ import pylab
 
 questionindex = 2
 
-if (len(sys.argv) < 2):
-    print 'Usage: python gen_scaling.py dir'
+if (len(sys.argv) < 3):
+    print 'Usage: python gen_scaling.py {num, len} dir'
     sys.exit(0)
 
-dirname = sys.argv[1]
+dirname = sys.argv[2]
 
 imps = {}
 
@@ -59,20 +59,65 @@ for num in os.listdir(dirname):
             imps[repname]["misses"]["y"].append(misssum)
 
 
+def capital(s):
+    return s.title()
+
+def get_imp(base_fname):
+    imp_type = ""
+    if "simple_cb" in base_fname:
+        imp_type = "Contested Bytes"
+    elif "in_order" in base_fname:
+        imp_type = "In Order"
+    elif "ll" in base_fname:
+        imp_type = "Linked List"
+    elif "trie_cb" in base_fname:
+        imp_type = "Trie Contested Bytes"
+    elif "carebear_dual_trie" in base_fname:
+        imp_type = "Carebear Dual Trie"
+    elif "carebear_forest" in base_fname:
+        imp_type = "Carebear Forest"
+    elif "lazy_exp" in base_fname:
+        imp_type = "Lazy Exp Trie"
+    elif "greedy_trie" in base_fname:
+        imp_type = "Greedy Trie"
+    elif "greedy_forest" in base_fname:
+        imp_type = "Greedy Forest"
+    elif "batch_forest" in base_fname:
+        imp_type = "Batch Forest"
+    else:
+        print_err("No existing implementation type by this name", 5)
+    
+    return imp_type
+
 i = 0
 for imp in imps:
     for hm in ["hits", "misses"]:
         i = i + 1
         points = zip(imps[imp][hm]["x"], imps[imp][hm]["y"])
+        maxX = max(imps[imp][hm]["x"])
+        maxY = max(imps[imp][hm]["y"])
         sortedpoints = sorted(points)
         xs = [point[0] for point in sortedpoints]
         ys = [point[1] for point in sortedpoints]
 
         plt.figure(i)
-        plt.plot(xs, ys)
-        plt.xlabel('number of vectors in cache')
-        plt.ylabel('total number of questions asked')
-        plt.title(imp + ' scaling with number of vectors ' + hm)
+        #plt.axhline(y=0)
+        #plt.axvline(x=0)
+        if (hm == "hits"):
+            plt.plot(xs, ys, 'yo', markersize=12)
+        if (hm == "misses"):
+            plt.plot(xs, ys, 'ko', markersize=12)
+
+        pylab.ylim([0, maxY*1.25])
+        pylab.xlim([0, maxX*1.25])
+
+        if (sys.argv[1] == 'num'):
+            plt.xlabel('Number of Vectors in Cache')
+            plt.title(get_imp(imp) + ' Scaling with Number of Cache Vectors (' + capital(hm) + ')')
+        elif (sys.argv[1] == 'len'):
+            plt.xlabel('Number of Bytenums in Cache & Query Vectors')
+            plt.title(get_imp(imp) + ' Scaling with Number of Bytenums in Vectors (' + capital(hm) + ')')
+        plt.ylabel('Total Number of Questions Asked')
         pylab.savefig('tmp/' + imp + '_' + hm + '.pdf')
         #plt.clf()
 
