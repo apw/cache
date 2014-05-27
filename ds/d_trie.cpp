@@ -1,5 +1,6 @@
 #include "../includes/rep.h"
 #include "../includes/d_trie.h"
+#include "../includes/common.h"
 
 #include "assert.h"
 #include <iostream>
@@ -8,6 +9,7 @@ d_trie::d_trie(unsigned bytenum, unsigned id) {
   bytenum_ = bytenum;
   id_ = id;
   x_ = NULL;
+  heat_ = 0;
 }
 
 d_trie::~d_trie(void) {
@@ -116,13 +118,23 @@ void d_trie::print() {
 }
 
 void d_trie::graph_to_ofstream(ofstream& outfile, unsigned int cur_id,
-			      unsigned int *nid) {
+			       unsigned int *nid, unsigned max_num_touches) {
+  unsigned color, opposite_color;
+  color = (unsigned) (((double) this->heat_) / ((double) max_num_touches) * 0xff);
+  opposite_color = 0xff - color;
   if (this->is_leaf() && !this->x_exists()) {
-    outfile << cur_id << " [label=\"" << get_id() << "\",shape=box]" << endl;
+    outfile << cur_id << " [label=\"" << get_id() <<
+      "\",shape=box, style=\"filled\", fillcolor=\"#" << get_hex(color) <<
+      get_hex(opposite_color) << get_hex(opposite_color) <<
+      "\", color=\"#000000\"]" << endl;
     return;
   }
-  
-  outfile << cur_id << " [label=\"" << get_bytenum() << "\"]" << endl;
+
+  outfile << cur_id << " [label=\"" << get_bytenum() <<
+    "\", style=\"filled\", fillcolor=\"#" << get_hex(color)
+	  << get_hex(opposite_color) << get_hex(opposite_color) <<
+    "\", color=\"#000000\"]" << endl;
+
   unsigned int next_id;
   if (!this->is_leaf()) {
     offspring::const_iterator children_end = children_.end();
@@ -130,7 +142,7 @@ void d_trie::graph_to_ofstream(ofstream& outfile, unsigned int cur_id,
       
       next_id = (*nid)++;
       outfile << cur_id << " -> " << next_id << " [label=\"" << ((unsigned) c_iter->first) << "\"]" << endl;
-      c_iter->second->graph_to_ofstream(outfile, next_id, nid);
+      c_iter->second->graph_to_ofstream(outfile, next_id, nid, max_num_touches);
     }
   }
   
@@ -138,7 +150,7 @@ void d_trie::graph_to_ofstream(ofstream& outfile, unsigned int cur_id,
     // assert(!this->is_leaf()); // !!! this assert fails; how can a leaf have an x_path?!?!
     next_id = (*nid)++;
     outfile << cur_id << " -> " << next_id << " [label=\"X\"]" << endl;
-    (this->decide_x())->graph_to_ofstream(outfile, next_id, nid);
+    (this->decide_x())->graph_to_ofstream(outfile, next_id, nid, max_num_touches);
   }
 }
 
@@ -152,7 +164,7 @@ void d_trie::gen_graph(char *out_file_path) {
   
   outfile << "digraph {" << endl;
 
-  graph_to_ofstream(outfile, 0, &node_id);
+  graph_to_ofstream(outfile, 0, &node_id, this->heat_);
   
   outfile << "}";
 

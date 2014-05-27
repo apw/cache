@@ -42,6 +42,7 @@ typedef enum {LL_IMP, IN_ORDER_IMP, SIMPLE_CB_IMP,
 // order in which implementations will be run
 int imps[] = {GREEDY_TRIE_IMP, GREEDY_FOREST_IMP, CAREBEAR_FOREST_IMP, CAREBEAR_DUAL_TRIE_IMP, LL_IMP, SIMPLE_CB_IMP, TRIE_CB_IMP,
 	      LAZY_EXP_IMP};
+//int imps[] = {BATCH_FOREST_IMP};
 
 #define TIMEBUF_SZ 80
 char *cur_time;

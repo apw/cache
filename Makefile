@@ -28,8 +28,10 @@ main:
 
 dgen:
 	mkdir -p bin
-	$(KANGAROO_BODY) $(OH_NO) -c $(VOLATILE_SOURCES) -o $(VOLATILE_OBJECT) $(LIBS)
-	$(KANGAROO_BODY) $(VOLATILE_OBJECT) $(OH) dgen/*.cpp $(GENERAL_SOURCES) -o $(DGEN) $(LIBS)
+#	$(KANGAROO_BODY) $(OH_NO) -c $(VOLATILE_SOURCES) -o $(VOLATILE_OBJECT) $(LIBS)
+#	$(KANGAROO_BODY) $(VOLATILE_OBJECT) $(OH) dgen/*.cpp $(GENERAL_SOURCES) -o $(DGEN) $(LIBS)
+#	./$(DGEN) ../data/ync.dat ../data/ynq.dat
+	$(KANGAROO_BODY) $(OH) dgen/*.cpp -o $(DGEN)
 	./$(DGEN) ../data/ync.dat ../data/ynq.dat
 
 dop:

@@ -9,6 +9,17 @@
 
 using namespace std;
 
+char *get_hex(unsigned x) {
+  assert(x <= 0xff);
+  unsigned small_digit = x % 16;
+  unsigned large_digit = (x - small_digit) / 16;
+  char *ret;
+  int num = asprintf(&ret, "%x%x", large_digit, small_digit);
+  assert(num == sizeof(char) * 2);
+  return ret;
+}
+
+
 void get_str_time(char *buffer, size_t sz) {
 /*
    * Code taken from:

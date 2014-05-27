@@ -136,6 +136,7 @@ void trie_cb::prepare_to_query() {
 
 unsigned trie_cb::do_query_helper(d_trie *current, uint8_t *bv, unsigned len) {
   num_steps_++;
+  current->heat_++;
   if (current->is_leaf() && !current->x_exists()) {
     assert(current->get_bytenum() == INVALID_BYTENUM);
     return current->get_id();

@@ -24,9 +24,11 @@ class lazy_trie {
   
   void print(void);
   void gen_graph(char *out_file_path);
-  void graph_to_ofstream(ofstream& outfile, unsigned int cur_id, unsigned int *nid);
+  void graph_to_ofstream(ofstream& outfile, unsigned int cur_id, unsigned int *nid, unsigned max_num_touches);
   
   void add_vect(c_entry ce);
+
+  unsigned heat_;
   
  protected:
   bool is_lazy(void);

@@ -1,12 +1,16 @@
 #include "../includes/rep.h"
 #include "../includes/lazy_trie.h"
+#include "../includes/common.h"
 
 #include "assert.h"
 #include <iostream>
+#include <sstream>
 
 lazy_trie::lazy_trie(unsigned id, unsigned cur_index,
 		     unsigned num_relevant, unsigned *relevant) {
   assert(cur_index <= num_relevant);
+
+  heat_ = 0;
   
   id_ = id;  
   cur_index_ = cur_index;
@@ -145,6 +149,7 @@ unsigned lazy_trie::burst() {
 
 lazy_trie *lazy_trie::decide(uint8_t byteval, unsigned *steps) {
   assert(*steps == 0);
+  this->heat_++;
   
   if (this->is_lazy()) {
     *steps += this->burst();
@@ -254,9 +259,18 @@ void lazy_trie::print() {
 }
 
 void lazy_trie::graph_to_ofstream(ofstream& outfile, unsigned int cur_id,
-			      unsigned int *nid) {
+				  unsigned int *nid, unsigned max_num_touches) {
+  unsigned color, opposite_color;
+  color = (unsigned) (((double) this->heat_) / ((double) max_num_touches) * 0xff);
+  opposite_color = 0xff - color;
+  std::stringstream ending;
+  ending.str("");
+  ending << ", style=\"filled\", fillcolor=\"#" << get_hex(color) <<
+      get_hex(opposite_color) << get_hex(opposite_color) <<
+    "\", color=\"#000000\"]" << endl;
   if (this->is_leaf() && !this->is_lazy()) {
-    outfile << cur_id << " [label=\"" << get_id() << "\",shape=box]" << endl;
+    outfile << cur_id << " [label=\"" << get_id() <<
+      "\",shape=box" << ending.str();
     return;
   }
 
@@ -270,11 +284,11 @@ void lazy_trie::graph_to_ofstream(ofstream& outfile, unsigned int cur_id,
       }
     }
     
-    outfile << "\",shape=box]" << endl;
+    outfile << "\",shape=box" << ending.str();
     return;
   }
   
-  outfile << cur_id << " [label=\"" << get_bytenum() << "\"]" << endl;
+  outfile << cur_id << " [label=\"" << get_bytenum() << "\"" << ending.str();
   unsigned int next_id;
   if (!this->is_leaf()) {
     offspring::const_iterator children_end = children_->end();
@@ -282,15 +296,15 @@ void lazy_trie::graph_to_ofstream(ofstream& outfile, unsigned int cur_id,
 
       next_id = (*nid)++;
       outfile << cur_id << " -> " << next_id << " [label=\"" << ((unsigned) c_iter->first) << "\"]" << endl;
-      c_iter->second->graph_to_ofstream(outfile, next_id, nid);
+      c_iter->second->graph_to_ofstream(outfile, next_id, nid, max_num_touches);
     }
   }
   
   if (this->ee_exists()) {
     // assert(!this->is_leaf()); // !!! this assert fails; how can a leaf have an x_path?!?!
     next_id = (*nid)++;
-    outfile << cur_id << " -> " << next_id << " [label=\"X\"]" << endl;
-    ee_->graph_to_ofstream(outfile, next_id, nid);
+    outfile << cur_id << " -> " << next_id << " [label=\"ee\"]" << endl;
+    ee_->graph_to_ofstream(outfile, next_id, nid, max_num_touches);
   }
 }
 
@@ -304,7 +318,7 @@ void lazy_trie::gen_graph(char *out_file_path) {
   
   outfile << "digraph {" << endl;
 
-  graph_to_ofstream(outfile, 0, &node_id);
+  graph_to_ofstream(outfile, 0, &node_id, this->heat_);
   
   outfile << "}";
 

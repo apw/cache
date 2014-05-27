@@ -21,4 +21,6 @@ void forest(void);
 // prints out a snorlax
 void snorlax(void);
 
+char *get_hex(unsigned x);
+
 #endif

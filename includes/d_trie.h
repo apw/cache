@@ -26,7 +26,9 @@ class d_trie {
   
   void print(void);
   void gen_graph(char *out_file_path);
-  void graph_to_ofstream(ofstream& outfile, unsigned int cur_id, unsigned int *nid);
+  void graph_to_ofstream(ofstream& outfile, unsigned int cur_id, unsigned int *nid, unsigned max_num_touches);
+
+  unsigned heat_;
   
  protected:
   void print_helper(unsigned);
@@ -50,6 +52,7 @@ class d_trie {
   
   unsigned bytenum_;
   unsigned id_;
+  
 };
 
 #endif

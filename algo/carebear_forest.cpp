@@ -282,6 +282,7 @@ unsigned carebear_forest::do_query(uint8_t *bv, unsigned len) {
       }
       
       uint8_t byteval = bv[cur->get_bytenum()];
+      cur->heat_++;
       cur = cur->decide(byteval);
     } while (cur != NULL);
     
@@ -405,7 +406,7 @@ void carebear_forest::viz() {
   unsigned cur_id = 0;
   unsigned next_id = 1;
   for(unsigned i = 0; i < forest_.size(); i++) {
-    forest_[i]->graph_to_ofstream(outfile, cur_id, &next_id);
+    forest_[i]->graph_to_ofstream(outfile, cur_id, &next_id, forest_[i]->heat_);
     cur_id = next_id;
     next_id++;
   }
