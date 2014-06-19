@@ -568,3 +568,6 @@ Ideally we would be able to implement this as a single mmap-able file<sup>[22]</
 
 [22]  Nutrient
 [22]: https://github.com/colmmacc/nutrient
+
+[23]  Compressing dictionaries with a DAWG.
+[23]: http://stevehanov.ca/blog/index.php?id=115
